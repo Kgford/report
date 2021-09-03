@@ -1,0 +1,2 @@
+Python ver 3.9 is required for SQL Server communication
+
