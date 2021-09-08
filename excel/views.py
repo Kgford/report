@@ -2,6 +2,8 @@ from django.shortcuts import render
 import xlwt
 from xlutils.copy import copy # http://pypi.python.org/pypi/xlutils
 from xlrd import open_workbook # http://pypi.python.org/pypi/xlrd
+from openpyxl import Workbook
+from openpyxl import load_workbook
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 import os
@@ -26,7 +28,7 @@ import getpass
 import subprocess
 import sys
 from base64 import *
-from test_db.models import Specifications,Workstation,Workstation1,Testdata,Testdata3,Trace,Tracepoints,Tracepoints2
+from test_db.models import Specifications,Workstation,Workstation1,Testdata,Testdata3,Trace,Tracepoints,Tracepoints2,Effeciency
 
 
 class ReportView(View):
@@ -80,8 +82,8 @@ class ReportView(View):
             #~~~~~~~~~~~~~ Time ~~~~~~~~~~~~~~~~~
             
             
-            workstation_list = Workstation.objects.using('TEST').order_by('workstationname').values_list('workstationname', flat=True).distinct()
-            operator_list = Workstation.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
+            workstation_list = Workstation.objects.using('TEST').order_by('computername').values_list('computername', flat=True).distinct()
+            operator_list = Effeciency.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
             job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
             part_list = Testdata.objects.using('TEST').order_by('partnumber').values_list('partnumber', flat=True).distinct()
         except IOError as e:
@@ -134,11 +136,80 @@ class ReportView(View):
             print('Month=',month_string)
             #~~~~~~~~~~~~~ Time ~~~~~~~~~~~~~~~~~
             
+            #~~~~~~~~~~Get Post Values~~~~~~~~~~~~~~~
+            job_num = request.POST.get('_job', -1)
+            print('job_num=',job_num)
+            part_num = request.POST.get('_part', -1)
+            workstation = request.POST.get('_workstation', -1)
+            operator = request.POST.get('_operator', -1)
+            start_date = request.POST.get('_start_date', -1)
+            end_date = request.POST.get('_end_date', -1)
+            report = request.POST.get('_report', -1)
+            print('report=',report)
+            analyze = request.POST.get('_analyze', -1)
+            #~~~~~~~~~~Get Post Values~~~~~~~~~~~~~~~
+            job_num = '25906-04'
+            #https://openpyxl.readthedocs.io/en/stable/
+            #https://www.softwaretestinghelp.com/python-openpyxl-tutorial/
+            if job_num != -1 and report !=-1:
+                job_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('partnumber').values_list('partnumber', flat=True).distinct()
+                report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).all()
+                spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).all()
+                print('spec_data=',spec_data)
+                
+                
+                if report_data:
+                    part_num = report_data[0].partnumber
+                    spectype = spec_data[0].spectype
+                    path = os.path.dirname(__file__)
+                    path = path + '/excel_templates/'
+                    print('path=',path)
+                    file = os.path.join(path, 'TestData.xlsx')
+                    print('file=',file)
+
+                    wb = load_workbook(file)
+                    print('wb=',wb)
+                    sheet = wb["Raw Data1"]
+                    print('sheet=',sheet)
+                    sheet['F2'] = job_num
+                    sheet['F3'] = part_num 
+                    sheet['F4'] = spectype 
+                    print(wb.sheetnames)
+                    sheetDelete = wb["Raw Data2"]
+                    wb.remove(sheetDelete)  #Sheet will be deleted
+                    sheetDelete = wb["Raw Data3"]
+                    wb.remove(sheetDelete)  #Sheet will be deleted
+                    sheetDelete = wb["Raw Data4"]
+                    wb.remove(sheetDelete)  #Sheet will be deleted
+                
+                    
+                    rownum = 6
+                    for data in report_data:
+                        print('insertionloss=',data.insertionloss)
+                        sheet.cell(row=rownum, column=1).value= data.serialnumber
+                        sheet.cell(row=rownum, column=2).value= data.workstation
+                        sheet.cell(row=rownum, column=3).value= round(data.insertionloss,2)
+                        sheet.cell(row=rownum, column=4).value= round(data.returnloss,2)
+                        sheet.cell(row=rownum, column=5).value= round(data.isolation,2)
+                        sheet.cell(row=rownum, column=6).value= round(data.amplitudebalance,2)
+                        sheet.cell(row=rownum, column=7).value= round(data.phasebalance,2)
+                        rownum +=1
+                    
+                    wb.save("C:/ATE Data/demo4.xlsx")
+            elif job_num != -1:
+                job_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('partnumber').values_list('partnumber', flat=True).distinct()
+                report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).all()
+            else:
+                job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').order_by('partnumber').values_list('partnumber', flat=True).distinct()
             
             workstation_list = Workstation.objects.using('TEST').order_by('workstationname').values_list('workstationname', flat=True).distinct()
             operator_list = Workstation.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
-            job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
-            part_list = Testdata.objects.using('TEST').order_by('partnumber').values_list('partnumber', flat=True).distinct()
+            
+            
+            
         except IOError as e:
             print ("Lists load Failure ", e)
             print('error = ',e)     
@@ -211,31 +282,24 @@ def export_styling_xls(request):
 
 #The below code will explain how to write data in Exisiting excel file and the content inside it.
 def export_write_xls(request):
-    response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="users.xls"'
-
     # EG: path = excel_app/sample.xls
     path = os.path.dirname(__file__)
-    #path = path + '/excel_templates/'
+    path = path + '/excel_templates/'
     print('path=',path)
-    file = os.path.join(path, 'TestData.xls')
+    file = os.path.join(path, 'TestData.xlsx')
+    print('file=',file)
 
-    rb = open_workbook(file, formatting_info=True)
-    r_sheet = rb.sheet_by_index(0)
-
-    wb = copy(rb)
-    ws = wb.get_sheet(0)
-
-    row_num = 2 # index start from 0
-    rows = User.objects.all().values_list('username', 'first_name', 'last_name', 'email')
-    for row in rows:
-        row_num += 1
-        for col_num in range(len(row)):
-            ws.write(row_num, col_num, row[col_num])
-    
-    # wb.save(file) # will replace original file
-    # wb.save(file + '.out' + os.path.splitext(file)[-1]) # will save file where the excel file is
-    wb.save(response)
+    wb = load_workbook(file)
+    print('wb=',wb)
+    sheet = wb["Raw Data1"]
+    print('sheet=',sheet)
+    sheet['F2'] = '398789-02' 
+    sheet['F3'] = 'IPP-89348' 
+    sheet['F4'] = '90 degree coupler' 
+    print("sheet['F2']=",sheet['F2'])
+    print(wb.sheetnames)
+    wb.save("C:/ATE Data/demo4.xlsx")
+    wb = load_workbook("C:/ATE Data/demo4.xlsx")
     return response
     
     

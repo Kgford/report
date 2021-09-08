@@ -30,7 +30,7 @@
     <div class="container">
       <a href="#" class="navbar-brand d-flex align-items-center">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        <strong>Innovative Power Products</strong>
+        <strong>&nbsp;&nbsp;&nbsp;&nbsp;Innovative Power Products</strong>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -40,21 +40,20 @@
 </header>
 
 <main>
-	
+	<form action = "{% url 'excel:reports' %}" method="post">
+		{% csrf_token %}	
 		<section class="py-5 text-center container">
 			<div class="row py-lg-5">
 				<div class="col-lg-6 col-md-8 mx-auto">
 					<h1 class="fw-light">IPP Report Server</h1>
 					<p class="lead text-muted">This page is the future automated report server for all IPP Test Data and active monitor of all work stations. It will run as an API; waiting for a signal from each Workstation as to when to start a final report. It will also be capable of manual report generation and analyzing all historical data.</p>
 					<p>
-					  <a href="http://inn-sqlexpress:8888/test/export/export-write-xls" class="btn btn-primary my-2">Create Test Report</a>
-					  <a href="#" class="btn btn-secondary my-2">Analyze Data</a>
+					  <button type="submit" id = "_report" name = "_report" class="btn btn-primary my-2">Create Test Report</button>
+					  <button type="submit" id = "_report" name = "_analyze" class="btn btn-secondary my-2">Analyze Data</button>
 					</p>
 					<h2 class="fw-light">Data Filter</h2>
 				</div>
 			</div>
-	<form action = "{% url 'excel:reports' %}" method="post">
-		{% csrf_token %}		
 	<div class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
 		
 			<div class="col-sm-1 col-lg-2 grid-col">
@@ -63,13 +62,13 @@
 					<!-- Customer-->
 					<select id='_cust' name ='_cust' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
 						{% if job_num == -1%}
-							<option data-desc = '_job', value = "Search by Job_number">Search by Job_number</option>
+							<option data-desc = '_job', id = '_job',name = '_job', value = "Search by Job_number">Search by Job_number</option>
 						{% else %}
-							<option data-desc = '_job', value = '{{job_num}}'>Search by Job_number</option>
-							<option selected>{{customer}}</option>
+							<option data-desc = '_job', id = '_job',name = '_job', value = '{{job_num}}'>Search by Job_number</option>
+							<option selected>{{job_num}}</option>
 						{% endif %}	
 						{% for job in job_list%}
-							<option data-desc = '_job', value = "{{job}}">{{job}}</option>
+							<option data-desc = '_job', id = '_job',name = '_job', value = "{{job}}">{{job}}</option>
 						{% endfor %}
 					</select>
 				</div>
@@ -79,13 +78,13 @@
 					<label for="_cust">Part Number</label>
 					<select id='_cust' name ='_cust' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
 						{% if part_num == -1%}
-							<option data-desc = '_part', value = "Search by Part_number">Search by Part_number</option>
+							<option data-desc = '_part',  id = '_part',name = '_part',value = "Search by Part_number">Search by Part_number</option>
 						{% else %}
-							<option data-desc = '_part', value = '{{part_num}}'>Search by Part_number</option>
+							<option data-desc = '_part',  id = '_part',name = '_part', value = '{{part_num}}'>Search by Part_number</option>
 							<option selected>{{part_num}}</option>
 						{% endif %}	
 						{% for part in part_list%}
-							<option data-desc = '_part', value = "{{part}}">{{part}}</option>
+							<option data-desc = '_part',  id = '_part',name = '_part', value = "{{part}}">{{part}}</option>
 						{% endfor %}
 					</select>
 				</div>

@@ -18,6 +18,7 @@ STATICFILES_DIRS = [STATIC_DIR]
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index' 
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 
 

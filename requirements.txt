@@ -8,5 +8,6 @@ reportlab>=2.7,<3
 pillow
 requests
 six
+openpyxl
 
 
