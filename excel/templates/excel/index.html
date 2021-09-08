@@ -1,22 +1,318 @@
-<!DOCTYPE html>
-<html>
-    <head><title>Excel Examples</title></head>
-    <body>
-        <h3>Excel Example - Read Write Examples</h3>
-        <ul>
-            <li>Write Operation
-                <ul>
-                    <li>
-                        <a href="{% url 'export_excel' %}">Simple Excel Write Operation</a>
-                    </li>
-                    <li>
-                        <a href="{% url 'export_styling_excel' %}">Styling your Excel data with xlwt</a>
-                    </li>
-                    <li>
-                        <a href="{% url 'export_write_xls' %}">writing to existing workbook using xlwt </a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </body>
+{% extends "excel/layout.html" %}
+{% load static %}
+
+{% block title %}
+    {{ index_type }}
+{% endblock %}
+
+{% block body %}
+    
+<header>
+  <div class="collapse bg-dark" id="navbarHeader">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 col-md-7 py-4">
+          <h4 class="text-white">About</h4>
+          <p class="text-muted">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
+        </div>
+        <div class="col-sm-4 offset-md-1 py-4">
+          <h4 class="text-white">Contact</h4>
+          <ul class="list-unstyled">
+            <li><a href="#" class="text-white">Follow on Twitter</a></li>
+            <li><a href="#" class="text-white">Like on Facebook</a></li>
+            <li><a href="#" class="text-white">Email me</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="container">
+      <a href="#" class="navbar-brand d-flex align-items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <strong>Innovative Power Products</strong>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+	
+		<section class="py-5 text-center container">
+			<div class="row py-lg-5">
+				<div class="col-lg-6 col-md-8 mx-auto">
+					<h1 class="fw-light">IPP Report Server</h1>
+					<p class="lead text-muted">This page is the future report server for all IPP Test Data and a monitor for all work stations. It will run as an API; waiting for a signal from each Workstation as to when to start a final report. It will also be capible of manual report generation and analyzing all historical data.</p>
+					<p>
+					  <a href="http://inn-autocon:8888/test/export/export-write-xls" class="btn btn-primary my-2">Create Test Report</a>
+					  <a href="#" class="btn btn-secondary my-2">Analyze Data</a>
+					</p>
+					<h2 class="fw-light">Data Filter</h2>
+				</div>
+			</div>
+	<form action = "{% url 'excel:reports' %}" method="post">
+		{% csrf_token %}		
+	<div class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+		
+			<div class="col-sm-1 col-lg-2 grid-col">
+				<div class="form-group">
+					<label for="_cust">Job Number</label>
+					<!-- Customer-->
+					<select id='_cust' name ='_cust' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
+						{% if job_num == -1%}
+							<option data-desc = '_job', value = "Search by Job_number">Search by Job_number</option>
+						{% else %}
+							<option data-desc = '_job', value = '{{job_num}}'>Search by Job_number</option>
+							<option selected>{{customer}}</option>
+						{% endif %}	
+						{% for job in job_list%}
+							<option data-desc = '_job', value = "{{job}}">{{job}}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>		
+			<div class="col-sm-1 col-lg-2 grid-col">
+				<div class="form-group">		
+					<label for="_cust">Part Number</label>
+					<select id='_cust' name ='_cust' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
+						{% if part_num == -1%}
+							<option data-desc = '_part', value = "Search by Part_number">Search by Part_number</option>
+						{% else %}
+							<option data-desc = '_part', value = '{{part_num}}'>Search by Part_number</option>
+							<option selected>{{part_num}}</option>
+						{% endif %}	
+						{% for part in part_list%}
+							<option data-desc = '_part', value = "{{part}}">{{part}}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+			<div class="col-sm-1 col-lg-2 grid-col">
+				<div class="form-group">
+					<label for="_cust">Workstation</label>
+					<!-- Customer-->
+					<select id='_cust' name ='_cust' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
+						{% if workstation == -1%}
+							<option data-desc = '_workstation', value = "Search by Workstation">Search by Workstation</option>
+						{% else %}
+							<option data-desc = '_workstation', value = '{{workstation}}'>Search by Workstation</option>
+							<option selected>{{workstation}}</option>
+						{% endif %}	
+						{% for station in workstation_list%}
+							<option data-desc = '_workstation', value = "{{workstation}}">{{station}}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>		
+			<div class="col-sm-1 col-lg-2 grid-col">
+				<div class="form-group">		
+					<label for="_cust">Operator</label>
+					<select id='_cust' name ='_cust' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
+						{% if job_num == -1%}
+							<option data-desc = '_operator', value = "Search by Operator">Search by Operator</option>
+						{% else %}
+							<option data-desc = '_operator', value = '{{operator}}'>Search by Operator</option>
+							<option selected>{{operator}}</option>
+						{% endif %}	
+						{% for op in operator_list%}
+							<option data-desc = '_operator', value = "{{op}}">{{op}}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+			<div class="col-sm-1 col-lg-2 grid-col">
+				<div class="form-group">
+					<label>Start Date<span class="k-required"></span></label>
+					{% if start_date == -1%}
+						<input  input type = "date" name='_start_date' id='_start_date' value = ""/>
+					{% else %}
+						<input  name='_start_date' id='_start_date' value = "{{start_date}}"/>
+					{% endif %}
+				</div>
+			</div>
+			<div class="col-sm-1 col-lg-2 grid-col">
+				<div class="form-group">
+					<label>End Date<span class="k-required"></span></label>
+					{% if end_date == -1%}
+						<input  input type = "date" name='_end_date' id='_end_date' value = ""/>
+					{% else %}
+						<input  name='_end_date' id='_end_date' value = "{{end_date}}"/>
+					{% endif %}
+				</div>
+			</div>
+		</form>
+	</div>
+ </section> 
+
+  <div class="album py-5 bg-light">
+    <div class="container">
+
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        <div class="col">
+          <div class="card shadow-sm">
+            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 1</text></svg>
+
+            <div class="card-body">
+              <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will also have a visual representaion of which stations are active.</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                </div>
+                <small class="text-muted">9 mins</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card shadow-sm">
+            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 2</text></svg>
+
+            <div class="card-body">
+              <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will also have a visual representaion of which stations are active.</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                </div>
+                <small class="text-muted">9 mins</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card shadow-sm">
+            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 3</text></svg>
+
+            <div class="card-body">
+              <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will also have a visual representaion of which stations are active.</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                </div>
+                <small class="text-muted">9 mins</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card shadow-sm">
+            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 4</text></svg>
+
+            <div class="card-body">
+              <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will also have a visual representaion of which stations are active.</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                </div>
+                <small class="text-muted">9 mins</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card shadow-sm">
+            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 5</text></svg>
+
+            <div class="card-body">
+              <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will also have a visual representaion of which stations are active.</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                </div>
+                <small class="text-muted">9 mins</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card shadow-sm">
+            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 6</text></svg>
+
+            <div class="card-body">
+              <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will also have a visual representaion of which stations are active.</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                </div>
+                <small class="text-muted">9 mins</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card shadow-sm">
+            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 7</text></svg>
+
+            <div class="card-body">
+              <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will also have a visual representaion of which stations are active.</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                </div>
+                <small class="text-muted">9 mins</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card shadow-sm">
+            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 8</text></svg>
+
+            <div class="card-body">
+              <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will have a visual representaion of which stations are active.</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                </div>
+                <small class="text-muted">9 mins</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card shadow-sm">
+            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 9</text></svg>
+
+            <div class="card-body">
+              <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will have a visual representaion of which stations are active.</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                </div>
+                <small class="text-muted">9 mins</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="text-muted py-5">
+  <div class="container">
+    <p class="float-end mb-1">
+      <a href="#">Back to top</a>
+    </p>
+    <p class="mb-1"> &copy; Automated Test Solutions</p>
+   
+  </div>
+</footer>
+<script type="text/javascript" src="{% static 'excel/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+  {% endblock %}
 </html>

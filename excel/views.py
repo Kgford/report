@@ -5,6 +5,147 @@ from xlrd import open_workbook # http://pypi.python.org/pypi/xlrd
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 import os
+from django import forms
+from django.views import View
+from report.overhead import TimeCode, Security, StringThings
+from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from django.http import JsonResponse
+from django.core import serializers
+from django.core.files import File
+#from .forms import QAForm
+from django.urls import reverse, reverse_lazy
+from django.db.models import Q
+from django.utils.timezone import make_aware
+import re
+import datetime
+import io
+from io import BytesIO
+import shutil
+import getpass
+import subprocess
+import sys
+from base64 import *
+from test_db.models import Specifications,Workstation,Workstation1,Testdata,Testdata3,Trace,Tracepoints,Tracepoints2
+
+
+class ReportView(View):
+    #~~~~~~~~~~~Load Item database from csv. must put this somewhere else later"
+    contSuccess = 0
+    
+    template_name = "index.html"
+    success_url = reverse_lazy('excel:reports')
+    def get(self, request, *args, **kwargs):
+        operator = self.request.user
+        form = 0
+        try:
+            status ='In Process'
+            job_num=-1
+            part_num=-1
+            workstation=-1
+            operator=-1
+            start_date=-1
+            search=-1
+            end_date = -1
+            
+            job_list = []
+            part_list = []
+            workstation_list = []
+            operator_list = []
+           
+            
+            #  Equations to get today - days
+            #~~~~~~~~~~~~~ Time ~~~~~~~~~~~~~~~~~
+            days=30 # start_date is today - days 
+            time_code = TimeCode(days)
+            friday = time_code.friday()
+            print('friday=',friday)
+            today = datetime.datetime.today()
+            today = make_aware(today)
+            print('today =', today)
+            #start_date  = time_code.today_minus() # end_date is today - days 
+            #start_date = make_aware(start_date)
+            #end_date = today
+            print('start_date =',start_date)
+            print('end_date =',end_date)
+            year = time_code.this_year()
+            month_num = time_code.this_month()
+            month_string = time_code.month_string()
+            day = time_code.this_day()
+            hour = time_code.this_hour()
+            minute = time_code.this_minute()
+            sec = time_code.this_sec()
+            print('Today=',day,'/',month_num,'/',year,'/ ',hour,':',minute,':',sec)
+            print('Month=',month_string)
+            #~~~~~~~~~~~~~ Time ~~~~~~~~~~~~~~~~~
+            
+            
+            workstation_list = Workstation.objects.using('TEST').order_by('workstationname').values_list('workstationname', flat=True).distinct()
+            operator_list = Workstation.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
+            job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
+            part_list = Testdata.objects.using('TEST').order_by('partnumber').values_list('partnumber', flat=True).distinct()
+        except IOError as e:
+            print ("Lists load Failure ", e)
+            print('error = ',e)     
+        return render (self.request,"excel/index.html",{'job_num':job_num,'part_num':part_num,'workstation':workstation,'operator':operator,'start_date':start_date,'end_date':end_date,
+                                                        'job_list':job_list,'part_list':part_list,'workstation_list':workstation_list,'operator_list':operator_list})    
+    
+    def post(self, request, *args, **kwargs):
+        operator = self.request.user
+        form = 0
+        try:
+            status ='In Process'
+            job_num=-1
+            part_num=-1
+            workstation=-1
+            operator=-1
+            start_date=-1
+            search=-1
+            end_date = -1
+            
+            job_list = []
+            part_list = []
+            workstation_list = []
+            operator_list = []
+           
+            
+            #  Equations to get today - days
+            #~~~~~~~~~~~~~ Time ~~~~~~~~~~~~~~~~~
+            days=30 # start_date is today - days 
+            time_code = TimeCode(days)
+            friday = time_code.friday()
+            print('friday=',friday)
+            today = datetime.datetime.today()
+            today = make_aware(today)
+            print('today =', today)
+            #start_date  = time_code.today_minus() # end_date is today - days 
+            #start_date = make_aware(start_date)
+            #end_date = today
+            print('start_date =',start_date)
+            print('end_date =',end_date)
+            year = time_code.this_year()
+            month_num = time_code.this_month()
+            month_string = time_code.month_string()
+            day = time_code.this_day()
+            hour = time_code.this_hour()
+            minute = time_code.this_minute()
+            sec = time_code.this_sec()
+            print('Today=',day,'/',month_num,'/',year,'/ ',hour,':',minute,':',sec)
+            print('Month=',month_string)
+            #~~~~~~~~~~~~~ Time ~~~~~~~~~~~~~~~~~
+            
+            
+            workstation_list = Workstation.objects.using('TEST').order_by('workstationname').values_list('workstationname', flat=True).distinct()
+            operator_list = Workstation.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
+            job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
+            part_list = Testdata.objects.using('TEST').order_by('partnumber').values_list('partnumber', flat=True).distinct()
+        except IOError as e:
+            print ("Lists load Failure ", e)
+            print('error = ',e)     
+        return render (self.request,"excel/index.html",{'job_num':job_num,'part_num':part_num,'workstation':workstation,'operator':operator,'start_date':start_date,'end_date':end_date,
+                                                        'job_list':job_list,'part_list':part_list,'workstation_list':workstation_list,'operator_list':operator_list}) 
+
+
 
 def export_users_xls(request):
     response = HttpResponse(content_type='application/ms-excel')
@@ -75,7 +216,9 @@ def export_write_xls(request):
 
     # EG: path = excel_app/sample.xls
     path = os.path.dirname(__file__)
-    file = os.path.join(path, 'sample.xls')
+    #path = path + '/excel_templates/'
+    print('path=',path)
+    file = os.path.join(path, 'TestData.xls')
 
     rb = open_workbook(file, formatting_info=True)
     r_sheet = rb.sheet_by_index(0)
@@ -94,3 +237,33 @@ def export_write_xls(request):
     # wb.save(file + '.out' + os.path.splitext(file)[-1]) # will save file where the excel file is
     wb.save(response)
     return response
+    
+    
+
+def test_report(request):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="users.xls"'
+
+    # EG: path = report/excel_templates/TestData.xls
+    path = os.path.dirname(__file__)
+    path = path + '/excel_templates/'
+    print('path=',path)
+    file = os.path.join(path, 'TestData.xls')
+
+    rb = open_workbook(file, formatting_info=True)
+    sh = rb.sheet_by_name('Data')
+
+   
+
+    row_num = 2 # index start from 0
+    rows = User.objects.all().values_list('username', 'first_name', 'last_name', 'email')
+    for row in rows:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num])
+    
+    # wb.save(file) # will replace original file
+    # wb.save(file + '.out' + os.path.splitext(file)[-1]) # will save file where the excel file is
+    wb.save(response)
+    return response
+   

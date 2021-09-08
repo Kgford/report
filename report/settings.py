@@ -21,8 +21,6 @@ LOGOUT_REDIRECT_URL = 'index'
 
 
 
-
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
@@ -37,7 +35,10 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
+    'users',
     'excel',
+    'E2',
+    'test_db',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -79,16 +80,18 @@ WSGI_APPLICATION = 'report.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        },
-    }
-
-
-
 '''
+I removed the django-pyodbc-azure and django-mssql-backend packages since they only support the older django versions. Afterwards is installed the mssql backend from https://github.com/microsoft/mssql-django
+
+pip uninstall django-pyodbc-azure
+pip uninstall django-mssql-backend
+pip install mssql-django
+Then i configured the DB to use 'ENGINE': 'mssql'
+
+After this i was able to connect to our MSSQL DB using Django 3.2!
+'''
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -96,7 +99,7 @@ DATABASES = {
         },
 
         'E2': {
-            'ENGINE': 'sql_server.pyodbc',
+            'ENGINE': 'mssql',
             'NAME': 'IPPMFGSQL',
             'USER': 'sa',
             'PASSWORD': 'Secure1!',
@@ -109,7 +112,7 @@ DATABASES = {
         },   
         
         'TEST': {
-                'ENGINE': 'sql_server.pyodbc',
+                'ENGINE': 'mssql',
                 'NAME': 'ATE',
                 'USER': 'developer',
                 'PASSWORD': 'secure',
@@ -121,7 +124,7 @@ DATABASES = {
                 }               
             },
     }
-'''
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

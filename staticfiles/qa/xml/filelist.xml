@@ -1,0 +1,6 @@
+<xml xmlns:o="urn:schemas-microsoft-com:office:office">
+ <o:MainFile HRef="C:/SRC/ipp/qa/templates/qa/Cert_template.html"/>
+ <o:File href="{% static 'qa/xml/themedata.thmx' %}"/>
+ <o:File href="{% static 'qa/xml/colorschememapping.xml' %}"/>
+ <o:File href="{% static 'qa/xml/filelist.xml' %}"/>
+</xml>

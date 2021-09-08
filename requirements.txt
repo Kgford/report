@@ -1,17 +1,10 @@
-Django==2.0
-django-mssql==1.8
+Django==3..2
+mssql-django
 xlwt
 xlutils
 xlrd
-
-pyodbc==4.0.19
-django-pyodbc==1.1.1
-django-pyodbc-azure==1.11.0.0
-django-easy-pdf
 xhtml2pdf>=0.0.6
 reportlab>=2.7,<3
-python-barcode
-python-barcode[images]
 pillow
-qrcode
+
 

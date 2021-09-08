@@ -1,0 +1,1 @@
+/* Size in inches */    @page {  size: 3in 4in landscape;}@media print {  @page {    size: 3in 5in landscape;  }}
