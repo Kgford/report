@@ -19,6 +19,10 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index' 
 DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
 
 
 
@@ -40,6 +44,8 @@ INSTALLED_APPS = [
     'excel',
     'E2',
     'test_db',
+    'rest_api',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

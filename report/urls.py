@@ -14,5 +14,6 @@ urlpatterns = [
     url(r'^logout/$', views.user_logout, name='logout'),
     url(r'^user_login/$', views.user_login, name='login'), 
     path('test/', include("excel.urls")),
+    path('api/', include("rest_api.urls")),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
