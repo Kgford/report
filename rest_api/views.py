@@ -1,22 +1,26 @@
-from django.contrib.auth.models import User, Group
+from test_db.models import ReportQueue
 from rest_framework import viewsets
 from rest_framework import permissions
-from rest_api.serializers import UserSerializer, GroupSerializer
+from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework.response import Response
+from rest_api.serializers import ReportQueueSerializer
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
-class GroupViewSet(viewsets.ModelViewSet):
+
+#https://www.django-rest-framework.org/tutorial/quickstart/
+#https://forums.asp.net/t/2100314.aspx?Calling+a+WEB+API+using+VB+Net
+#https://www.django-rest-framework.org/api-guide/requests/#authentication
+
+   
+class ReportQueueViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    queryset = ReportQueue.objects.all()
+    serializer_class = ReportQueueSerializer
+    
+
+    

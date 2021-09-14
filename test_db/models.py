@@ -9,6 +9,18 @@ from django.db import models
 from django.utils import timezone
 
 
+class ReportQueue(models.Model):    
+    id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
+    reportname = models.CharField(db_column='ReportName', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    reporttype = models.CharField(db_column='ReportType', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    reportstatus = models.CharField(db_column='ReportStatus', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    jobnumber = models.CharField(db_column='JobNumber', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    workstation = models.CharField(db_column='WorkStation', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    partnumber = models.CharField(db_column='PartNumber', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    operator = models.CharField(db_column='Operator', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    activedate = models.DateTimeField(db_column='ActiveDate', blank=True, null=True)  # Field name made lowercase.
+
+
 class Coeffcal(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
     stringname = models.CharField(db_column='StringName', max_length=50, blank=True, null=True)  # Field name made lowercase.

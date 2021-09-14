@@ -691,7 +691,22 @@ class Security:
         return visitor_ip
  
 
-  
+class Conversions:
+    def __init__ (self, data,unit):
+        self.data = data
+        self.unit = unit
+        print('*******look here *******self.data=',self.data)
+       
+    def vswr_to_rl(self):
+        try:
+            rl = 20 * math.log10((self.data-1)/(self.data +1))
+            return rl
+        except IOError as e:
+            print('error = ',e) 
+            return 0     
+
+
+
 
 
 class Style:
