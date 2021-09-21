@@ -1,6 +1,7 @@
 from django.urls import include, path
 
 from rest_api import views
+from .views import ReportQueueViews,
 
 
 
@@ -8,6 +9,8 @@ from rest_api import views
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     
-    path('report_queue/', include('rest_framework.urls', namespace='rest_framework'))
+    #path('report_queue/', include('rest_framework.urls', namespace='rest_framework'))
+    path('report_queue/', ReportQueueViews.as_view()),
+    path('api/', , ReportQueueView.as_view()),
     
  ]

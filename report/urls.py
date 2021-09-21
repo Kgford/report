@@ -4,11 +4,14 @@ from django.conf.urls import url,include
 from django.conf.urls.static import static
 from django.conf import settings
 from rest_framework import routers
-from users import views
-from rest_api import views
+from rest_api.views import ReportQueueViews
+from rest_api.views import ExcelReportStartView
+
 
 router = routers.DefaultRouter()
-router.register(r'report queue', views.ReportQueueViewSet)
+router.register(r'report_queue', ReportQueueViews)
+#router.register(r'excel_report_start', ExcelReportStartView, basename='excel_report_start')
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),

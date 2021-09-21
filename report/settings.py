@@ -41,7 +41,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'users',
-    'excel',
+    'excel.apps.ExcelConfig',
     'E2',
     'test_db',
     'rest_api',
@@ -53,6 +53,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+Q_CLUSTER = {
+    "name": "reporting",
+    "orm": "default",  # Use Django's ORM + database for broker
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

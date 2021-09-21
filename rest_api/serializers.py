@@ -6,3 +6,5 @@ class ReportQueueSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ReportQueue
         fields = ['reportname', 'reporttype', 'reportstatus','jobnumber','workstation','partnumber','operator','activedate']
+        
+    

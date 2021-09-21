@@ -19,6 +19,10 @@ class ReportQueue(models.Model):
     partnumber = models.CharField(db_column='PartNumber', max_length=50, blank=True, null=True)  # Field name made lowercase.
     operator = models.CharField(db_column='Operator', max_length=50, blank=True, null=True)  # Field name made lowercase.
     activedate = models.DateTimeField(db_column='ActiveDate', blank=True, null=True)  # Field name made lowercase.
+    
+    class Meta:
+        managed = False
+        db_table = 'ReportQueue'
 
 
 class Coeffcal(models.Model):
@@ -164,6 +168,34 @@ class Specifications(models.Model):
     ab_stop1 = models.FloatField(db_column='AB_stop1', blank=True, null=True)  # Field name made lowercase.
     ab_stop2 = models.FloatField(db_column='AB_stop2', blank=True, null=True)  # Field name made lowercase.
     ab_tf = models.IntegerField(db_column='AB_tf', blank=True, null=True)  # Field name made lowercase.
+    pb_exp_tf = models.BooleanField(db_column='PB_exp_tf', blank=True, null=True)  # Field name made lowercase.
+    pb_ex = models.FloatField(db_column='PB_ex', blank=True, null=True)  # Field name made lowercase.
+    pb_start1 = models.FloatField(db_column='PB_start1', blank=True, null=True)  # Field name made lowercase.
+    pb_start2 = models.FloatField(db_column='PB_start2', blank=True, null=True)  # Field name made lowercase.
+    pb_stop1 = models.FloatField(db_column='PB_stop1', blank=True, null=True)  # Field name made lowercase.
+    pb_stop2 = models.FloatField(db_column='PB_stop2', blank=True, null=True)  # Field name made lowercase.
+    pb_tf = models.IntegerField(db_column='PB_tf', blank=True, null=True)  # Field name made lowercase.
+    iso_exp_tf = models.BooleanField(db_column='ISO_exp_tf', blank=True, null=True)  # Field name made lowercase.
+    iso_ex = models.FloatField(db_column='ISO_ex', blank=True, null=True)  # Field name made lowercase.
+    iso_start1 = models.FloatField(db_column='ISO_start1', blank=True, null=True)  # Field name made lowercase.
+    iso_start2 = models.FloatField(db_column='ISO_start2', blank=True, null=True)  # Field name made lowercase.
+    iso_stop1 = models.FloatField(db_column='ISO_stop1', blank=True, null=True)  # Field name made lowercase.
+    iso_stop2 = models.FloatField(db_column='ISO_stop2', blank=True, null=True)  # Field name made lowercase.
+    iso_tf = models.IntegerField(db_column='ISO_tf', blank=True, null=True)  # Field name made lowercase.
+    coup_exp_tf = models.BooleanField(db_column='COUP_exp_tf', blank=True, null=True)  # Field name made lowercase.
+    coup_ex = models.FloatField(db_column='COUP_ex', blank=True, null=True)  # Field name made lowercase.
+    coup_start1 = models.FloatField(db_column='COUP_start1', blank=True, null=True)  # Field name made lowercase.
+    coup_start2 = models.FloatField(db_column='COUP_start2', blank=True, null=True)  # Field name made lowercase.
+    coup_stop1 = models.FloatField(db_column='COUP_stop1', blank=True, null=True)  # Field name made lowercase.
+    coup_stop2 = models.FloatField(db_column='COUP_stop2', blank=True, null=True)  # Field name made lowercase.
+    coup_tf = models.IntegerField(db_column='COUP_tf', blank=True, null=True)  # Field name made lowercase.
+    dir_exp_tf = models.BooleanField(db_column='DIR_exp_tf', blank=True, null=True)  # Field name made lowercase.
+    dir_ex = models.FloatField(db_column='DIR_ex', blank=True, null=True)  # Field name made lowercase.
+    dir_start1 = models.FloatField(db_column='DIR_start1', blank=True, null=True)  # Field name made lowercase.
+    dir_start2 = models.FloatField(db_column='DIR_start2', blank=True, null=True)  # Field name made lowercase.
+    dir_stop1 = models.FloatField(db_column='DIR_stop1', blank=True, null=True)  # Field name made lowercase.
+    dir_stop2 = models.FloatField(db_column='DIR_stop2', blank=True, null=True)  # Field name made lowercase.
+    dir_tf = models.IntegerField(db_column='DIR_tf', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -186,10 +218,15 @@ class Testdata(models.Model):
     coupledflatness = models.FloatField(db_column='CoupledFlatness', blank=True, null=True)  # Field name made lowercase.
     phasebalance = models.FloatField(db_column='PhaseBalance', blank=True, null=True)  # Field name made lowercase.
     failurelog = models.CharField(db_column='FailureLog', max_length=255, blank=True, null=True)  # Field name made lowercase.
-    artwork_rev = models.CharField(max_length=50, blank=True, null=True)
+    artwork_rev = models.CharField(db_column='artwork_rev',max_length=50, blank=True, null=True)
     amplitudebalance1 = models.FloatField(db_column='AmplitudeBalance1', blank=True, null=True)  # Field name made lowercase.
     amplitudebalance2 = models.FloatField(db_column='AmplitudeBalance2', blank=True, null=True)  # Field name made lowercase.
     isolation2 = models.FloatField(db_column='Isolation2', blank=True, null=True)  # Field name made lowercase.
+    operator = models.CharField(db_column='Operator', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    returnloss2 = models.FloatField(db_column='ReturnLoss2', blank=True, null=True)  # Field name made lowercase.
+    coupling2 = models.FloatField(db_column='Coupling2', blank=True, null=True)  # Field name made lowercase.
+    directivity2 = models.FloatField(db_column='Directivity2', blank=True, null=True)  # Field name made lowercase.
+    phasebalance2 = models.FloatField(db_column='PhaseBalance2', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False
