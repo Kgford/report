@@ -2,7 +2,7 @@
 #http://www.pygal.org/en/stable/documentation/types/histogram.html
 def LineHistogramView(request):
 
-    line_chart = pygal.Line()
+    line_chart.title = 'Hours spent in each activity during the specified e_chart = pygal.Line()
     line_chart.title = 'Hours spent in each activity during the specified 
     period ({} to {})'.format(input_start,input_end)
     line_chart.x_labels = map(lambda d: d.strftime('%Y-%m-%d'), 

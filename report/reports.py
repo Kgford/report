@@ -11,19 +11,21 @@ from test_db.models import Specifications,Workstation,Workstation1,Testdata,Test
 import os
 import statistics 
 
+
 class ExcelReports:
     def __init__ (self, job_num,operator,workstation):
         self.job_num = job_num
         self.operator = operator
         self.workstation = workstation
-        print('job_num=',self.job_num)
+        #print('job_num=',self.job_num)
                
     def test_data(self):
         job_list = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
         part_list = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).order_by('partnumber').values_list('partnumber', flat=True).distinct()
         artwork_list = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
         report_data = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).all()
-        #ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='running report')
+        print('running report')
+        ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='running report')
         
         
         part_num = report_data[0].partnumber
@@ -46,7 +48,7 @@ class ExcelReports:
             if not artwork_rev == '':
                 temp_list.append(artwork_rev)
         artwork_list = temp_list
-        # datasheet can only handle 5 artworks
+        # datasheet can only handle 5 artworks----for now---
         #print('len(artwork_list)=',len(artwork_list))
         if len(artwork_list) >5:
             group = 5
@@ -57,7 +59,8 @@ class ExcelReports:
         remove_extra.remove()
         
         x=1
-        print('artwork_list=',artwork_list)
+        print('loading data')
+        ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='loading data')
         for artwork_rev in artwork_list:
             if 'RawData 1' in artwork_rev:
                 report_data = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).all()
@@ -384,6 +387,7 @@ class ExcelReports:
                     sheet['E' + str(sum_row)] = ab_avg
                     sheet['F' + str(sum_row)] = pb_avg
                     sheet['G' + str(sum_row)] = rownum
+                    
                  
                     #MIN
                     sheet['A' + str(sum_row + 14)] = artwork_rev
@@ -417,13 +421,16 @@ class ExcelReports:
                     sum_row+=1
                 
             #~~~~~~~~~~~~~~~~~~~~~~~~~charts~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='loading charts')
             trace_num = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Insertion Loss J3').count()
             loadcharts = Charts(len(artwork_list),self.job_num,part_num,spectype,self.operator,self.workstation,wb)
             loadcharts.load()
+            print('Charts Loaded')
              #~~~~~~~~~~~~~~~~~~~~~~~~~Save~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             savenow = SaveReports(self.job_num,part_num,spectype,self.operator,self.workstation,wb)
             savenow.save()
-            #ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='report complete')
+            ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='report complete')
+            print("Report for ",self.job_num, " is complete")
 
 
 class ReportFiles:
@@ -458,7 +465,6 @@ class ReportFiles:
         return new_path
     
     def template(self):
-        print('we are here now1')
         top_folder = "\\\ippdc\\Test Automation\\Excel_Templates\\"
         template = "90DEGREE_STANDARD.xlsx"
         if '90 DEGREE COUPLER SMD' in self.spec_type:
@@ -507,13 +513,12 @@ class Charts:
         self.operator = operator
         self.workstation = workstation
         self.wb = wb
-        print('loading charts1',self.rev_num)
+        print('loading charts')
         
     def load(self):
         if self.rev_num==1:
-            print('loading charts12')
             charts = LoadCharts(self.job_num,self.part_num,self.spec_type,self.operator,self.workstation,1,self.wb)
-            print('charts=',charts)
+            #print('charts=',charts)
             charts.chart1()
             charts.chart2()
             charts.chart3()
@@ -612,7 +617,6 @@ class LoadCharts:
         if '90 DEGREE COUPLER' in self.spec_type or 'BALUN' in self.spec_type:
             title1='Insertion Loss J3'
             title2='Insertion Loss J4'
-            print('in chart1')
         else:
             title='Insertion Loss'
         for idx in range(5): 
@@ -623,17 +627,17 @@ class LoadCharts:
                 trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
                 trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').first()
                 #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss J3~~~~~~~~~~~~~~~~~~~~~~~~
-                print('trace_id=',trace_id1)
+                #print('trace_id=',trace_id1)
                 if trace_id1[0] > 171666:
                     trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id1[0]).all()
                 else:
                     trace_points = Tracepoints.objects.using('TEST').filter(traceid=trace_id1[0]).all()
-                print('trace_points=',trace_points)
+                #print('trace_points=',trace_points)
                 rownum=56
                 for point in trace_points:
                     sheet.cell(row=rownum, column=1).value= round(point.xdata,0)
                     sheet.cell(row=rownum, column=2).value= round(point.ydata,0)
-                    print('rownum=',rownum,' point.xdata=',point.xdata)
+                    #print('rownum=',rownum,' point.xdata=',point.xdata)
                     rownum+=1
                  #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss J4~~~~~~~~~~~~~~~~~~~~~~~~
                 
@@ -648,17 +652,17 @@ class LoadCharts:
             else:
                 #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss ~~~~~~~~~~~~~~~~~~~~~~~~
                 trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).values_list('id').first()
-                print('trace_id=',trace_id[0])
+                #print('trace_id=',trace_id[0])
                 if trace_id[0] > 171666:
                     trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id[0]).all()
                 else:
                     trace_points = Tracepoints.objects.using('TEST').filter(traceid=trace_id[0]).all()
-                print('trace_points=',trace_points)
+                #print('trace_points=',trace_points)
                 rownum=56
                 for point in trace_points:
                     sheet.cell(row=rownum, column=1).value= round(point.xdata,0)
                     sheet.cell(row=rownum, column=2).value= round(point.ydata,0)
-                    print('rownum=',rownum,' point.xdata=',point.xdata)
+                    #print('rownum=',rownum,' point.xdata=',point.xdata)
                     rownum+=1
             
        
@@ -852,7 +856,7 @@ class get_serial_num:
     def __init__ (self,chart_group,idx):
         self.chart_group = chart_group
         self.idx = idx
-        print('self.idx=',self.idx)       
+        #print('self.idx=',self.idx)       
             
     def uut(self):
         serialnumber = "UUT 1"
@@ -860,7 +864,7 @@ class get_serial_num:
             serialnumber = "UUT 1"
         elif self.chart_group==1 and self.idx ==1:
             serialnumber = "UUT 2"
-        elif self.chart_group==1 and self.idx ==3:
+        elif self.chart_group==1 and self.idx ==2:
             serialnumber = "UUT 3"
         elif self.chart_group==1 and self.idx ==3:
             serialnumber = "UUT 4"
@@ -908,5 +912,180 @@ class get_serial_num:
             serialnumber = "UUT 25"    
                 
         return serialnumber
-
   
+class Statistics:  
+    def __init__(self,test1,test2,test3,test4,test5):
+        self.test1 = test1
+        self.test2 = test2
+        self.test3 = test3
+        self.test4 = test4
+        self.test5 = test5
+       
+        
+    
+    def get_stats(self):
+     #~~~~~~~~~~~~~~~~Statics and Summary ~~~~~~~~~~~~~~~~~~~~
+        if len(self.test1) > 1:# must have at least two tests
+            #print('insertion_loss=',self.test1)
+            s1_stdev = round(statistics.stdev(self.test1),2) #Standard deviation
+            s1_var = round(statistics.variance(self.test1),2) #Variance
+            s1_avg = round(statistics.mean(self.test1),2) #Mean Average
+            s1_min = round(min(self.test1),2) #Min
+            s1_max = round(max(self.test1),2) #Max
+            s1_list = [s1_min,s1_max,s1_avg,s1_stdev]
+            #print('il_list=',il_list)
+
+            #print('return_loss=',self.test2)
+            s2_stdev = round(statistics.stdev(self.test2),2) #Standard deviation
+            s2_var = round(statistics.variance(self.test2),2) #Variance
+            s2_avg = round(statistics.mean(self.test2),2) #Mean Average
+            s2_min = round(min(self.test2),2) #Min
+            s2_max = round(max(self.test2),2) #Max
+            s2_list = [s2_min,s2_max,s2_avg,s2_stdev]
+            
+
+            s3_stdev = round(statistics.stdev(self.test3),2) #Standard deviation
+            s3_var = round(statistics.variance(self.test3),2) #Variance
+            s3_avg = round(statistics.mean(self.test3),2) #Mean Average
+            s3_min = round(min(self.test3),2) #Min
+            s3_max = round(max(self.test3),2) #Max
+            s3_list = [s3_min,s3_max,s3_avg,s3_stdev]
+           
+            s4_stdev = round(statistics.stdev(self.test4),2) #Standard deviation
+            s4_var = round(statistics.variance(self.test4),2) #Variance
+            s4_avg = round(statistics.mean(self.test4),2) #Mean Average
+            s4_min = round(min(self.test4),2) #Min
+            s4_max = round(max(self.test4),2) #Max
+            s4_list = [s4_min,s4_max,s4_avg,s4_stdev]
+           
+            s5_stdev = round(statistics.stdev(self.test5),2) #Standard deviation
+            s5_var = round(statistics.variance(self.test5),2) #Variance
+            s5_avg = round(statistics.mean(self.test5),2) #Mean Average
+            s5_min = round(min(self.test5),2) #Min
+            s5_max = round(max(self.test5),2) #Max
+            s5_list = [s5_min,s5_max,s5_avg,s5_stdev]
+            
+            stat_list = [s1_list,s2_list,s3_list,s4_list,s5_list]
+           
+            return stat_list
+           
+class Histogram:  
+    def __init__(self,test1,test2,test3,test4,test5,spec1,spec2,spec3,spec4,spec5):
+        self.test1 = test1
+        self.test2 = test2
+        self.test3 = test3
+        self.test4 = test4
+        self.test5 = test5
+        self.spec1 = spec1
+        self.spec2 = spec2
+        self.spec3 = spec3
+        self.spec4 = spec4
+        self.spec5 = spec5
+        
+    def Insertion_loss(self):
+        bin1 = []
+        bin2 = []
+        bin3 = []
+        bin4 = []
+        bin5 = []
+        bin6 = []
+        bin7 = []
+        bin8 = []
+        bin9 = []
+        bin10 = []
+        bin11 = []
+        bin12 = []
+        bin13 = []
+        bin14 = []
+        bin15 = []
+        bin16 = []
+        for il in self.test1:
+            if il < (self.spec1*0.01) - self.spec1:
+                bin1.append(il)
+            elif il < (self.spec1*0.02) - self.spec1:
+                bin2.append(il)
+            elif il < (self.spec1*0.05) - self.spec1:
+                bin3.append(il)
+            elif il < (self.spec1*0.10) - self.spec1:
+                bin4.append(il)
+            elif il < (self.spec1*0.15) - self.spec1:
+                bin5.append(il)
+            elif il < (self.spec1*0.2) - self.spec1:
+                bin6.append(il)
+            elif il < (self.spec1*0.5) - self.spec1:
+                bin7.append(il)
+            elif il < (self.spec1*1) - self.spec1:
+                bin8.append(il)
+            elif il < (self.spec1*2) - self.spec1:
+                bin8.append(il)
+            elif il > (self.spec1*2) + self.spec1:
+                bin9.append(il)
+            elif il > (self.spec1*1) + self.spec1:
+                bin10.append(il)
+            elif il > (self.spec1*0.5) + self.spec1:
+                bin11.append(il)
+            elif il > (self.spec1*0.2) + self.spec1:
+                bin11.append(il)
+            elif il > (self.spec1*0.15) + self.spec1:
+                bin12.append(il)
+            elif il > (self.spec1*0.1) + self.spec1:
+                bin13.append(il)
+            elif il > (self.spec1*0.05) + self.spec1:
+                bin14.append(il)
+            elif il > (self.spec1*0.02) + self.spec1:
+                bin15.append(il)
+            elif il > (self.spec1*0.01) + self.spec1:
+                bin16.append(il)   
+        print('len(bin1)=',len(bin1))
+        print('len(bin2)=',len(bin2))
+        print('len(bin3)=',len(bin3))
+        print('len(bin4)=',len(bin4))
+        print('len(bin5)=',len(bin5))
+        print('len(bin6)=',len(bin6))
+        print('len(bin7)=',len(bin7))
+        print('len(bin8)=',len(bin8))
+        print('len(bin9)=',len(bin9))
+        print('len(bin10)=',len(bin10))
+        print('len(bin11)=',len(bin11))
+        print('len(bin12)=',len(bin12))
+        print('len(bin13)=',len(bin13))
+        print('len(bin14)=',len(bin14))
+        print('len(bin15)=',len(bin15))
+        print('len(bin16)=',len(bin16))
+        
+        hist = []
+        if len(bin1)>0:
+            hist.append((len(bin1),min(bin1),max(bin1)))
+        if len(bin2)>0:
+            hist.append((len(bin2),min(bin2),max(bin2)))
+        if len(bin3)>0:
+            hist.append((len(bin3),min(bin3),max(bin3)))
+        if len(bin4)>0:
+            hist.append((len(bin4),min(bin4),max(bin4)))
+        if len(bin5)>0:
+            hist.append((len(bin5),min(bin5),max(bin5)))
+        if len(bin6)>0:
+            hist.append((len(bin6),min(bin6),max(bin6)))
+        if len(bin7)>0:
+            hist.append((len(bin7),min(bin7),max(bin7)))
+        if len(bin8)>0:
+            hist.append((len(bin8),min(bin8),max(bin8)))
+        if len(bin9)>0:
+            hist.append((len(bin9),min(bin9),max(bin9)))
+        if len(bin10)>0:
+            hist.append((len(bin10),min(bin10),max(bin10)))
+        if len(bin11)>0:
+            hist.append((len(bin11),min(bin11),max(bin11)))
+        if len(bin12)>0:
+            hist.append((len(bin12),min(bin12),max(bin12)))
+        if len(bin13)>0:
+            hist.append((len(bin13),min(bin13),max(bin13)))
+        if len(bin14)>0:
+            hist.append((len(bin14),min(bin14),max(bin14)))
+        if len(bin15)>0:
+            hist.append((len(bin15),min(bin15),max(bin15)))
+        if len(bin16)>0:
+            hist.append((len(bin16),min(bin16),max(bin16)))
+
+        return hist
+                    

@@ -12,13 +12,13 @@ class TestThread(Thread):
             from report.reports import ExcelReports
             
             queue = ReportQueue.objects.using('TEST').filter(reportstatus='report queue').values_list('jobnumber','operator','workstation').all()
-            print('checking Report queue')
+            #print('checking Report queue')
             for jobnumber,operator,workstation in queue:
                 print('jobnumber=',jobnumber)
                 reporting = ExcelReports(jobnumber,operator,workstation)
                 reporting.test_data()
             
-            time.sleep(60)
+            time.sleep(10)
 
 class ExcelConfig(AppConfig):
     name = 'excel'

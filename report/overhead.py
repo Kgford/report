@@ -695,7 +695,7 @@ class Conversions:
     def __init__ (self, data,unit):
         self.data = data
         self.unit = unit
-        print('*******look here *******self.data=',self.data)
+        #print('*******look here *******self.data=',self.data)
        
     def vswr_to_rl(self):
         try:

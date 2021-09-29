@@ -10,7 +10,7 @@ import os
 from django import forms
 from django.views import View
 from report.overhead import TimeCode, Security, StringThings,Conversions
-from report.reports import ExcelReports
+from report.reports import ExcelReports,Statistics,Histogram
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
@@ -29,15 +29,14 @@ import getpass
 import subprocess
 import sys
 from base64 import *
+import pygal
 from test_db.models import Specifications,Workstation,Workstation1,Testdata,Testdata3,Trace,Tracepoints,Tracepoints2,Effeciency
-
 
 
 
 class ReportView(View):
     #~~~~~~~~~~~Load Item database from csv. must put this somewhere else later"
     contSuccess = 0
-    
     template_name = "index.html"
     success_url = reverse_lazy('excel:reports')
     def get(self, request, *args, **kwargs):
@@ -52,13 +51,48 @@ class ReportView(View):
             start_date=-1
             search=-1
             end_date = -1
+            spectype = -1
+            spec1 = -1
+            spec2 = -1
+            spec3 = -1
+            spec4 = -1
+            spec5 = -1
+            report_data = -1
+            analyze =-1
+            artwork = -1
+            stat1_min = -1
+            stat1_max = -1
+            stat1_avg = -1
+            stat1_std = -1
+            stat2_min = -1
+            stat2_max = -1
+            stat2_avg = -1
+            stat2_std = -1
+            stat3_min = -1
+            stat3_max = -1
+            stat3_avg = -1
+            stat3_std = -1
+            stat4_min = -1
+            stat4_max = -1
+            stat4_avg = -1
+            stat4_std = -1
+            stat5_min = -1
+            stat5_max = -1
+            stat5_avg = -1
+            stat5_std = -1
             
             job_list = []
             part_list = []
             workstation_list = []
             operator_list = []
+            spec_list = -1
+            test1_list = []
+            test2_list = []
+            test3_list = []
+            test4_list = []
+            test5_list = []
+            artwork_list = ['RawData 1',]
            
-            
             #  Equations to get today - days
             #~~~~~~~~~~~~~ Time ~~~~~~~~~~~~~~~~~
             days=30 # start_date is today - days 
@@ -92,9 +126,13 @@ class ReportView(View):
         except IOError as e:
             print ("Lists load Failure ", e)
             print('error = ',e)     
-        return render (self.request,"excel/index.html",{'job_num':job_num,'part_num':part_num,'workstation':workstation,'operator':operator,'start_date':start_date,'end_date':end_date,
-                                                        'job_list':job_list,'part_list':part_list,'workstation_list':workstation_list,'operator_list':operator_list})    
-    
+        return render (self.request,"excel/index.html",{'job_num':job_num,'part_num':part_num,'workstation':workstation,'operator':operator,'start_date':start_date,'end_date':end_date,'artwork_list':artwork_list,'artwork':artwork,
+                                                        'job_list':job_list,'part_list':part_list,'workstation_list':workstation_list,'operator_list':operator_list,'spec1':spec1,'spec2':spec1,'spec3':spec3,'spectype':spectype,
+                                                        'spec4':spec4,'spec5':spec5,'report_data':report_data,'test1_list':test1_list,'test2_list':test2_list,'test3_list':test3_list,'test4_list':test4_list,'test5_list':test5_list,
+                                                        'stat1_min':stat1_min,'stat1_max':stat1_max,'stat1_avg':stat1_avg,'stat1_std':stat1_std,'stat2_min':stat2_min,'stat2_max':stat2_max,'stat2_avg':stat2_avg,'stat2_std':stat2_std,
+                                                        'stat3_min':stat3_min,'stat3_max':stat3_max,'stat3_avg':stat3_avg,'stat3_std':stat3_std,'stat4_min':stat4_min,'stat4_max':stat4_max,'stat4_avg':stat4_avg,'stat4_std':stat4_std,
+                                                        'stat5_min':stat3_min,'stat5_max':stat5_max,'stat5_avg':stat5_avg,'stat5_std':stat5_std,'analyze':analyze})    
+
     def post(self, request, *args, **kwargs):
         operator = self.request.user
         form = 0
@@ -107,13 +145,48 @@ class ReportView(View):
             start_date=-1
             search=-1
             end_date = -1
+            spectype = -1
+            spec1 = -1
+            spec2 = -1
+            spec3 = -1
+            spec4 = -1
+            spec5 = -1
+            artwork = -1
+            report_data = -1
+            stat1_min = -1
+            stat1_max = -1
+            stat1_avg = -1
+            stat1_std = -1
+            stat2_min = -1
+            stat2_max = -1
+            stat2_avg = -1
+            stat2_std = -1
+            stat3_min = -1
+            stat3_max = -1
+            stat3_avg = -1
+            stat3_std = -1
+            stat4_min = -1
+            stat4_max = -1
+            stat4_avg = -1
+            stat4_std = -1
+            stat5_min = -1
+            stat5_max = -1
+            stat5_avg = -1
+            stat5_std = -1
             
             job_list = []
             part_list = []
             workstation_list = []
             operator_list = []
             stat_list = []
-           
+            spec_list = -1
+            artwork_list = ['RawData 1',]
+            test1_list = []
+            test2_list = []
+            test3_list = []
+            test4_list = []
+            test4_list = []
+            test5_list = []
             
             #  Equations to get today - days
             #~~~~~~~~~~~~~ Time ~~~~~~~~~~~~~~~~~
@@ -149,21 +222,115 @@ class ReportView(View):
             start_date = request.POST.get('_start_date', -1)
             end_date = request.POST.get('_end_date', -1)
             report = request.POST.get('_report', -1)
-            print('report=',report)
+            print('report123=',report)
             analyze = request.POST.get('_analyze', -1)
+            if analyze != -1 :
+                analyze = 1
+            print('analyze=',analyze)
             #~~~~~~~~~~Get Post Values~~~~~~~~~~~~~~~
-            job_num = '38783-01'
             #https://openpyxl.readthedocs.io/en/stable/
             #https://www.softwaretestinghelp.com/python-openpyxl-tutorial/
             if job_num != -1 and report !=-1:
                 reporting = ExcelReports(job_num,operator,workstation)
                 spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()
                 if '90 degree coupler' in spec_data.spectype.lower():
-                    reporting.coupler_90_deg()
-            elif job_num != -1:
+                    reporting.test_data()
+            elif job_num != 'Part_number':
+                print('shit')
                 job_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
                 part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('partnumber').values_list('partnumber', flat=True).distinct()
+                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
+                #filter blanks
+                temp_list = []
+                for artwork_rev in artwork_list:
+                    if not artwork_rev == '':
+                        temp_list.append(artwork_rev)
+                artwork_list = temp_list
+                if artwork_list:
+                    artwork = artwork_list[0]
+                print('artwork_list=',artwork_list)
+                spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()
+                print('spec_data.vswr=',spec_data.vswr)
+                conversions = Conversions(spec_data.vswr,'')
+                spec_rl = round(conversions.vswr_to_rl(),2)
+                print('spec_rl=',spec_rl)
+                spectype = spec_data.spectype
+                if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
+                    spec1 = spec_data.insertionloss
+                    spec2 = spec_rl
+                    spec3 = spec_data.isolation
+                    spec4 = spec_data.amplitudebalance
+                    spec5 = spec_data.phasebalance
+                elif 'DIRECTIONAL COUPLER' in spectype: 
+                    spec1 = spec_data.insertionloss
+                    spec2 = spec_rl
+                    spec3 = spec_data.coupling
+                    spec4 = spec_data.directivity
+                    spec5 = spec_data.coupledflatness
+                    
                 report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).all()
+                part_num = report_data[0].partnumber
+                workstation = report_data[0].workstation
+                operator = report_data[0].operator
+                print('part_num=',part_num)
+                #print('report_data=',report_data)
+                
+                temp_list = []
+                for data in report_data:
+                    if data.serialnumber[3] == " ":
+                        temp_list.append(data)
+                        test1_list.append(data.insertionloss)
+                        test2_list.append(data.returnloss)
+                        if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
+                            test3_list.append(data.isolation)
+                            test4_list.append(data.amplitudebalance)
+                            test5_list.append(data.phasebalance)
+                        else:
+                            test3_list.append(data.coupling)
+                            test4_list.append(data.directivity)
+                            test5_list.append(data.coupledflatness)
+                report_data = temp_list 
+
+                if len(test1_list) > 1:# must have at least two tests
+                    histo_data = Histogram(test1_list,test2_list,test3_list,test4_list,test5_list,spec1,spec2,spec3,spec4,spec5) 
+                    il_histo = histo_data.Insertion_loss()
+                    print('il_histo=',il_histo)
+                    hist = pygal.Histogram()
+                    hist.add('Wide bars', il_histo)
+                    hist.title = 'Insertion Loss' 
+                    il_histo_data = hist.render_data_uri()
+                    #print('il_histo_data=',il_histo_data)
+                
+                #statistics
+                #print('test2_list',test2_list)
+                if len(test1_list) > 1:# must have at least two tests
+                    stat_data = Statistics(test1_list,test2_list,test3_list,test4_list,test5_list) 
+                    stat_list = stat_data.get_stats()
+                    #print('stat_list=',stat_list)
+                    stat1_min = stat_list[0][0]
+                    print('stat1_min=',stat1_min)
+                    stat1_max = stat_list[0][1]
+                    print('stat1_max=',stat1_max)
+                    stat1_avg = stat_list[0][2]
+                    print('stat1_avg=',stat1_avg)
+                    stat1_std = stat_list[0][3]
+                    print('stat1_std=',stat1_std)
+                    stat2_min = stat_list[1][0]
+                    stat2_max = stat_list[1][1]
+                    stat2_avg = stat_list[1][2]
+                    stat2_std = stat_list[1][3]
+                    stat3_min = stat_list[2][0]
+                    stat3_max = stat_list[2][1]
+                    stat3_avg = stat_list[2][2]
+                    stat3_std = stat_list[2][3]
+                    stat4_min = stat_list[3][0]
+                    stat4_max = stat_list[3][1]
+                    stat4_avg = stat_list[3][2]
+                    stat4_std = stat_list[3][3]
+                    stat5_min = stat_list[4][0]
+                    stat5_max = stat_list[4][1]
+                    stat5_avg = stat_list[4][2]
+                    stat5_std = stat_list[4][3]
             else:
                 job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
                 part_list = Testdata.objects.using('TEST').order_by('partnumber').values_list('partnumber', flat=True).distinct()
@@ -171,13 +338,15 @@ class ReportView(View):
             workstation_list = Workstation.objects.using('TEST').order_by('workstationname').values_list('workstationname', flat=True).distinct()
             operator_list = Workstation.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
             
-            
-            
         except IOError as e:
             print ("Lists load Failure ", e)
             print('error = ',e)     
-        return render (self.request,"excel/index.html",{'job_num':job_num,'part_num':part_num,'workstation':workstation,'operator':operator,'start_date':start_date,'end_date':end_date,
-                                                        'job_list':job_list,'part_list':part_list,'workstation_list':workstation_list,'operator_list':operator_list,'stat_list':stat_list}) 
+        return render (self.request,"excel/index.html",{'job_num':job_num,'part_num':part_num,'workstation':workstation,'operator':operator,'start_date':start_date,'end_date':end_date,'artwork_list':artwork_list,'artwork':artwork,
+                                                        'job_list':job_list,'part_list':part_list,'workstation_list':workstation_list,'operator_list':operator_list,'spec1':spec1,'spec2':spec1,'spec3':spec3,'spectype':spectype,
+                                                        'spec4':spec4,'spec5':spec5,'report_data':report_data,'test1_list':test1_list,'test2_list':test2_list,'test3_list':test3_list,'test4_list':test4_list,'test5_list':test5_list,
+                                                        'stat1_min':stat1_min,'stat1_max':stat1_max,'stat1_avg':stat1_avg,'stat1_std':stat1_std,'stat2_min':stat2_min,'stat2_max':stat2_max,'stat2_avg':stat2_avg,'stat2_std':stat2_std,
+                                                        'stat3_min':stat3_min,'stat3_max':stat3_max,'stat3_avg':stat3_avg,'stat3_std':stat3_std,'stat4_min':stat4_min,'stat4_max':stat4_max,'stat4_avg':stat4_avg,'stat4_std':stat4_std,
+                                                        'stat5_min':stat3_min,'stat5_max':stat5_max,'stat5_avg':stat5_avg,'stat5_std':stat5_std,'analyze':analyze,'il_histo_data':il_histo_data})    
 
 
 
