@@ -30,6 +30,7 @@ import subprocess
 import sys
 from base64 import *
 import pygal
+from pygal.style import Style
 from test_db.models import Specifications,Workstation,Workstation1,Testdata,Testdata3,Trace,Tracepoints,Tracepoints2,Effeciency
 
 
@@ -100,6 +101,21 @@ class ReportView(View):
             test4_list = []
             test5_list = []
             artwork_list = ['RawData 1',]
+            passed1 = 0
+            failed1 = 0
+            failed_percent1 = 0
+            passed2 = 0
+            failed2 = 0
+            failed_percent2 = 0
+            passed3 = 0
+            failed3 = 0
+            failed_percent3 = 0
+            passed4 = 0
+            failed4 = 0
+            failed_percent4 = 0
+            passed5 = 0
+            failed5 = 0
+            failed_percent5 = 0
            
             #  Equations to get today - days
             #~~~~~~~~~~~~~ Time ~~~~~~~~~~~~~~~~~
@@ -205,6 +221,22 @@ class ReportView(View):
             test4_list = []
             test4_list = []
             test5_list = []
+            passed1 = 0
+            failed1 = 0
+            failed_percent1 = 0
+            passed2 = 0
+            failed2 = 0
+            failed_percent2 = 0
+            passed3 = 0
+            failed3 = 0
+            failed_percent3 = 0
+            passed4 = 0
+            failed4 = 0
+            failed_percent4 = 0
+            passed5 = 0
+            failed5 = 0
+            failed_percent5 = 0
+                
             
             #  Equations to get today - days
             #~~~~~~~~~~~~~ Time ~~~~~~~~~~~~~~~~~
@@ -250,7 +282,7 @@ class ReportView(View):
             spec3 = request.POST.get('_spec3', -1)
             spec4 = request.POST.get('_spec4', -1)
             spec5 = request.POST.get('_spec5', -1)
-            print('spec1=',spec1)
+            print('4444444444444444444444444444444444spec5=',spec5)
             if spec1!=-1:
                 spec1 = float(spec1)
                 spec2 = float(spec2)
@@ -268,7 +300,7 @@ class ReportView(View):
                     reporting.test_data()
             elif job_num != 'Part_number':
                 print('shit')
-                job_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
+                job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
                 part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('partnumber').values_list('partnumber', flat=True).distinct()
                 artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
                 #filter blanks
@@ -324,83 +356,83 @@ class ReportView(View):
                 report_data = temp_list 
 
                 if len(test1_list) > 1:# must have at least two tests
-                    histo_data = Histogram(test1_list,test2_list,test3_list,test4_list,test5_list,spec1,spec2,spec3,spec4,spec5) 
-                    il_histo = histo_data.Insertion_loss()
+                    histo_data = Histogram(test1_list,test2_list,test3_list,test4_list,test5_list,spec1,spec2,spec3,spec4,spec5,'test1') 
+                    il_histo = histo_data.Hist_data()
                     print('il_histo=',il_histo)
-                    hist = pygal.Histogram()
-                    hist.add('Wide bars', il_histo)
+                    custom_style = Style(colors=('#991593','#201599'),title_font_size=39)
+                    hist = pygal.Histogram(fill=True,style=custom_style)
+                    
+                    hist.add('Insertion Loss', il_histo)
                     hist.title = 'Insertion Loss' 
                     il_histo_data = hist.render_data_uri()
                     #print('il_histo_data=',il_histo_data)
-                    rl_histo = histo_data.Return_loss()
+                    histo_data = Histogram(test1_list,test2_list,test3_list,test4_list,test5_list,spec1,spec2,spec3,spec4,spec5,'test2')
+                    rl_histo = histo_data.Hist_data()
                     print('rl_histo=',rl_histo)
-                    hist = pygal.Histogram()
-                    hist.add('Wide bars', rl_histo)
+                    custom_style = Style(colors=('#47ff7b','#201599'),title_font_size=39)
+                    hist = pygal.Histogram(fill=True,style=custom_style)
+                    hist.add('Return Loss', rl_histo)
                     hist.title = 'Return Loss' 
                     rl_histo_data = hist.render_data_uri()
                     #print('rl_histo_data=',rl_histo_data)
                     if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
-                        iso_histo = histo_data.Isolation()
+                        histo_data = Histogram(test1_list,test2_list,test3_list,test4_list,test5_list,spec1,spec2,spec3,spec4,spec5,'test3')
+                        iso_histo = histo_data.Hist_data()
                         print('iso_histo=',iso_histo)
-                        hist = pygal.Histogram()
-                        hist.add('Wide bars', iso_histo)
+                        custom_style = Style(colors=('#ffd138','#201599'),title_font_size=39)
+                        hist = pygal.Histogram(fill=True,style=custom_style)
+                        hist.add('Isolation', iso_histo)
                         hist.title = 'Isolation' 
                         iso_histo_data = hist.render_data_uri()
                         #print('iso_histo_data=',iso_histo_data)
-                        ab_histo = histo_data.Amplitude_Balance()
+                        histo_data = Histogram(test1_list,test2_list,test3_list,test4_list,test5_list,spec1,spec2,spec3,spec4,spec5,'test4')
+                        ab_histo = histo_data.Hist_data()
                         print('ab_histo=',ab_histo)
-                        hist = pygal.Histogram()
-                        hist.add('Wide bars', ab_histo)
+                        custom_style = Style(colors=('#130fff','#201599'),title_font_size=39)
+                        hist = pygal.Histogram(fill=True,style=custom_style)
+                        hist.add('Amplitude Balance', ab_histo)
                         hist.title = 'Amplitude_Balance' 
                         ab_histo_data = hist.render_data_uri()
                         #print('il_histo_data=',il_histo_data)
-                        pb_histo = histo_data.Phase_Balance()
+                        histo_data = Histogram(test1_list,test2_list,test3_list,test4_list,test5_list,spec1,spec2,spec3,spec4,spec5,'test5')
+                        pb_histo = histo_data.Hist_data()
                         print('pb_histo=',pb_histo)
-                        hist = pygal.Histogram()
-                        hist.add('Wide bars', pb_histo)
+                        custom_style = Style(colors=('#ff2617','#201599'),title_font_size=39)
+                        hist = pygal.Histogram(fill=True,style=custom_style)
+                        hist.add('Phase Balance', pb_histo)
                         hist.title = 'Phase Balance' 
                         pb_histo_data = hist.render_data_uri()
                         #print('pb_histo_data=',pb_histo_data)
                     else:
-                        coup_histo = histo_data.Coupling()
+                        histo_data = Histogram(test1_list,test2_list,test3_list,test4_list,test5_list,spec1,spec2,spec3,spec4,spec5,'test3')
+                        coup_histo = histo_data.Hist_data()
                         print('coup_histo=',coup_histo)
-                        hist = pygal.Histogram()
-                        hist.add('Wide bars', coup_histo)
+                        custom_style = Style(colors=('#ffd138','#201599'),title_font_size=39)
+                        hist = pygal.Histogram(fill=True,style=custom_style)
+                        hist.add('Coupling', coup_histo)
                         hist.title = 'Coupling' 
                         il_histo_data = hist.render_data_uri()
                         #print('il_histo_data=',il_histo_data)
-                        il_histo = histo_data.Insertion_loss()
-                        dir_histo = histo_data.Directivity()
+                        histo_data = Histogram(test1_list,test2_list,test3_list,test4_list,test5_list,spec1,spec2,spec3,spec4,spec5,'test4')
+                        dir_histo = histo_data.Hist_data()
                         print('dir_histo=',dir_histo)
-                        hist = pygal.Histogram()
-                        hist.add('Wide bars', dir_histo)
+                        custom_style = Style(colors=('#130fff','#201599'),title_font_size=39)
+                        hist = pygal.Histogram(fill=True,style=custom_style)
+                        hist.add('Directivity', dir_histo)
                         hist.title = 'Directivity' 
                         dir_histo_data = hist.render_data_uri()
                         #print('dir_histo_data=',dir_histo_data)
-                        cb_histo = histo_data.Coupling_Balance()
+                        histo_data = Histogram(test1_list,test2_list,test3_list,test4_list,test5_list,spec1,spec2,spec3,spec4,spec5,'test5')
+                        cb_histo = histo_data.Hist_data()
                         print('cb_histo=',cb_histo)
-                        hist = pygal.Histogram()
-                        hist.add('Wide bars', cb_histo)
+                        custom_style = Style(colors=('#ff2617','#201599'),title_font_size=39)
+                        hist = pygal.Histogram(fill=True,style=custom_style)
+                        hist.add('Coupling Balance', cb_histo)
                         hist.title = 'Coupuling Balance' 
                         cb_histo_data = hist.render_data_uri()
                         #print('cb_histo_data=',cb_histo_data)
                 
                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~statistics~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                passed1 = 0
-                failed1 = 0
-                failed_percent1 = 0
-                passed2 = 0
-                failed2 = 0
-                failed_percent2 = 0
-                passed3 = 0
-                failed3 = 0
-                failed_percent3 = 0
-                passed4 = 0
-                failed4 = 0
-                failed_percent4 = 0
-                passed5 = 0
-                failed5 = 0
-                failed_percent5 = 0
                 #print('test2_list',test2_list)
                 if len(test1_list) > 1:# must have at least two tests
                     stat_data = Statistics(test1_list,test2_list,test3_list,test4_list,test5_list) 
@@ -430,8 +462,64 @@ class ReportView(View):
                     stat5_max = stat_list[4][1]
                     stat5_avg = stat_list[4][2]
                     stat5_std = stat_list[4][3]
+                    for x in range(len(test1_list)):
+                        if test1_list[x] <= spec1:
+                            passed1 +=1
+                        else:
+                            failed1 +=1
+                            
+                        if test2_list[x] <= spec2:
+                            passed2 +=1
+                        else:
+                            failed2 +=1
+                        if test3_list[x] <= spec3:
+                            passed3 +=1
+                        else:
+                            failed3 +=1
+                        if test4_list[x] <= spec4:
+                            passed4 +=1
+                        else:
+                            failed4 +=1
+                        if test5_list[x] <= spec5:
+                            passed5 +=1
+                        else:
+                            failed5 +=1
+                            
+                    if passed1==0:
+                        failed_percent1 = '100%'
+                    elif failed1==0:
+                        failed_percent1 = '0%'
+                    else:    
+                        failed_percent1 = str(round((failed1/passed1)* 100,2)) + '%'
                     
+                    if passed2==0:
+                        failed_percent2 = '100%'
+                    elif failed2==0:
+                        failed_percent2 = '0%'
+                    else:    
+                        failed_percent2 = str(round((failed2/passed2)* 100,2)) + '%'
                     
+                    if passed3==0:
+                        failed_percent3 = '100%'
+                    elif failed3==0:
+                        failed_percent3 = '0%'
+                    else:    
+                        failed_percent3 = str(round((failed3/passed3)* 100,2)) + '%'
+                    
+                    if passed4==0:
+                        failed_percent4 = '100%'
+                    elif failed4==0:
+                        failed_percent4 = '0%'
+                    else:    
+                        failed_percent4 = str(round((failed4/passed4)* 100,2)) + '%'
+                    
+                    if passed5==0:
+                        failed_percent5 = '100%'
+                    elif failed5==0:
+                        failed_percent5 = '0%'
+                    else:    
+                        failed_percent5 = str(round((failed5/passed5)* 100,2)) + '%'
+            
             else:
                 job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
                 part_list = Testdata.objects.using('TEST').order_by('partnumber').values_list('partnumber', flat=True).distinct()
@@ -449,8 +537,8 @@ class ReportView(View):
                                                         'stat3_min':stat3_min,'stat3_max':stat3_max,'stat3_avg':stat3_avg,'stat3_std':stat3_std,'stat4_min':stat4_min,'stat4_max':stat4_max,'stat4_avg':stat4_avg,'stat4_std':stat4_std,
                                                         'stat5_min':stat3_min,'stat5_max':stat5_max,'stat5_avg':stat5_avg,'stat5_std':stat5_std,'analyze':analyze,'il_histo_data':il_histo_data,'rl_histo_data':rl_histo_data,
                                                         'iso_histo_data':iso_histo_data,'ab_histo_data':ab_histo_data,'pb_histo_data':pb_histo_data,'coup_histo_data':coup_histo_data,'iso_histo_data':iso_histo_data,'cb_histo_data':cb_histo_data,
-                                                        'passed1':passed1,'failed1':failed1,'failed_percent1':failed_percent1,'passed2':passed2,'failed2':failed2,'failed_percent2':failed_percent2,'passed3':passed3,'failed3':failed3,'failed_percent3':failed_percent3,    
-                                                        'passed4':passed4,'failed4':failed4,'failed_percent4':failed_percent4,'passed5':passed5,'failed5':failed5,'failed_percent5':failed_percent5})
+                                                        'passed1':passed1,'failed1':failed1,'failed_percent1':failed_percent1,'passed2':passed2,'failed2':failed2,'failed_percent2':failed_percent2,'passed3':passed3,'failed3':failed3,   
+                                                        'failed_percent3':failed_percent3,'passed4':passed4,'failed4':failed4,'failed_percent4':failed_percent4,'passed5':passed5,'failed5':failed5,'failed_percent5':failed_percent5})
 
 
 def export_users_xls(request):
