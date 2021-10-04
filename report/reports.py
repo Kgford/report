@@ -1088,4 +1088,753 @@ class Histogram:
             hist.append((len(bin16),min(bin16),max(bin16)))
 
         return hist
+        
+    def Return_loss(self):
+        bin1 = []
+        bin2 = []
+        bin3 = []
+        bin4 = []
+        bin5 = []
+        bin6 = []
+        bin7 = []
+        bin8 = []
+        bin9 = []
+        bin10 = []
+        bin11 = []
+        bin12 = []
+        bin13 = []
+        bin14 = []
+        bin15 = []
+        bin16 = []
+        for rl in self.test2:
+            if rl < (self.spec2*0.01) - self.spec2:
+                bin1.append(rl)
+            elif rl < (self.spec2*0.02) - self.spec2:
+                bin2.append(rl)
+            elif rl < (self.spec2*0.05) - self.spec2:
+                bin3.append(rl)
+            elif rl < (self.spec2*0.10) - self.spec2:
+                bin4.append(rl)
+            elif rl < (self.spec2*0.15) - self.spec2:
+                bin5.append(rl)
+            elif rl < (self.spec2*0.2) - self.spec2:
+                bin6.append(rl)
+            elif rl < (self.spec2*0.5) - self.spec2:
+                bin7.append(rl)
+            elif rl < (self.spec2*1) - self.spec2:
+                bin8.append(rl)
+            elif rl < (self.spec2*2) - self.spec2:
+                bin8.append(rl)
+            elif rl > (self.spec2*2) + self.spec2:
+                bin9.append(rl)
+            elif rl > (self.spec2*1) + self.spec2:
+                bin10.append(rl)
+            elif rl > (self.spec2*0.5) + self.spec2:
+                bin11.append(rl)
+            elif rl > (self.spec2*0.2) + self.spec2:
+                bin11.append(rl)
+            elif rl > (self.spec2*0.15) + self.spec2:
+                bin12.append(rl)
+            elif rl > (self.spec2*0.1) + self.spec2:
+                bin13.append(rl)
+            elif rl > (self.spec2*0.05) + self.spec2:
+                bin14.append(rl)
+            elif rl > (self.spec2*0.02) + self.spec2:
+                bin15.append(rl)
+            elif rl > (self.spec2*0.01) + self.spec2:
+                bin16.append(rl)   
+        print('len(bin1)=',len(bin1))
+        print('len(bin2)=',len(bin2))
+        print('len(bin3)=',len(bin3))
+        print('len(bin4)=',len(bin4))
+        print('len(bin5)=',len(bin5))
+        print('len(bin6)=',len(bin6))
+        print('len(bin7)=',len(bin7))
+        print('len(bin8)=',len(bin8))
+        print('len(bin9)=',len(bin9))
+        print('len(bin10)=',len(bin10))
+        print('len(bin11)=',len(bin11))
+        print('len(bin12)=',len(bin12))
+        print('len(bin13)=',len(bin13))
+        print('len(bin14)=',len(bin14))
+        print('len(bin15)=',len(bin15))
+        print('len(bin16)=',len(bin16))
+        
+        hist = []
+        if len(bin1)>0:
+            hist.append((len(bin1),min(bin1),max(bin1)))
+        if len(bin2)>0:
+            hist.append((len(bin2),min(bin2),max(bin2)))
+        if len(bin3)>0:
+            hist.append((len(bin3),min(bin3),max(bin3)))
+        if len(bin4)>0:
+            hist.append((len(bin4),min(bin4),max(bin4)))
+        if len(bin5)>0:
+            hist.append((len(bin5),min(bin5),max(bin5)))
+        if len(bin6)>0:
+            hist.append((len(bin6),min(bin6),max(bin6)))
+        if len(bin7)>0:
+            hist.append((len(bin7),min(bin7),max(bin7)))
+        if len(bin8)>0:
+            hist.append((len(bin8),min(bin8),max(bin8)))
+        if len(bin9)>0:
+            hist.append((len(bin9),min(bin9),max(bin9)))
+        if len(bin10)>0:
+            hist.append((len(bin10),min(bin10),max(bin10)))
+        if len(bin11)>0:
+            hist.append((len(bin11),min(bin11),max(bin11)))
+        if len(bin12)>0:
+            hist.append((len(bin12),min(bin12),max(bin12)))
+        if len(bin13)>0:
+            hist.append((len(bin13),min(bin13),max(bin13)))
+        if len(bin14)>0:
+            hist.append((len(bin14),min(bin14),max(bin14)))
+        if len(bin15)>0:
+            hist.append((len(bin15),min(bin15),max(bin15)))
+        if len(bin16)>0:
+            hist.append((len(bin16),min(bin16),max(bin16)))
+
+        return hist
                     
+    def Isolation(self):
+        bin1 = []
+        bin2 = []
+        bin3 = []
+        bin4 = []
+        bin5 = []
+        bin6 = []
+        bin7 = []
+        bin8 = []
+        bin9 = []
+        bin10 = []
+        bin11 = []
+        bin12 = []
+        bin13 = []
+        bin14 = []
+        bin15 = []
+        bin16 = []
+        for iso in self.test3:
+            if iso < (self.spec3*0.01) - self.spec3:
+                bin1.append(iso)
+            elif iso < (self.spec3*0.02) - self.spec3:
+                bin2.append(iso)
+            elif iso < (self.spec3*0.05) - self.spec3:
+                bin3.append(iso)
+            elif iso < (self.spec3*0.10) - self.spec3:
+                bin4.append(iso)
+            elif iso < (self.spec3*0.15) - self.spec3:
+                bin5.append(iso)
+            elif iso < (self.spec3*0.2) - self.spec3:
+                bin6.append(iso)
+            elif iso < (self.spec3*0.5) - self.spec3:
+                bin7.append(iso)
+            elif iso < (self.spec3*1) - self.spec3:
+                bin8.append(iso)
+            elif iso < (self.spec3*2) - self.spec3:
+                bin8.append(iso)
+            elif iso > (self.spec3*2) + self.spec3:
+                bin9.append(iso)
+            elif iso > (self.spec3*1) + self.spec3:
+                bin10.append(iso)
+            elif iso > (self.spec3*0.5) + self.spec3:
+                bin11.append(iso)
+            elif iso > (self.spec3*0.2) + self.spec3:
+                bin11.append(iso)
+            elif iso > (self.spec3*0.15) + self.spec3:
+                bin12.append(iso)
+            elif iso > (self.spec3*0.1) + self.spec3:
+                bin13.append(iso)
+            elif iso > (self.spec3*0.05) + self.spec3:
+                bin14.append(iso)
+            elif iso > (self.spec3*0.02) + self.spec3:
+                bin15.append(iso)
+            elif iso > (self.spec3*0.01) + self.spec3:
+                bin16.append(iso)   
+        print('len(bin1)=',len(bin1))
+        print('len(bin2)=',len(bin2))
+        print('len(bin3)=',len(bin3))
+        print('len(bin4)=',len(bin4))
+        print('len(bin5)=',len(bin5))
+        print('len(bin6)=',len(bin6))
+        print('len(bin7)=',len(bin7))
+        print('len(bin8)=',len(bin8))
+        print('len(bin9)=',len(bin9))
+        print('len(bin10)=',len(bin10))
+        print('len(bin11)=',len(bin11))
+        print('len(bin12)=',len(bin12))
+        print('len(bin13)=',len(bin13))
+        print('len(bin14)=',len(bin14))
+        print('len(bin15)=',len(bin15))
+        print('len(bin16)=',len(bin16))
+        
+        hist = []
+        if len(bin1)>0:
+            hist.append((len(bin1),min(bin1),max(bin1)))
+        if len(bin2)>0:
+            hist.append((len(bin2),min(bin2),max(bin2)))
+        if len(bin3)>0:
+            hist.append((len(bin3),min(bin3),max(bin3)))
+        if len(bin4)>0:
+            hist.append((len(bin4),min(bin4),max(bin4)))
+        if len(bin5)>0:
+            hist.append((len(bin5),min(bin5),max(bin5)))
+        if len(bin6)>0:
+            hist.append((len(bin6),min(bin6),max(bin6)))
+        if len(bin7)>0:
+            hist.append((len(bin7),min(bin7),max(bin7)))
+        if len(bin8)>0:
+            hist.append((len(bin8),min(bin8),max(bin8)))
+        if len(bin9)>0:
+            hist.append((len(bin9),min(bin9),max(bin9)))
+        if len(bin10)>0:
+            hist.append((len(bin10),min(bin10),max(bin10)))
+        if len(bin11)>0:
+            hist.append((len(bin11),min(bin11),max(bin11)))
+        if len(bin12)>0:
+            hist.append((len(bin12),min(bin12),max(bin12)))
+        if len(bin13)>0:
+            hist.append((len(bin13),min(bin13),max(bin13)))
+        if len(bin14)>0:
+            hist.append((len(bin14),min(bin14),max(bin14)))
+        if len(bin15)>0:
+            hist.append((len(bin15),min(bin15),max(bin15)))
+        if len(bin16)>0:
+            hist.append((len(bin16),min(bin16),max(bin16)))
+
+        return hist
+        
+    def Amplitude_Balance(self):
+        bin1 = []
+        bin2 = []
+        bin3 = []
+        bin4 = []
+        bin5 = []
+        bin6 = []
+        bin7 = []
+        bin8 = []
+        bin9 = []
+        bin10 = []
+        bin11 = []
+        bin12 = []
+        bin13 = []
+        bin14 = []
+        bin15 = []
+        bin16 = []
+        for ab in self.test4:
+            if ab < (self.spec4*0.01) - self.spec4:
+                bin1.append(ab)
+            elif ab < (self.spec4*0.02) - self.spec4:
+                bin2.append(ab)
+            elif ab < (self.spec4*0.05) - self.spec4:
+                bin3.append(ab)
+            elif ab < (self.spec4*0.10) - self.spec4:
+                bin4.append(ab)
+            elif ab < (self.spec4*0.15) - self.spec4:
+                bin5.append(ab)
+            elif ab < (self.spec4*0.2) - self.spec4:
+                bin6.append(ab)
+            elif ab < (self.spec4*0.5) - self.spec4:
+                bin7.append(ab)
+            elif ab < (self.spec4*1) - self.spec4:
+                bin8.append(ab)
+            elif ab < (self.spec4*2) - self.spec4:
+                bin8.append(ab)
+            elif ab > (self.spec4*2) + self.spec4:
+                bin9.append(ab)
+            elif ab > (self.spec4*1) + self.spec4:
+                bin10.append(ab)
+            elif ab > (self.spec4*0.5) + self.spec4:
+                bin11.append(ab)
+            elif ab > (self.spec4*0.2) + self.spec4:
+                bin11.append(ab)
+            elif ab > (self.spec4*0.15) + self.spec4:
+                bin12.append(ab)
+            elif ab > (self.spec4*0.1) + self.spec4:
+                bin13.append(ab)
+            elif ab > (self.spec4*0.05) + self.spec4:
+                bin14.append(ab)
+            elif ab > (self.spec4*0.02) + self.spec4:
+                bin15.append(ab)
+            elif ab > (self.spec4*0.01) + self.spec4:
+                bin16.append(ab)   
+        print('len(bin1)=',len(bin1))
+        print('len(bin2)=',len(bin2))
+        print('len(bin3)=',len(bin3))
+        print('len(bin4)=',len(bin4))
+        print('len(bin5)=',len(bin5))
+        print('len(bin6)=',len(bin6))
+        print('len(bin7)=',len(bin7))
+        print('len(bin8)=',len(bin8))
+        print('len(bin9)=',len(bin9))
+        print('len(bin10)=',len(bin10))
+        print('len(bin11)=',len(bin11))
+        print('len(bin12)=',len(bin12))
+        print('len(bin13)=',len(bin13))
+        print('len(bin14)=',len(bin14))
+        print('len(bin15)=',len(bin15))
+        print('len(bin16)=',len(bin16))
+        
+        hist = []
+        if len(bin1)>0:
+            hist.append((len(bin1),min(bin1),max(bin1)))
+        if len(bin2)>0:
+            hist.append((len(bin2),min(bin2),max(bin2)))
+        if len(bin3)>0:
+            hist.append((len(bin3),min(bin3),max(bin3)))
+        if len(bin4)>0:
+            hist.append((len(bin4),min(bin4),max(bin4)))
+        if len(bin5)>0:
+            hist.append((len(bin5),min(bin5),max(bin5)))
+        if len(bin6)>0:
+            hist.append((len(bin6),min(bin6),max(bin6)))
+        if len(bin7)>0:
+            hist.append((len(bin7),min(bin7),max(bin7)))
+        if len(bin8)>0:
+            hist.append((len(bin8),min(bin8),max(bin8)))
+        if len(bin9)>0:
+            hist.append((len(bin9),min(bin9),max(bin9)))
+        if len(bin10)>0:
+            hist.append((len(bin10),min(bin10),max(bin10)))
+        if len(bin11)>0:
+            hist.append((len(bin11),min(bin11),max(bin11)))
+        if len(bin12)>0:
+            hist.append((len(bin12),min(bin12),max(bin12)))
+        if len(bin13)>0:
+            hist.append((len(bin13),min(bin13),max(bin13)))
+        if len(bin14)>0:
+            hist.append((len(bin14),min(bin14),max(bin14)))
+        if len(bin15)>0:
+            hist.append((len(bin15),min(bin15),max(bin15)))
+        if len(bin16)>0:
+            hist.append((len(bin16),min(bin16),max(bin16)))
+
+        return hist
+        
+    def Phase_Balance(self):
+        bin1 = []
+        bin2 = []
+        bin3 = []
+        bin4 = []
+        bin5 = []
+        bin6 = []
+        bin7 = []
+        bin8 = []
+        bin9 = []
+        bin10 = []
+        bin11 = []
+        bin12 = []
+        bin13 = []
+        bin14 = []
+        bin15 = []
+        bin16 = []
+        for pb in self.test5:
+            if pb < (self.spec5*0.01) - self.spec5:
+                bin1.append(pb)
+            elif pb < (self.spec5*0.02) - self.spec5:
+                bin2.append(pb)
+            elif pb < (self.spec5*0.05) - self.spec5:
+                bin3.append(pb)
+            elif pb < (self.spec5*0.10) - self.spec5:
+                bin4.append(pb)
+            elif pb < (self.spec5*0.15) - self.spec5:
+                bin5.append(pb)
+            elif pb < (self.spec5*0.2) - self.spec5:
+                bin6.append(pb)
+            elif pb < (self.spec5*0.5) - self.spec5:
+                bin7.append(pb)
+            elif pb < (self.spec5*1) - self.spec5:
+                bin8.append(pb)
+            elif pb < (self.spec5*2) - self.spec5:
+                bin8.append(pb)
+            elif pb > (self.spec5*2) + self.spec5:
+                bin9.append(pb)
+            elif pb > (self.spec5*1) + self.spec5:
+                bin10.append(pb)
+            elif pb > (self.spec5*0.5) + self.spec5:
+                bin11.append(pb)
+            elif pb > (self.spec5*0.2) + self.spec5:
+                bin11.append(pb)
+            elif pb > (self.spec5*0.15) + self.spec5:
+                bin12.append(pb)
+            elif pb > (self.spec5*0.1) + self.spec5:
+                bin13.append(pb)
+            elif pb > (self.spec5*0.05) + self.spec5:
+                bin14.append(pb)
+            elif pb > (self.spec5*0.02) + self.spec5:
+                bin15.append(pb)
+            elif pb > (self.spec5*0.01) + self.spec5:
+                bin16.append(pb)   
+        print('len(bin1)=',len(bin1))
+        print('len(bin2)=',len(bin2))
+        print('len(bin3)=',len(bin3))
+        print('len(bin4)=',len(bin4))
+        print('len(bin5)=',len(bin5))
+        print('len(bin6)=',len(bin6))
+        print('len(bin7)=',len(bin7))
+        print('len(bin8)=',len(bin8))
+        print('len(bin9)=',len(bin9))
+        print('len(bin10)=',len(bin10))
+        print('len(bin11)=',len(bin11))
+        print('len(bin12)=',len(bin12))
+        print('len(bin13)=',len(bin13))
+        print('len(bin14)=',len(bin14))
+        print('len(bin15)=',len(bin15))
+        print('len(bin16)=',len(bin16))
+        
+        hist = []
+        if len(bin1)>0:
+            hist.append((len(bin1),min(bin1),max(bin1)))
+        if len(bin2)>0:
+            hist.append((len(bin2),min(bin2),max(bin2)))
+        if len(bin3)>0:
+            hist.append((len(bin3),min(bin3),max(bin3)))
+        if len(bin4)>0:
+            hist.append((len(bin4),min(bin4),max(bin4)))
+        if len(bin5)>0:
+            hist.append((len(bin5),min(bin5),max(bin5)))
+        if len(bin6)>0:
+            hist.append((len(bin6),min(bin6),max(bin6)))
+        if len(bin7)>0:
+            hist.append((len(bin7),min(bin7),max(bin7)))
+        if len(bin8)>0:
+            hist.append((len(bin8),min(bin8),max(bin8)))
+        if len(bin9)>0:
+            hist.append((len(bin9),min(bin9),max(bin9)))
+        if len(bin10)>0:
+            hist.append((len(bin10),min(bin10),max(bin10)))
+        if len(bin11)>0:
+            hist.append((len(bin11),min(bin11),max(bin11)))
+        if len(bin12)>0:
+            hist.append((len(bin12),min(bin12),max(bin12)))
+        if len(bin13)>0:
+            hist.append((len(bin13),min(bin13),max(bin13)))
+        if len(bin14)>0:
+            hist.append((len(bin14),min(bin14),max(bin14)))
+        if len(bin15)>0:
+            hist.append((len(bin15),min(bin15),max(bin15)))
+        if len(bin16)>0:
+            hist.append((len(bin16),min(bin16),max(bin16)))
+
+        return hist
+        
+        
+    def Coupling(self):
+        bin1 = []
+        bin2 = []
+        bin3 = []
+        bin4 = []
+        bin5 = []
+        bin6 = []
+        bin7 = []
+        bin8 = []
+        bin9 = []
+        bin10 = []
+        bin11 = []
+        bin12 = []
+        bin13 = []
+        bin14 = []
+        bin15 = []
+        bin16 = []
+        for coup in self.test3:
+            if coup < (self.spec3*0.01) - self.spec3:
+                bin1.append(coup)
+            elif coup < (self.spec3*0.02) - self.spec3:
+                bin2.append(coup)
+            elif coup < (self.spec3*0.05) - self.spec3:
+                bin3.append(coup)
+            elif coup < (self.spec3*0.10) - self.spec3:
+                bin4.append(coup)
+            elif coup < (self.spec3*0.15) - self.spec3:
+                bin5.append(coup)
+            elif coup < (self.spec3*0.2) - self.spec3:
+                bin6.append(coup)
+            elif coup < (self.spec3*0.5) - self.spec3:
+                bin7.append(coup)
+            elif coup < (self.spec3*1) - self.spec3:
+                bin8.append(coup)
+            elif coup < (self.spec3*2) - self.spec3:
+                bin8.append(coup)
+            elif coup > (self.spec3*2) + self.spec3:
+                bin9.append(coup)
+            elif coup > (self.spec3*1) + self.spec3:
+                bin10.append(coup)
+            elif coup > (self.spec3*0.5) + self.spec3:
+                bin11.append(coup)
+            elif coup > (self.spec3*0.2) + self.spec3:
+                bin11.append(coup)
+            elif coup > (self.spec3*0.15) + self.spec3:
+                bin12.append(coup)
+            elif coup > (self.spec3*0.1) + self.spec3:
+                bin13.append(coup)
+            elif coup > (self.spec3*0.05) + self.spec3:
+                bin14.append(coup)
+            elif coup > (self.spec3*0.02) + self.spec3:
+                bin15.append(coup)
+            elif coup > (self.spec3*0.01) + self.spec3:
+                bin16.append(coup)   
+        print('len(bin1)=',len(bin1))
+        print('len(bin2)=',len(bin2))
+        print('len(bin3)=',len(bin3))
+        print('len(bin4)=',len(bin4))
+        print('len(bin5)=',len(bin5))
+        print('len(bin6)=',len(bin6))
+        print('len(bin7)=',len(bin7))
+        print('len(bin8)=',len(bin8))
+        print('len(bin9)=',len(bin9))
+        print('len(bin10)=',len(bin10))
+        print('len(bin11)=',len(bin11))
+        print('len(bin12)=',len(bin12))
+        print('len(bin13)=',len(bin13))
+        print('len(bin14)=',len(bin14))
+        print('len(bin15)=',len(bin15))
+        print('len(bin16)=',len(bin16))
+        
+        hist = []
+        if len(bin1)>0:
+            hist.append((len(bin1),min(bin1),max(bin1)))
+        if len(bin2)>0:
+            hist.append((len(bin2),min(bin2),max(bin2)))
+        if len(bin3)>0:
+            hist.append((len(bin3),min(bin3),max(bin3)))
+        if len(bin4)>0:
+            hist.append((len(bin4),min(bin4),max(bin4)))
+        if len(bin5)>0:
+            hist.append((len(bin5),min(bin5),max(bin5)))
+        if len(bin6)>0:
+            hist.append((len(bin6),min(bin6),max(bin6)))
+        if len(bin7)>0:
+            hist.append((len(bin7),min(bin7),max(bin7)))
+        if len(bin8)>0:
+            hist.append((len(bin8),min(bin8),max(bin8)))
+        if len(bin9)>0:
+            hist.append((len(bin9),min(bin9),max(bin9)))
+        if len(bin10)>0:
+            hist.append((len(bin10),min(bin10),max(bin10)))
+        if len(bin11)>0:
+            hist.append((len(bin11),min(bin11),max(bin11)))
+        if len(bin12)>0:
+            hist.append((len(bin12),min(bin12),max(bin12)))
+        if len(bin13)>0:
+            hist.append((len(bin13),min(bin13),max(bin13)))
+        if len(bin14)>0:
+            hist.append((len(bin14),min(bin14),max(bin14)))
+        if len(bin15)>0:
+            hist.append((len(bin15),min(bin15),max(bin15)))
+        if len(bin16)>0:
+            hist.append((len(bin16),min(bin16),max(bin16)))
+
+        return hist
+        
+    def Directivity(self):
+        bin1 = []
+        bin2 = []
+        bin3 = []
+        bin4 = []
+        bin5 = []
+        bin6 = []
+        bin7 = []
+        bin8 = []
+        bin9 = []
+        bin10 = []
+        bin11 = []
+        bin12 = []
+        bin13 = []
+        bin14 = []
+        bin15 = []
+        bin16 = []
+        for dir in self.test4:
+            if dir < (self.spec4*0.01) - self.spec4:
+                bin1.append(dir)
+            elif dir < (self.spec4*0.02) - self.spec4:
+                bin2.append(dir)
+            elif dir < (self.spec4*0.05) - self.spec4:
+                bin3.append(dir)
+            elif dir < (self.spec4*0.10) - self.spec4:
+                bin4.append(dir)
+            elif dir < (self.spec4*0.15) - self.spec4:
+                bin5.append(dir)
+            elif dir < (self.spec4*0.2) - self.spec4:
+                bin6.append(dir)
+            elif dir < (self.spec4*0.5) - self.spec4:
+                bin7.append(dir)
+            elif dir < (self.spec4*1) - self.spec4:
+                bin8.append(dir)
+            elif dir < (self.spec4*2) - self.spec4:
+                bin8.append(dir)
+            elif dir > (self.spec4*2) + self.spec4:
+                bin9.append(dir)
+            elif dir > (self.spec4*1) + self.spec4:
+                bin10.append(dir)
+            elif dir > (self.spec4*0.5) + self.spec4:
+                bin11.append(dir)
+            elif dir > (self.spec4*0.2) + self.spec4:
+                bin11.append(dir)
+            elif dir > (self.spec4*0.15) + self.spec4:
+                bin12.append(dir)
+            elif dir > (self.spec4*0.1) + self.spec4:
+                bin13.append(dir)
+            elif dir > (self.spec4*0.05) + self.spec4:
+                bin14.append(dir)
+            elif dir > (self.spec4*0.02) + self.spec4:
+                bin15.append(dir)
+            elif dir > (self.spec4*0.01) + self.spec4:
+                bin16.append(dir)   
+        print('len(bin1)=',len(bin1))
+        print('len(bin2)=',len(bin2))
+        print('len(bin3)=',len(bin3))
+        print('len(bin4)=',len(bin4))
+        print('len(bin5)=',len(bin5))
+        print('len(bin6)=',len(bin6))
+        print('len(bin7)=',len(bin7))
+        print('len(bin8)=',len(bin8))
+        print('len(bin9)=',len(bin9))
+        print('len(bin10)=',len(bin10))
+        print('len(bin11)=',len(bin11))
+        print('len(bin12)=',len(bin12))
+        print('len(bin13)=',len(bin13))
+        print('len(bin14)=',len(bin14))
+        print('len(bin15)=',len(bin15))
+        print('len(bin16)=',len(bin16))
+        
+        hist = []
+        if len(bin1)>0:
+            hist.append((len(bin1),min(bin1),max(bin1)))
+        if len(bin2)>0:
+            hist.append((len(bin2),min(bin2),max(bin2)))
+        if len(bin3)>0:
+            hist.append((len(bin3),min(bin3),max(bin3)))
+        if len(bin4)>0:
+            hist.append((len(bin4),min(bin4),max(bin4)))
+        if len(bin5)>0:
+            hist.append((len(bin5),min(bin5),max(bin5)))
+        if len(bin6)>0:
+            hist.append((len(bin6),min(bin6),max(bin6)))
+        if len(bin7)>0:
+            hist.append((len(bin7),min(bin7),max(bin7)))
+        if len(bin8)>0:
+            hist.append((len(bin8),min(bin8),max(bin8)))
+        if len(bin9)>0:
+            hist.append((len(bin9),min(bin9),max(bin9)))
+        if len(bin10)>0:
+            hist.append((len(bin10),min(bin10),max(bin10)))
+        if len(bin11)>0:
+            hist.append((len(bin11),min(bin11),max(bin11)))
+        if len(bin12)>0:
+            hist.append((len(bin12),min(bin12),max(bin12)))
+        if len(bin13)>0:
+            hist.append((len(bin13),min(bin13),max(bin13)))
+        if len(bin14)>0:
+            hist.append((len(bin14),min(bin14),max(bin14)))
+        if len(bin15)>0:
+            hist.append((len(bin15),min(bin15),max(bin15)))
+        if len(bin16)>0:
+            hist.append((len(bin16),min(bin16),max(bin16)))
+
+        return hist
+        
+    def Coupling_Balance(self):
+        bin1 = []
+        bin2 = []
+        bin3 = []
+        bin4 = []
+        bin5 = []
+        bin6 = []
+        bin7 = []
+        bin8 = []
+        bin9 = []
+        bin10 = []
+        bin11 = []
+        bin12 = []
+        bin13 = []
+        bin14 = []
+        bin15 = []
+        bin16 = []
+        for cb in self.test5:
+            if cb < (self.spec5*0.01) - self.spec5:
+                bin1.append(cb)
+            elif cb < (self.spec5*0.02) - self.spec5:
+                bin2.append(cb)
+            elif cb < (self.spec5*0.05) - self.spec5:
+                bin3.append(cb)
+            elif cb < (self.spec5*0.10) - self.spec5:
+                bin4.append(cb)
+            elif cb < (self.spec5*0.15) - self.spec5:
+                bin5.append(cb)
+            elif cb < (self.spec5*0.2) - self.spec5:
+                bin6.append(cb)
+            elif cb < (self.spec5*0.5) - self.spec5:
+                bin7.append(cb)
+            elif cb < (self.spec5*1) - self.spec5:
+                bin8.append(cb)
+            elif cb < (self.spec5*2) - self.spec5:
+                bin8.append(cb)
+            elif cb > (self.spec5*2) + self.spec5:
+                bin9.append(cb)
+            elif cb > (self.spec5*1) + self.spec5:
+                bin10.append(cb)
+            elif cb > (self.spec5*0.5) + self.spec5:
+                bin11.append(cb)
+            elif cb > (self.spec5*0.2) + self.spec5:
+                bin11.append(cb)
+            elif cb > (self.spec5*0.15) + self.spec5:
+                bin12.append(cb)
+            elif cb > (self.spec5*0.1) + self.spec5:
+                bin13.append(cb)
+            elif cb > (self.spec5*0.05) + self.spec5:
+                bin14.append(cb)
+            elif cb > (self.spec5*0.02) + self.spec5:
+                bin15.append(cb)
+            elif cb > (self.spec5*0.01) + self.spec5:
+                bin16.append(cb)   
+        print('len(bin1)=',len(bin1))
+        print('len(bin2)=',len(bin2))
+        print('len(bin3)=',len(bin3))
+        print('len(bin4)=',len(bin4))
+        print('len(bin5)=',len(bin5))
+        print('len(bin6)=',len(bin6))
+        print('len(bin7)=',len(bin7))
+        print('len(bin8)=',len(bin8))
+        print('len(bin9)=',len(bin9))
+        print('len(bin10)=',len(bin10))
+        print('len(bin11)=',len(bin11))
+        print('len(bin12)=',len(bin12))
+        print('len(bin13)=',len(bin13))
+        print('len(bin14)=',len(bin14))
+        print('len(bin15)=',len(bin15))
+        print('len(bin16)=',len(bin16))
+        
+        hist = []
+        if len(bin1)>0:
+            hist.append((len(bin1),min(bin1),max(bin1)))
+        if len(bin2)>0:
+            hist.append((len(bin2),min(bin2),max(bin2)))
+        if len(bin3)>0:
+            hist.append((len(bin3),min(bin3),max(bin3)))
+        if len(bin4)>0:
+            hist.append((len(bin4),min(bin4),max(bin4)))
+        if len(bin5)>0:
+            hist.append((len(bin5),min(bin5),max(bin5)))
+        if len(bin6)>0:
+            hist.append((len(bin6),min(bin6),max(bin6)))
+        if len(bin7)>0:
+            hist.append((len(bin7),min(bin7),max(bin7)))
+        if len(bin8)>0:
+            hist.append((len(bin8),min(bin8),max(bin8)))
+        if len(bin9)>0:
+            hist.append((len(bin9),min(bin9),max(bin9)))
+        if len(bin10)>0:
+            hist.append((len(bin10),min(bin10),max(bin10)))
+        if len(bin11)>0:
+            hist.append((len(bin11),min(bin11),max(bin11)))
+        if len(bin12)>0:
+            hist.append((len(bin12),min(bin12),max(bin12)))
+        if len(bin13)>0:
+            hist.append((len(bin13),min(bin13),max(bin13)))
+        if len(bin14)>0:
+            hist.append((len(bin14),min(bin14),max(bin14)))
+        if len(bin15)>0:
+            hist.append((len(bin15),min(bin15),max(bin15)))
+        if len(bin16)>0:
+            hist.append((len(bin16),min(bin16),max(bin16)))
+
+        return hist

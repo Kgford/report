@@ -137,6 +137,63 @@
 				</div>
 			</section>
 			{% if analyze != -1 %}
+			<section class="py-7 text-center container">
+				<h2 class="fw-light">Specifications</h2>
+				<div class="col-sm-1 col-lg-2 grid-col">
+					<div class="form-group">
+						<label for="_spec1">Insertion loss</label>
+						<input type="text" id='_spec1' name ='_spec1' value = {{spec1}} style="width: 124px">
+					</div>
+				</div>	
+				<div class="col-sm-1 col-lg-2 grid-col">
+					<div class="form-group">
+						<label for="_il">Return loss</label>
+						<input type="text" id='_spec2' name ='_spec2' value = {{spec2}} style="width: 124px">
+					</div>
+				</div>
+				{% if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype %}
+					<div class="col-sm-1 col-lg-2 grid-col">
+						<div class="form-group">
+							<label for="_spec3">Isolation</label>
+							<input type="text" id='_spec3' name ='_spec3' value = {{spec3}} style="width: 124px">
+						</div>
+					</div>
+					<div class="col-sm-1 col-lg-2 grid-col">
+						<div class="form-group">
+							<label for="_spec4">Amplitude Balance</label>
+							<input type="text" id='_spec4' name ='_spec4' value = {{spec4}} style="width: 124px">
+						</div>
+					</div>
+					<div class="col-sm-1 col-lg-2 grid-col">
+						<div class="form-group">
+							<label for="_spec5">Phase Balance</label>
+							<input type="text" id='_spec5' name ='_spec4' value = {{spec5}} style="width: 124px">
+						</div>
+					</div>
+				{% else %}
+					<div class="col-sm-1 col-lg-2 grid-col">
+						<div class="form-group">
+							<label for="_spec3">Coupling</label>
+							<input type="text" id='_spec3' name ='_spec3' value = {{spec3}} style="width: 124px">
+						</div>
+					</div>
+					<div class="col-sm-1 col-lg-2 grid-col">
+						<div class="form-group">
+							<label for="_spec4">Directivity</label>
+							<input type="text" id='_spec4' name ='_spec4' value = {{spec4}} style="width: 124px">
+						</div>
+					</div>
+					<div class="col-sm-1 col-lg-2 grid-col">
+						<div class="form-group">
+							<label for="_spec5">Coupling Balance</label>
+							<input type="text" id='_spec5' name ='_spec5' value = {{spec5}} style="width: 124px">
+						</div>
+					</div>
+				{% endif %}
+			{% endif %}
+			</section>
+			
+			{% if analyze != -1 %}
 				<section class="py-7 container">
 				<h2 class="text-center">Statistics</h2>
 					<div class="col-sm-1 col-lg-10 grid-col">
@@ -237,10 +294,16 @@
 				<div class="container" align="left">
 					<h2 class="text-center">Histograms</h2>
 					<embed type="image/svg+xml" src={{il_histo_data|safe}} style='max-width:300px'/>
-					<embed type="image/svg+xml" src={{il_histo_data|safe}} style='max-width:300px'/>
-					<embed type="image/svg+xml" src={{il_histo_data|safe}} style='max-width:300px'/>
-					<embed type="image/svg+xml" src={{il_histo_data|safe}} style='max-width:300px'/>
-					<embed type="image/svg+xml" src={{il_histo_data|safe}} style='max-width:300px'/>
+					<embed type="image/svg+xml" src={{rl_histo_data|safe}} style='max-width:300px'/>
+					{% if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype %}
+						<embed type="image/svg+xml" src={{iso_histo_data|safe}} style='max-width:300px'/>
+						<embed type="image/svg+xml" src={{ab_histo_data|safe}} style='max-width:300px'/>
+						<embed type="image/svg+xml" src={{pb_histo_data|safe}} style='max-width:300px'/>
+					{% else %}
+						<embed type="image/svg+xml" src={{coup_histo_data|safe}} style='max-width:300px'/>
+						<embed type="image/svg+xml" src={{dir_histo_data|safe}} style='max-width:300px'/>
+						<embed type="image/svg+xml" src={{cb_histo_data|safe}} style='max-width:300px'/>
+					{% endif %}
 				</div>
 			{% endif %}
 			{% if spectype != -1 %}
