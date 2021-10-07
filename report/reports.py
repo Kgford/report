@@ -628,42 +628,47 @@ class LoadCharts:
                 trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').first()
                 #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss J3~~~~~~~~~~~~~~~~~~~~~~~~
                 #print('trace_id=',trace_id1)
-                if trace_id1[0] > 171666:
-                    trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id1[0]).all()
-                else:
-                    trace_points = Tracepoints.objects.using('TEST').filter(traceid=trace_id1[0]).all()
-                #print('trace_points=',trace_points)
-                rownum=56
-                for point in trace_points:
-                    sheet.cell(row=rownum, column=1).value= round(point.xdata,0)
-                    sheet.cell(row=rownum, column=2).value= round(point.ydata,0)
-                    #print('rownum=',rownum,' point.xdata=',point.xdata)
-                    rownum+=1
+                trace_points = []
+                if trace_id1:
+                    if trace_id1[0] > 171666:
+                        trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id1[0]).all()
+                    else:
+                        trace_points = Tracepoints.objects.using('TEST').filter(traceid=trace_id1[0]).all()
+                    #print('trace_points=',trace_points)
+                    rownum=56
+                    for point in trace_points:
+                        sheet.cell(row=rownum, column=1).value= round(point.xdata,0)
+                        sheet.cell(row=rownum, column=2).value= round(point.ydata,0)
+                        #print('rownum=',rownum,' point.xdata=',point.xdata)
+                        rownum+=1
                  #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss J4~~~~~~~~~~~~~~~~~~~~~~~~
-                
-                if trace_id2[0] > 171666:
-                    trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id2[0]).all()
-                else:
-                    trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id2[0]).all()
-                rownum=56
-                for point in trace_points:
-                    sheet.cell(row=rownum, column=3).value= round(point.ydata,0)
-                    rownum+=1 
+                trace_points = []
+                if trace_id2:
+                    if trace_id2[0] > 171666:
+                        trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id2[0]).all()
+                    else:
+                        trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id2[0]).all()
+                    rownum=56
+                    for point in trace_points:
+                        sheet.cell(row=rownum, column=3).value= round(point.ydata,0)
+                        rownum+=1 
             else:
                 #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss ~~~~~~~~~~~~~~~~~~~~~~~~
                 trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).values_list('id').first()
                 #print('trace_id=',trace_id[0])
-                if trace_id[0] > 171666:
-                    trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id[0]).all()
-                else:
-                    trace_points = Tracepoints.objects.using('TEST').filter(traceid=trace_id[0]).all()
-                #print('trace_points=',trace_points)
-                rownum=56
-                for point in trace_points:
-                    sheet.cell(row=rownum, column=1).value= round(point.xdata,0)
-                    sheet.cell(row=rownum, column=2).value= round(point.ydata,0)
-                    #print('rownum=',rownum,' point.xdata=',point.xdata)
-                    rownum+=1
+                trace_points = []
+                if trace_id:
+                    if trace_id[0] > 171666:
+                        trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id[0]).all()
+                    else:
+                        trace_points = Tracepoints.objects.using('TEST').filter(traceid=trace_id[0]).all()
+                    #print('trace_points=',trace_points)
+                    rownum=56
+                    for point in trace_points:
+                        sheet.cell(row=rownum, column=1).value= round(point.xdata,0)
+                        sheet.cell(row=rownum, column=2).value= round(point.ydata,0)
+                        #print('rownum=',rownum,' point.xdata=',point.xdata)
+                        rownum+=1
             
        
     def chart2(self):
@@ -673,15 +678,17 @@ class LoadCharts:
             sheet = self.wb[serialnumber]
             #~~~~~~~~~~~~~~~~~~~~~~Return Loss~~~~~~~~~~~~~~~~~~~~~~~~
             trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).values_list('id').first()       
-            if trace_id[0] > 171666:
-                trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id[0]).all()
-            else:
-                trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id[0]).all()
-            rownum=56
-            for point in trace_points:
-                sheet.cell(row=rownum, column=4).value= round(point.xdata,0)
-                sheet.cell(row=rownum, column=5).value= round(point.ydata,0)
-                rownum+=1
+            trace_points = []
+            if trace_id:
+                if trace_id[0] > 171666:
+                    trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id[0]).all()
+                else:
+                    trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id[0]).all()
+                rownum=56
+                for point in trace_points:
+                    sheet.cell(row=rownum, column=4).value= round(point.xdata,0)
+                    sheet.cell(row=rownum, column=5).value= round(point.ydata,0)
+                    rownum+=1
         
           
     def chart3(self): 
@@ -691,15 +698,17 @@ class LoadCharts:
             sheet = self.wb[serialnumber]
             #~~~~~~~~~~~~~~~~~~~~~~isolation~~~~~~~~~~~~~~~~~~~~~~~~
             trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).values_list('id').first()    
-            if trace_id[0] > 171666:
-                trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id[0]).all()
-            else:
-                trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id[0]).all()
-            rownum=56
-            for point in trace_points:
-                sheet.cell(row=rownum, column=6).value= round(point.xdata,0)
-                sheet.cell(row=rownum, column=7).value= round(point.ydata,0)
-                rownum+=1
+            trace_points = []
+            if trace_id:
+                if trace_id[0] > 171666:
+                    trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id[0]).all()
+                else:
+                    trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id[0]).all()
+                rownum=56
+                for point in trace_points:
+                    sheet.cell(row=rownum, column=6).value= round(point.xdata,0)
+                    sheet.cell(row=rownum, column=7).value= round(point.ydata,0)
+                    rownum+=1
             
     
     def chart4(self):
@@ -718,24 +727,28 @@ class LoadCharts:
         
             
             #~~~~~~~~~~~~~~~~~~~~~~Phase Balance J3~~~~~~~~~~~~~~~~~~~~~~~~
-            if trace_id1[0] > 171666:
-                trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id1[0]).all()
-            else:
-                trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id1[0]).all()
-            rownum=56
-            for point in trace_points:
-                sheet.cell(row=rownum, column=8).value= round(point.xdata,0)
-                sheet.cell(row=rownum, column=9).value= round(point.ydata,0)
-                rownum+=1
+            trace_points = []
+            if trace_id1:
+                if trace_id1[0] > 171666:
+                    trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id1[0]).all()
+                else:
+                    trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id1[0]).all()
+                rownum=56
+                for point in trace_points:
+                    sheet.cell(row=rownum, column=8).value= round(point.xdata,0)
+                    sheet.cell(row=rownum, column=9).value= round(point.ydata,0)
+                    rownum+=1
             #~~~~~~~~~~~~~~~~~~~~~~Phase Balance J4~~~~~~~~~~~~~~~~~~~~~~~~
-            if trace_id2[0] > 171666:
-                trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id2[0]).all()
-            else:
-                trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id2[0]).all()
-            rownum=56
-            for point in trace_points:
-                sheet.cell(row=rownum, column=10).value= round(point.ydata,0)
-                rownum+=1    
+            trace_points = []
+            if trace_id2:
+                if trace_id2[0] > 171666:
+                    trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id2[0]).all()
+                else:
+                    trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id2[0]).all()
+                rownum=56
+                for point in trace_points:
+                    sheet.cell(row=rownum, column=10).value= round(point.ydata,0)
+                    rownum+=1    
               
 class DeleteSheets:    
     def __init__ (self,chart_group,wb):
@@ -969,18 +982,120 @@ class Statistics:
            
             return stat_list
            
-class Histogram:  
-    def __init__(self,test1,test2,test3,test4,test5,spec1,spec2,spec3,spec4,spec5,test):
-        self.test1 = test1
-        self.test2 = test2
-        self.test3 = test3
-        self.test4 = test4
-        self.test5 = test5
-        self.spec1 = spec1
-        self.spec2 = spec2
-        self.spec3 = spec3
-        self.spec4 = spec4
-        self.spec5 = spec5
+class XY_Chart:  
+    def __init__(self,tests,specs,test):
+        self.test1 = tests[0]
+        self.test2 = tests[1]
+        self.test3 = tests[2]
+        self.test4 = tests[3]
+        self.test5 = tests[4]
+        self.spec1 = specs[0]
+        self.spec2 = specs[1]
+        self.spec3 = specs[2]
+        self.spec4 = specs[3]
+        self.spec5 = specs[4]
+        self.test = test
+        
+    def Chart_data(self):
+        chart = []
+        if self.test == 'test1':
+            testing = self.test1
+            spec = self.spec1
+        if self.test == 'test2':
+            testing = self.test2
+            spec = self.spec2
+        if self.test == 'test3':
+            testing = self.test3
+            spec = self.spec3    
+        if self.test == 'test4':
+            testing = self.test4
+            spec = self.spec4
+        if self.test == 'test5':
+            testing = self.test5
+            spec = self.spec5
+        
+        x=0
+        for test in testing:
+            chart.append((x,test))
+            x+=1
+        
+        return chart
+
+class XY_Hist:  
+    def __init__(self,sd_list,sd_x_range):
+        self.sd_list = sd_list
+        self.sd_x_range = sd_x_range
+            
+    def data(self):
+        xy = []
+        x=0
+        for test in self.sd_x_range:
+            xy.append((self.sd_x_range[x],test))
+            x+=1
+        
+        return xy        
+            
+
+class X_Range:
+    def __init__(self,data,Min,Max):
+        self.data = data
+        self.Min = Min
+        self.Max = Max
+
+    
+    def list(self):
+        span = self.Max - self.Min
+        step = int(len(self.data)+4)
+        stepsize = (span/step)
+        print('step =',step)
+        print('stepsize =',stepsize)
+        # create a linear x_range
+        x_range_list = []
+        for i in range(step + 5):
+            if i==0:
+                x_range_list.append(round(self.Min-stepsize*2,2))
+            elif i==1:
+                x_range_list.append(round(self.Min-stepsize,2))
+            elif i==2:
+                x_range_list.append(round(self.Min,1))
+            else:
+                x_range_list.append(round(self.Min + stepsize*(i-2),2))
+        return x_range_list 
+        
+    def list_expanded(self):
+        span = self.Max - self.Min
+        step = int(len(self.data)+8)
+        stepsize = (span/step)
+        print('step =',step)
+        print('stepsize =',stepsize)
+        # create a linear x_range
+        x_range_list = []
+        for i in range(step + 10):
+            if i==0:
+                x_range_list.append(round(self.Min-stepsize*2,3))
+            elif i==1:
+                x_range_list.append(round(self.Min-stepsize,3))
+            elif i==2:
+                x_range_list.append(round(self.Min,3))
+            else:
+                x_range_list.append(round(self.Min + stepsize*(i-2),3))
+        return x_range_list 
+
+        
+
+
+class Histogram_data:  
+    def __init__(self,tests,specs,test):
+        self.test1 = tests[0]
+        self.test2 = tests[1]
+        self.test3 = tests[2]
+        self.test4 = tests[3]
+        self.test5 = tests[4]
+        self.spec1 = specs[0]
+        self.spec2 = specs[1]
+        self.spec3 = specs[2]
+        self.spec4 = specs[3]
+        self.spec5 = specs[4]
         self.test = test
         
     def Hist_data(self):
@@ -1095,183 +1210,183 @@ class Histogram:
             if abs(tst) < (spec*0.01) - spec:
                 bin1.append(abs(tst))
             elif abs(tst) < (spec*0.02) - spec:
-                bin2.append(abs(tst))
+                bin2.append(tst)
             elif abs(tst) < (spec*0.03) - spec:
-                bin3.append(abs(tst))
+                bin3.append(tst)
             elif abs(tst) < (spec*0.04) - spec:
-                bin4.append(abs(tst))
+                bin4.append(tst)
             elif abs(tst) < (spec*0.05) - spec:
-                bin5.append(abs(tst))
+                bin5.append(tst)
             elif abs(tst) < (spec*0.06) - spec:
-                bin6.append(abs(tst))
+                bin6.append(tst)
             elif abs(tst) < (spec*0.07) - spec:
-                bin7.append(abs(tst))
+                bin7.append(tst)
             elif abs(tst) < (spec*0.08) - spec:
-                bin8.append(abs(tst))
+                bin8.append(tst)
             elif abs(tst) < (spec*0.09) - spec:
-                bin9.append(abs(tst))
+                bin9.append(tst)
             elif abs(tst) < (spec*0.10) - spec:
-                bin10.append(abs(tst))
+                bin10.append(tst)
             elif abs(tst) < (spec*0.11) - spec:
-                bin11.append(abs(tst))
+                bin11.append(tst)
             elif abs(tst) < (spec*0.12) - spec:
-                bin12.append(abs(tst))
+                bin12.append(tst)
             elif abs(tst) < (spec*0.13) - spec:
-                bin13.append(abs(tst))
+                bin13.append(tst)
             elif abs(tst) < (spec*0.14) - spec:
-                bin14.append(abs(tst))
+                bin14.append(tst)
             elif abs(tst) < (spec*0.15) - spec:
-                bin15.append(abs(tst))
+                bin15.append(tst)
             elif abs(tst) < (spec*0.16) - spec:
-                bin15.append(abs(tst))
+                bin15.append(tst)
             elif abs(tst) < (spec*0.17) - spec:
-                bin16.append(abs(tst))
+                bin16.append(tst)
             elif abs(tst) < (spec*0.18) - spec:
-                bin17.append(abs(tst))
+                bin17.append(tst)
             elif abs(tst) < (spec*0.19) - spec:
-                bin18.append(abs(tst))
+                bin18.append(tst)
             elif abs(tst) < (spec*0.2) - spec:
-                bin19.append(abs(tst))
+                bin19.append(tst)
             elif abs(tst) < (spec*0.3) - spec:
-                bin20.append(abs(tst))
+                bin20.append(tst)
             elif abs(tst) < (spec*0.4) - spec:
-                bin21.append(abs(tst))
+                bin21.append(tst)
             elif abs(tst) < (spec*0.5) - spec:
-                bin22.append(abs(tst))
+                bin22.append(tst)
             elif abs(tst) < (spec*0.6) - spec:
-                bin23.append(abs(tst))
+                bin23.append(tst)
             elif abs(tst) < (spec*0.7) - spec:
-                bin24.append(abs(tst))
+                bin24.append(tst)
             elif abs(tst) < (spec*0.8) - spec:
-                bin25.append(abs(tst))
+                bin25.append(tst)
             elif abs(tst) < (spec*0.9) - spec:
-                bin26.append(abs(tst))
+                bin26.append(tst)
             elif abs(tst) < (spec*1) - spec:
-                bin27.append(abs(tst))
+                bin27.append(tst)
             elif abs(tst) < (spec*1.1) - spec:
-                bin28.append(abs(tst))
+                bin28.append(tst)
             elif abs(tst) < (spec*1.2) - spec:
-                bin29.append(abs(tst))
+                bin29.append(tst)
             elif abs(tst) < (spec*1.3) - spec:
-                bin30.append(abs(tst))
+                bin30.append(tst)
             elif abs(tst) < (spec*1.4) - spec:
-                bin31.append(abs(tst))
+                bin31.append(tst)
             elif abs(tst) < (spec*1.5) - spec:
-                bin32.append(abs(tst))
+                bin32.append(tst)
             elif abs(tst) < (spec*1.6) - spec:
-                bin33.append(abs(tst))
+                bin33.append(tst)
             elif abs(tst) < (spec*1.7) - spec:
-                bin34.append(abs(tst))
+                bin34.append(tst)
             elif abs(tst) < (spec*1.8) - spec:
-                bin35.append(abs(tst))
+                bin35.append(tst)
             elif abs(tst) < (spec*1.9) - spec:
-                bin36.append(abs(tst))
+                bin36.append(tst)
             elif abs(tst) < (spec*2) - spec:
-                bin37.append(abs(tst))
+                bin37.append(tst)
             elif abs(tst) < (spec*2.1) - spec:
-                bin38.append(abs(tst))
+                bin38.append(tst)
             elif abs(tst) < (spec*2.2) - spec:
-                bin39.append(abs(tst))
+                bin39.append(tst)
             elif abs(tst) < (spec*2.3) - spec:
-                bin40.append(abs(tst))
+                bin40.append(tst)
             elif abs(tst) < (spec*2.4) - spec:
-                bin41.append(abs(tst))
+                bin41.append(tst)
             elif abs(tst) < (spec*2.5) - spec:
-                bin42.append(abs(tst))
+                bin42.append(tst)
             elif abs(tst) < (spec*2.6) - spec:
-                bin43.append(abs(tst))
+                bin43.append(tst)
             elif abs(tst) < (spec*2.7) - spec:
-                bin44.append(abs(tst))
+                bin44.append(tst)
             elif abs(tst) < (spec*2.8) - spec:
-                bin45.append(abs(tst))
+                bin45.append(tst)
             elif abs(tst) < (spec*2.9) - spec:
-                bin46.append(abs(tst))
+                bin46.append(tst)
             elif abs(tst) < (spec*3) - spec:
-                bin47.append(abs(tst))
+                bin47.append(tst)
             elif abs(tst) > (spec*3) + spec:
-                bin48.append(abs(tst))
+                bin48.append(tst)
             elif abs(tst) > (spec*2.9) + spec:
-                bin49.append(abs(tst))
+                bin49.append(tst)
             elif abs(tst) > (spec*2.8) + spec:
-                bin50.append(abs(tst))
+                bin50.append(tst)
             elif abs(tst) > (spec*2.7) + spec:
-                bin51.append(abs(tst))
+                bin51.append(tst)
             elif abs(tst) > (spec*2.6) + spec:
-                bin52.append(abs(tst))
+                bin52.append(tst)
             elif abs(tst) > (spec*2.5) + spec:
-                bin53.append(abs(tst))
+                bin53.append(tst)
             elif abs(tst) > (spec*2.4) + spec:
-                bin54.append(abs(tst))
+                bin54.append(tst)
             elif abs(tst) > (spec*2.3) + spec:
-                bin55.append(abs(tst))
+                bin55.append(tst)
             elif abs(tst) > (spec*2.2) + spec:
-                bin56.append(abs(tst))
+                bin56.append(tst)
             elif abs(tst) > (spec*2.1) + spec:
-                bin57.append(abs(tst))
+                bin57.append(tst)
             elif abs(tst) > (spec*2) + spec:
-                bin58.append(abs(tst))
+                bin58.append(tst)
             elif abs(tst) > (spec*1.9) + spec:
-                bin59.append(abs(tst))
+                bin59.append(tst)
             elif abs(tst) > (spec*1.8) + spec:
-                bin60.append(abs(tst))
+                bin60.append(tst)
             elif abs(tst) > (spec*1.7) + spec:
-                bin61.append(abs(tst))
+                bin61.append(tst)
             elif abs(tst) > (spec*1.6) + spec:
-                bin62.append(abs(tst))
+                bin62.append(tst)
             elif abs(tst) > (spec*1.5) + spec:
-                bin63.append(abs(tst))
+                bin63.append(tst)
             elif abs(tst) > (spec*2.4) + spec:
-                bin64.append(abs(tst))
+                bin64.append(tst)
             elif abs(tst) > (spec*1.3) + spec:
-                bin65.append(abs(tst))
+                bin65.append(tst)
             elif abs(tst) > (spec*1.2) + spec:
-                bin66.append(abs(tst))
+                bin66.append(tst)
             elif abs(tst) > (spec*1.1) + spec:
-                bin67.append(abs(tst))
+                bin67.append(tst)
             elif abs(tst) > (spec*1) + spec:
-                bin68.append(abs(tst))
+                bin68.append(tst)
             elif abs(tst) > (spec*0.9) + spec:
-                bin69.append(abs(tst))
+                bin69.append(tst)
             elif abs(tst) > (spec*0.8) + spec:
-                bin70.append(abs(tst))
+                bin70.append(tst)
             elif abs(tst) > (spec*0.7) + spec:
-                bin71.append(abs(tst))
+                bin71.append(tst)
             elif abs(tst) > (spec*0.6) + spec:
-                bin72.append(abs(tst))
+                bin72.append(tst)
             elif abs(tst) > (spec*0.5) + spec:
-                bin73.append(abs(tst))
+                bin73.append(tst)
             elif abs(tst) > (spec*0.4) + spec:
-                bin74.append(abs(tst))
+                bin74.append(tst)
             elif abs(tst) > (spec*0.3) + spec:
-                bin75.append(abs(tst))
+                bin75.append(tst)
             elif abs(tst) > (spec*0.2) + spec:
-                bin76.append(abs(tst))
+                bin76.append(tst)
             elif abs(tst) > (spec*0.19) + spec:
-                bin77.append(abs(tst))
+                bin77.append(tst)
             elif abs(tst) > (spec*0.18) + spec:
-                bin78.append(abs(tst))
+                bin78.append(tst)
             elif abs(tst) > (spec*0.17) + spec:
-                bin79.append(abs(tst))
+                bin79.append(tst)
             elif abs(tst) > (spec*0.16) + spec:
-                bin80.append(abs(tst))
+                bin80.append(tst)
             elif abs(tst) > (spec*0.15) + spec:
-                bin81.append(abs(tst))
+                bin81.append(tst)
             elif abs(tst) > (spec*0.14) + spec:
-                bin82.append(abs(tst))
+                bin82.append(tst)
             elif abs(tst) > (spec*0.13) + spec:
-                bin83.append(abs(tst))
+                bin83.append(tst)
             elif abs(tst) > (spec*0.12) + spec:
-                bin84.append(abs(tst))
+                bin84.append(tst)
             elif abs(tst) > (spec*0.11) + spec:
-                bin85.append(abs(tst))
+                bin85.append(tst)
             elif abs(tst) > (spec*0.1) + spec:
-                bin86.append(abs(tst))
+                bin86.append(tst)
             elif abs(tst) > (spec*0.05) + spec:
-                bin87.append(abs(tst))
+                bin87.append(tst)
             elif abs(tst) > (spec*0.02) + spec:
-                bin88.append(abs(tst))
+                bin88.append(tst)
             elif abs(tst) > (spec*0.01) + spec:
-                bin89.append(abs(tst))   
+                bin89.append(tst)   
         
         
         hist = []
@@ -1496,4 +1611,5 @@ class Histogram:
        
         return hist
         
+    
     

@@ -11,6 +11,9 @@ six
 openpyxl
 djangorestframework
 pygal
+numpy
+matplotlib
+scipy
 
 
 
