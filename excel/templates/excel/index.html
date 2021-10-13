@@ -28,7 +28,7 @@
   </div>
   <div class="navbar navbar-dark bg-dark shadow-sm">
     <div class="container">
-      <a href="#" class="navbar-brand d-flex align-items-center">
+      <a href="{% url 'excel:reports' %}" class="navbar-brand d-flex align-items-center">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         <strong>&nbsp;&nbsp;&nbsp;&nbsp;Innovative Power Products</strong>
       </a>
@@ -46,7 +46,7 @@
 			<section class="py-7 text-center container">
 				<div class="row py-lg-5">
 					<div class="col-lg-6 col-md-8 mx-auto">
-						<h1 class="fw-light">IPP Report Server</h1>
+						<h1 class="fw-light">IPP Test Report Server</h1>
 						<p>
 							{% if job_num != -1 %}
 								<button type="submit" id = "_report" name = "_report" class="btn btn-primary my-2" onclick="changeReportingValue()">Create Test Report</button>
@@ -327,7 +327,7 @@
 						<embed type="image/svg+xml" src={{chart1|safe}} style='max-width:500px'/>
 					</div-->
 					<embed type="image/svg+xml" src={{il_histo_data|safe}} style='max-width:500px'/>
-					<embed type="image/svg+xml" src={{il_histo_data2|safe}} style='max-width:500px'/>
+					<!--embed type="image/svg+xml" src={{il_histo_data2|safe}} style='max-width:500px'/-->
 					<embed type="image/svg+xml" src={{chart1|safe}} style='max-width:500px'/>
 					<embed type="image/svg+xml" src={{rl_histo_data|safe}} style='max-width:500px'/>
 					<embed type="image/svg+xml" src={{chart2|safe}} style='max-width:500px'/>
@@ -397,154 +397,101 @@
 		</div>	
 	</form>
 		<div class="container">
+			<h2 class="text-center">Active Workstations</h2>
 			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-			<div class="col">
-			  <div class="card shadow-sm">
-				<svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 1</text></svg>
-
-				<div class="card-body">
-				  <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will also have a visual representaion of which stations are active.</p>
-				  <div class="d-flex justify-content-between align-items-center">
-					<div class="btn-group">
-					  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-					  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+				{% if test_status1 != -1 %}
+					<div class="col">
+					  <div class="card shadow-sm">
+					  <embed type="image/svg+xml" src={{test_status1|safe}} style='max-width:300px'/>
+						<div class="card-body">
+						  <p class="card-text">{{test_comment1|linebreaks}}</p>
+						</div>
+					  </div>
 					</div>
-					<small class="text-muted">9 mins</small>
-				  </div>
-				</div>
-			  </div>
-			</div>
-			<div class="col">
-			  <div class="card shadow-sm">
-				<svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 2</text></svg>
-
-				<div class="card-body">
-				  <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will also have a visual representaion of which stations are active.</p>
-				  <div class="d-flex justify-content-between align-items-center">
-					<div class="btn-group">
-					  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-					  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+				{% endif %}
+				{% if test_status2 != -1 %}
+					<div class="col">
+					  <div class="card shadow-sm">
+						<embed type="image/svg+xml" src={{test_status2|safe}} style='max-width:300px'/>
+						<div class="card-body">
+						  <p class="card-text">{{test_comment2|linebreaks}}</p>
+						</div>
+					  </div>
 					</div>
-					<small class="text-muted">9 mins</small>
-				  </div>
-				</div>
-			  </div>
-			</div>
-			<div class="col">
-			  <div class="card shadow-sm">
-				<svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 3</text></svg>
-
-				<div class="card-body">
-				  <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will also have a visual representaion of which stations are active.</p>
-				  <div class="d-flex justify-content-between align-items-center">
-					<div class="btn-group">
-					  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-					  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+				{% endif %}
+				{% if test_status3 != -1 %}
+					<div class="col">
+					  <div class="card shadow-sm">
+						<embed type="image/svg+xml" src={{test_status3|safe}} style='max-width:300px'/><div class="card-body">
+						  <p class="card-text">{{test_comment3|linebreaks}}</p>
+					  </div>
 					</div>
-					<small class="text-muted">9 mins</small>
 				  </div>
-				</div>
-			  </div>
-			</div>
-
-			<div class="col">
-			  <div class="card shadow-sm">
-				<svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 4</text></svg>
-
-				<div class="card-body">
-				  <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will also have a visual representaion of which stations are active.</p>
-				  <div class="d-flex justify-content-between align-items-center">
-					<div class="btn-group">
-					  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-					  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+				{% endif %}
+				{% if test_status4 != -1 %}
+					<div class="col">
+					  <div class="card shadow-sm">
+						<embed type="image/svg+xml" src={{test_status4|safe}} style='max-width:300px'/><div class="card-body">
+						  <p class="card-text">{{test_comment4|linebreaks}}</p>
+					  </div>
 					</div>
-					<small class="text-muted">9 mins</small>
 				  </div>
-				</div>
-			  </div>
-			</div>
-			<div class="col">
-			  <div class="card shadow-sm">
-				<svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 5</text></svg>
-
-				<div class="card-body">
-				  <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will also have a visual representaion of which stations are active.</p>
-				  <div class="d-flex justify-content-between align-items-center">
-					<div class="btn-group">
-					  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-					  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+				{% endif %}	
+				{% if test_status5 != -1 %}
+					<div class="col">
+					  <div class="card shadow-sm">
+						<embed type="image/svg+xml" src={{test_status5|safe}} style='max-width:300px'/><div class="card-body">
+						  <p class="card-text">{{test_comment5|linebreaks}}</p>
+					  </div>
 					</div>
-					<small class="text-muted">9 mins</small>
 				  </div>
-				</div>
-			  </div>
-			</div>
-			<div class="col">
-			  <div class="card shadow-sm">
-				<svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 6</text></svg>
-
-				<div class="card-body">
-				  <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will also have a visual representaion of which stations are active.</p>
-				  <div class="d-flex justify-content-between align-items-center">
-					<div class="btn-group">
-					  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-					  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+				{% endif %}
+				{% if test_status6 != -1 %}
+					<div class="col">
+					  <div class="card shadow-sm">
+						<embed type="image/svg+xml" src={{test_status6|safe}} style='max-width:300px'/><div class="card-body">
+						  <p class="card-text">{{test_comment6|linebreaks}}</p>
+					  </div>
 					</div>
-					<small class="text-muted">9 mins</small>
 				  </div>
-				</div>
-			  </div>
-			</div>
-
-			<div class="col">
-			  <div class="card shadow-sm">
-				<svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 7</text></svg>
-
-				<div class="card-body">
-				  <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will also have a visual representaion of which stations are active.</p>
-				  <div class="d-flex justify-content-between align-items-center">
-					<div class="btn-group">
-					  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-					  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+				{% endif %}
+				{% if test_status7 != -1 %}
+					<div class="col">
+					  <div class="card shadow-sm">
+						<embed type="image/svg+xml" src={{test_status7|safe}} style='max-width:300px'/><div class="card-body">
+						  <p class="card-text">{{test_comment7|linebreaks}}</p>
+					  </div>
 					</div>
-					<small class="text-muted">9 mins</small>
 				  </div>
-				</div>
-			  </div>
-			</div>
-			<div class="col">
-			  <div class="card shadow-sm">
-				<svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 8</text></svg>
-
-				<div class="card-body">
-				  <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will have a visual representaion of which stations are active.</p>
-				  <div class="d-flex justify-content-between align-items-center">
-					<div class="btn-group">
-					  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-					  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+				{% endif %}
+				{% if test_status8 != -1 %}
+					<div class="col">
+					  <div class="card shadow-sm">
+						<embed type="image/svg+xml" src={{test_status8|safe}} style='max-width:300px'/><div class="card-body">
+						  <p class="card-text">{{test_comment8|linebreaks}}</p>
+					  </div>
 					</div>
-					<small class="text-muted">9 mins</small>
 				  </div>
-				</div>
-			  </div>
-			</div>
-			<div class="col">
-			  <div class="card shadow-sm">
-				<svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Workstation 9</text></svg>
-
-				<div class="card-body">
-				  <p class="card-text">This is a Placeholder for future Workstation access. You will have access to live data in process. You will have a visual representaion of which stations are active.</p>
-				  <div class="d-flex justify-content-between align-items-center">
-					<div class="btn-group">
-					  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-					  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+				{% endif %}
+				{% if test_status9 != -1 %}
+					<div class="col">
+					  <div class="card shadow-sm">
+						<embed type="image/svg+xml" src={{test_status9|safe}} style='max-width:300px'/><div class="card-body">
+						  <p class="card-text">{{test_comment9|linebreaks}}</p>
+					  </div>
 					</div>
-					<small class="text-muted">9 mins</small>
 				  </div>
-				</div>
-			  </div>
+				{% endif %}
+				{% if test_status10 != -1 %}
+					<div class="col">
+					  <div class="card shadow-sm">
+						<embed type="image/svg+xml" src={{test_status10|safe}} style='max-width:300px'/><div class="card-body">
+						  <p class="card-text">{{test_comment10|linebreaks}}</p>
+					  </div>
+					</div>
+				  </div>
+				{% endif %}
 			</div>
-		  </div>
 		</div>
 	  </div>
 

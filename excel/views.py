@@ -10,7 +10,7 @@ import os
 from django import forms
 from django.views import View
 from report.overhead import TimeCode, Security, StringThings,Conversions
-from report.reports import ExcelReports,Statistics,Histogram_data,XY_Chart,X_Range
+from report.reports import ExcelReports,Statistics,Histogram_data,XY_Chart,X_Range,SDEV_Dist
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
@@ -32,10 +32,12 @@ from base64 import *
 import pygal
 from pygal.style import Style
 from report.pygal_extended import LineHist,LineBar
-from test_db.models import Specifications,Workstation,Workstation1,Testdata,Testdata3,Trace,Tracepoints,Tracepoints2,Effeciency
+from test_db.models import Specifications,Workstation,Workstation1,Testdata,Testdata3,Trace,Tracepoints,Tracepoints2,Effeciency,ReportQueue
 
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.stats as st
+import seaborn as sns
 from scipy.stats import norm
 import statistics
 # Create a class extending Graph
@@ -95,33 +97,76 @@ class ReportView(View):
             coup_histo_data = -1
             dir_histo_data = -1
             cb_histo_data = -1
+            il_histo_data2 = -1
+            chart1 = -1
+            chart2 = -1
+            chart3 = -1
+            chart4 = -1
+            chart5 = -1
             
             job_list = []
             part_list = []
             workstation_list = []
             operator_list = []
+            stat_list = []
             spec_list = -1
+            artwork_list = ['RawData 1',]
+            art_rev_list = []
             test1_list = []
             test2_list = []
             test3_list = []
             test4_list = []
             test5_list = []
             artwork_list = ['RawData 1',]
+            bad1_list = []
+            bad2_list = []
+            bad3_list = []
+            bad4_list = []
+            bad4_list = []
+            bad5_list = []
+           
+            blank = 0
+            total = 0
+            bad_data1 = 0
             passed1 = 0
             failed1 = 0
             failed_percent1 = 0
+            bad_data2 = 0
             passed2 = 0
             failed2 = 0
             failed_percent2 = 0
+            bad_data3 = 0
             passed3 = 0
             failed3 = 0
             failed_percent3 = 0
+            bad_data4 = 0
             passed4 = 0
             failed4 = 0
             failed_percent4 = 0
+            bad_data5 = 0
             passed5 = 0
             failed5 = 0
             failed_percent5 = 0
+            test_status1 = -1
+            test_status2 = -1
+            test_status3 = -1
+            test_status4 = -1
+            test_status5 = -1
+            test_status6 = -1
+            test_status7 = -1
+            test_status8 = -1
+            test_status9 = -1
+            test_status10 = -1
+            test_comment1 = 1
+            test_comment2 = -1
+            test_comment3 = -1
+            test_comment4 = -1
+            test_comment5 = -1
+            test_comment6 = -1
+            test_comment7 = -1
+            test_comment8 = -1
+            test_comment9 = -1
+            test_comment10 = -1
            
             #  Equations to get today - days
             #~~~~~~~~~~~~~ Time ~~~~~~~~~~~~~~~~~
@@ -153,6 +198,59 @@ class ReportView(View):
             operator_list = Effeciency.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
             job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
             part_list = Testdata.objects.using('TEST').order_by('partnumber').values_list('partnumber', flat=True).distinct()
+            workstation_status = ReportQueue.objects.using('TEST').filter(reportstatus='test running').values_list('workstation','jobnumber','partnumber','operator','value','maxvalue').all()
+            x=1
+            for station, jobs, parts, opera, value, maxvalue in workstation_status:
+                gauge = pygal.SolidGauge(
+                show_legend=False, half_pie=True, inner_radius=0.70,
+                style=pygal.style.styles['default'](value_font_size=80,plot_background="gray"))
+                efficiency = Effeciency.objects.using('TEST').filter(workstation=station).filter(jobnumber=jobs).filter(operator=opera).last()
+                print('efficiency=',efficiency)
+                if efficiency:
+                    comment = 'Workstation: ' + str(station) + '\nOperator: ' + str(opera) + '\nJob: ' + str(jobs) + '\nPart: ' + str(parts) + '\nOperator Effeciency: ' + str(efficiency.effeciencystatus)
+                else:
+                    comment = 'Workstation: ' + str(station) + '\nOperator: ' + str(opera) + '\nJob: ' + str(jobs)
+                percent_formatter = lambda x: '{:.10g}%'.format(x)
+                dollar_formatter = lambda x: '{:.10g}$'.format(x)
+                gauge.value_formatter = percent_formatter
+                if value > maxvalue:
+                    value = maxvalue-1
+                gauge.add('', [{'value': int(value), 'max_value': int(maxvalue)}])
+                print('value=',value,' maxvalue=',maxvalue)
+                if x == 1:
+                    test_status1=gauge.render_data_uri()
+                    test_comment1 = comment
+                elif x == 2:
+                    test_status2=gauge.render_data_uri()
+                    test_comment2 = comment
+                elif x == 3:
+                    test_status3=gauge.render_data_uri()
+                    test_comment3=comment
+                elif x == 4:
+                    test_status4=gauge.render_data_uri()
+                    test_comment4 = comment
+                elif x == 5:
+                    test_status5=gauge.render_data_uri()
+                    test_comment5 = comment
+                elif x == 6:
+                    test_status6=gauge.render_data_uri()
+                    test_comment6 = comment
+                elif x == 7:
+                    test_status7=gauge.render_data_uri()
+                    test_comment7 = comment
+                elif x == 8:
+                    test_status8=gauge.render_data_uri()
+                    test_comment8 = comment
+                elif x == 9:
+                    test_status9=gauge.render_data_uri()
+                    test_comment9 = comment
+                elif x == 10:
+                    test_status10=gauge.render_data_uri()
+                    test_comment10 = comment
+                x+=1
+                #print('test_status1',test_status1)
+                print('comment=',comment)
+            
         except IOError as e:
             print ("Lists load Failure ", e)
             print('error = ',e)     
@@ -162,9 +260,15 @@ class ReportView(View):
                                                         'stat1_min':stat1_min,'stat1_max':stat1_max,'stat1_avg':stat1_avg,'stat1_std':stat1_std,'stat2_min':stat2_min,'stat2_max':stat2_max,'stat2_avg':stat2_avg,'stat2_std':stat2_std,
                                                         'stat3_min':stat3_min,'stat3_max':stat3_max,'stat3_avg':stat3_avg,'stat3_std':stat3_std,'stat4_min':stat4_min,'stat4_max':stat4_max,'stat4_avg':stat4_avg,'stat4_std':stat4_std,
                                                         'stat5_min':stat3_min,'stat5_max':stat5_max,'stat5_avg':stat5_avg,'stat5_std':stat5_std,'analyze':analyze,'il_histo_data':il_histo_data,'rl_histo_data':rl_histo_data,
-                                                        'iso_histo_data':iso_histo_data,'ab_histo_data':ab_histo_data,'pb_histo_data':pb_histo_data,'coup_histo_data':coup_histo_data,'iso_histo_data':iso_histo_data,'cb_histo_data':cb_histo_data,
-                                                        'passed1':passed1,'failed1':failed1,'failed_percent1':failed_percent1,'passed2':passed2,'failed2':failed2,'failed_percent2':failed_percent2,'passed3':passed3,'failed3':failed3,'failed_percent3':failed_percent3,    
-                                                        'passed4':passed4,'failed4':failed4,'failed_percent4':failed_percent4,'passed5':passed5,'failed5':failed5,'failed_percent5':failed_percent5})
+                                                        'iso_histo_data':iso_histo_data,'ab_histo_data':ab_histo_data,'pb_histo_data':pb_histo_data,'coup_histo_data':coup_histo_data,'iso_histo_data':iso_histo_data,
+                                                        'passed1':passed1,'failed1':failed1,'failed_percent1':failed_percent1,'passed2':passed2,'failed2':failed2,'failed_percent2':failed_percent2,'passed3':passed3,'failed3':failed3,   
+                                                        'cb_histo_data':cb_histo_data,'failed_percent3':failed_percent3,'passed4':passed4,'failed4':failed4,'failed_percent4':failed_percent4,'passed5':passed5,'failed5':failed5,
+                                                        'failed_percent5':failed_percent5,'bad_data1':bad_data1,'bad_data2':bad_data2,'bad_data3':bad_data3,'bad_data4':bad_data4,'bad_data5':bad_data5,'il_histo_data2':il_histo_data2,
+                                                        'chart1':chart1,'chart2':chart2,'chart3':chart3,'chart4':chart4,'chart5':chart5,'blank':blank,'total':total,'art_rev_list':art_rev_list,'blank':blank,'test_status1':test_status1,
+                                                        'test_status2':test_status2,'test_status3':test_status3,'test_status4':test_status4,'test_status5':test_status5,'test_status6':test_status6,'test_status7':test_status7,
+                                                        'test_status8':test_status8,'test_status9':test_status9,'test_status10':test_status10,'test_comment1':test_comment1,'test_comment2':test_comment2,'test_comment3':test_comment3,
+                                                        'test_comment4':test_comment4,'test_comment5':test_comment5,'test_comment6':test_comment6,'test_comment7':test_comment7,'test_comment8':test_comment8,
+                                                        'test_comment9':test_comment9,'test_comment10':test_comment10})
     def post(self, request, *args, **kwargs):
         operator = self.request.user
         form = 0
@@ -264,6 +368,26 @@ class ReportView(View):
             passed5 = 0
             failed5 = 0
             failed_percent5 = 0
+            test_status1 = -1
+            test_status2 = -1
+            test_status3 = -1
+            test_status4 = -1
+            test_status5 = -1
+            test_status6 = -1
+            test_status7 = -1
+            test_status8 = -1
+            test_status9 = -1
+            test_status10 = -1
+            test_comment1 = -1
+            test_comment2 = -1
+            test_comment3 = -1
+            test_comment4 = -1
+            test_comment5 = -1
+            test_comment6 = -1
+            test_comment7 = -1
+            test_comment8 = -1
+            test_comment9 = -1
+            test_comment10 = -1
                 
             
             #  Equations to get today - days
@@ -345,25 +469,27 @@ class ReportView(View):
                 if artwork_list:
                     artwork = artwork_list[0]
                 #print('artwork_list=',artwork_list)
+                print('job_num=',job_num)
                 spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()
-                print('spec_data.vswr=',spec_data.vswr)
-                conversions = Conversions(spec_data.vswr,'')
-                spec_rl = round(conversions.vswr_to_rl(),3)
-                print('spec_rl=',spec_rl)
-                spectype = spec_data.spectype
-                if spec1==-1:
-                    if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
-                        spec1 = round(spec_data.insertionloss,3)
-                        spec2 = spec_rl
-                        spec3 = round(spec_data.isolation,3)
-                        spec4 = round(spec_data.amplitudebalance,3)
-                        spec5 = round(spec_data.phasebalance,3)
-                    elif 'DIRECTIONAL COUPLER' in spectype: 
-                        spec1 = round(spec_data.insertionloss,3)
-                        spec2 = spec_rl
-                        spec3 = round(spec_data.coupling,3)
-                        spec4 = round(spec_data.directivity,3)
-                        spec5 = round(spec_data.coupledflatness,3)
+                if spec_data:
+                    print('spec_data.vswr=',spec_data.vswr)
+                    conversions = Conversions(spec_data.vswr,'')
+                    spec_rl = round(conversions.vswr_to_rl(),3)
+                    print('spec_rl=',spec_rl)
+                    spectype = spec_data.spectype
+                    if spec1==-1:
+                        if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
+                            spec1 = round(spec_data.insertionloss,3)
+                            spec2 = spec_rl
+                            spec3 = round(spec_data.isolation,3)
+                            spec4 = round(spec_data.amplitudebalance,3)
+                            spec5 = round(spec_data.phasebalance,3)
+                        elif 'DIRECTIONAL COUPLER' in spectype: 
+                            spec1 = round(spec_data.insertionloss,3)
+                            spec2 = spec_rl
+                            spec3 = round(spec_data.coupling,3)
+                            spec4 = round(spec_data.directivity,3)
+                            spec5 = round(spec_data.coupledflatness,3)
                     
                 report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).all()
                 part_num = report_data[0].partnumber
@@ -503,43 +629,26 @@ class ReportView(View):
                     print('mean=',mean)
                     print('sd=',sd)   
                      
-                                    
-                    #hist.add("SD", [10, 20, 39, 40, 30, 20,10], plotas='line', secondary=True)
-                    #data_max = max(il_histo_data)
-                    #hist.add('', [ x[3] for x in il_histo_data_line], plotas='line', secondary=True)
-                    #hist.add('IL', il_histo_data_line, plotas='bar')
-                    #hist.x_labels = x_range_list
-                    #hist.title = 'IL Histogram' 
+                   
                     
                     histo_data = Histogram_data(test_list,spec_list,'test1')
                     il_histo = histo_data.Hist_data()
-                    #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
+                     #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
                     x_range_list = []
-                    sd_x_range = []
-                    x_range = X_Range(il_histo,stat1_min,stat1_max)                
+                    x_range = X_Range(il_histo,stat1_min,stat1_max,stat1_avg)                
                     x_range_list=x_range.list()
-                    sd_x_range =x_range.list_expanded()
                     print('x_range_list=',x_range_list)
-                    print('sd_x_range=',sd_x_range)
                     #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
-                    
                     #~~~~~~~~~~make standard deviation line~~~~~~~~~~~~~
                     sd_list = []
-                    for i in range(len(sd_x_range)):
-                        item = spec1- abs(sd-sd_x_range[i])
-                        if item <0:
-                            item=0
-                        
-                        sd_list.append(item)
+                    print('we are here')
+                    sd=SDEV_Dist(test1_list,stat1_std,stat1_avg) 
+                    sd_list =sd.matlab()
                     print('sd_list=',sd_list)
-                    xy_data = []
-                    x=0
-                    for test in sd_list:
-                        xy_data.append((sd_x_range[x],test))
-                        x+=1
                     #~~~~~~~~~~make standard deviation line~~~~~~~~~~~~~
                     
                     
+                   
                     #print('rl_histo=',rl_histo)
                     custom_style = Style(colors=('#991593','#201599'),title_font_size=39, label_font_size=15)
                     hist = pygal.Histogram(fill=True,style=custom_style, human_readable=True)
@@ -551,17 +660,16 @@ class ReportView(View):
                     
                     histo_data = Histogram_data(test_list,spec_list,'test1')
                     il_histo = histo_data.Hist_data()
-                    #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
-                    x_range_list = []
-                    x_range = X_Range(il_histo,stat1_min,stat1_max)                
-                    x_range_list=x_range.list()
-                    #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
+                    
                                        
                      #print('chart_data=',chart_data)
                     custom_style = Style(colors=('#991593','#201599'),title_font_size=39, label_font_size=15)
                     xy_chart = pygal.XY(style=custom_style, background= 'transparent')
                     xy_chart.title = 'Insertion Loss'
-                    xy_chart.add('IL Histogram', xy_data)
+                    xy_chart.add('IL Histogram', sd_list)
+                    print('sd_list=',sd_list)
+                    print('sd=',sd)
+                    print('spec1=',spec1)
                     xy_chart.add('spec', [(spec1, 0), (spec1, 0.5)])
                     il_histo_data2 = xy_chart.render_data_uri()
                     
@@ -582,7 +690,7 @@ class ReportView(View):
                     
                     #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
                     x_range_list = []
-                    x_range = X_Range(rl_histo,stat2_min,stat2_max)                
+                    x_range = X_Range(rl_histo,stat2_min,stat2_max,stat2_avg)                
                     x_range_list=x_range.list()
                     #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
                     #print('rl_histo=',rl_histo)
@@ -609,7 +717,7 @@ class ReportView(View):
                         iso_histo = histo_data.Hist_data()
                         #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
                         x_range_list = []
-                        x_range = X_Range(iso_histo,stat3_min,stat3_max)                
+                        x_range = X_Range(iso_histo,stat3_min,stat3_max,stat2_avg)                
                         x_range_list=x_range.list()
                         #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
                         #print('iso_histo=',iso_histo)
@@ -635,7 +743,7 @@ class ReportView(View):
                         ab_histo = histo_data.Hist_data()
                         #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
                         x_range_list = []
-                        x_range = X_Range(ab_histo,stat4_min,stat4_max)                
+                        x_range = X_Range(ab_histo,stat4_min,stat4_max,stat2_avg)                
                         x_range_list=x_range.list()
                         #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
                         #print('ab_histo=',ab_histo)
@@ -662,7 +770,7 @@ class ReportView(View):
                         pb_histo = histo_data.Hist_data()
                         #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
                         x_range_list = []
-                        x_range = X_Range(pb_histo,stat5_min,stat5_max)                
+                        x_range = X_Range(pb_histo,stat5_min,stat5_max,stat2_avg)                
                         x_range_list=x_range.list()
                         #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
                         #print('pb_histo=',pb_histo)
@@ -690,7 +798,7 @@ class ReportView(View):
                         coup_histo = histo_data.Hist_data()
                         #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
                         x_range_list = []
-                        x_range = X_Range(coup_histo,stat3_min,stat3_max)                
+                        x_range = X_Range(coup_histo,stat3_min,stat3_max,stat2_avg)                
                         x_range_list=x_range.list()
                         #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
                         #print('coup_histo=',coup_histo)
@@ -716,7 +824,7 @@ class ReportView(View):
                         dir_histo = histo_data.Hist_data()
                         #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
                         x_range_list = []
-                        x_range = X_Range(dir_histo,stat4_min,stat4_max)                
+                        x_range = X_Range(dir_histo,stat4_min,stat4_max,stat2_avg)                
                         x_range_list=x_range.list()
                         #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
                         #print('dir_histo=',dir_histo)
@@ -743,7 +851,7 @@ class ReportView(View):
                         cb_histo = histo_data.Hist_data()
                         #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
                         x_range_list = []
-                        x_range = X_Range(cb_histo,stat5_min,stat5_max)                
+                        x_range = X_Range(cb_histo,stat5_min,stat5_max,stat2_avg)                
                         x_range_list=x_range.list()
                         #~~~~~~~~~~make plot x-range~~~~~~~~~~~~~
                         #print('cb_histo=',cb_histo)
@@ -770,8 +878,62 @@ class ReportView(View):
                 job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
                 part_list = Testdata.objects.using('TEST').order_by('partnumber').values_list('partnumber', flat=True).distinct()
             
-            workstation_list = Workstation.objects.using('TEST').order_by('workstationname').values_list('workstationname', flat=True).distinct()
-            operator_list = Workstation.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
+            workstation_list = Workstation.objects.using('TEST').order_by('computername').values_list('computername', flat=True).distinct()
+            operator_list = Effeciency.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
+            job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
+            part_list = Testdata.objects.using('TEST').order_by('partnumber').values_list('partnumber', flat=True).distinct()
+            workstation_status = ReportQueue.objects.using('TEST').filter(reportstatus='test running').values_list('workstation','jobnumber','partnumber','operator','value','maxvalue').all()
+            x=1
+            for station, jobs, parts, opera, value, maxvalue in workstation_status:
+                gauge = pygal.SolidGauge(
+                show_legend=False, half_pie=True, inner_radius=0.70,
+                style=pygal.style.styles['default'](value_font_size=80,plot_background="gray"))
+                efficiency = Effeciency.objects.using('TEST').filter(workstation=station).filter(jobnumber=jobs).filter(operator=opera).last()
+                print('efficiency=',efficiency)
+                if efficiency:
+                    comment = 'Workstation: ' + str(station) + '\nOperator: ' + str(opera) + '\nJob: ' + str(jobs) + '\nPart: ' + str(parts) + '\nOperator Effeciency: ' + str(efficiency.effeciencystatus)
+                else:
+                    comment = 'Workstation: ' + str(station) + '\nOperator: ' + str(opera) + '\nJob: ' + str(jobs)
+                percent_formatter = lambda x: '{:.10g}%'.format(x)
+                dollar_formatter = lambda x: '{:.10g}$'.format(x)
+                gauge.value_formatter = percent_formatter
+                if value > maxvalue:
+                    value = maxvalue-1
+                gauge.add('', [{'value': int(value), 'max_value': int(maxvalue)}])
+                print('value=',value,' maxvalue=',maxvalue)
+                if x == 1:
+                    test_status1=gauge.render_data_uri()
+                    test_comment1 = comment
+                elif x == 2:
+                    test_status2=gauge.render_data_uri()
+                    test_comment2 = comment
+                elif x == 3:
+                    test_status3=gauge.render_data_uri()
+                    test_comment3=comment
+                elif x == 4:
+                    test_status4=gauge.render_data_uri()
+                    test_comment4 = comment
+                elif x == 5:
+                    test_status5=gauge.render_data_uri()
+                    test_comment5 = comment
+                elif x == 6:
+                    test_status6=gauge.render_data_uri()
+                    test_comment6 = comment
+                elif x == 7:
+                    test_status7=gauge.render_data_uri()
+                    test_comment7 = comment
+                elif x == 8:
+                    test_status8=gauge.render_data_uri()
+                    test_comment8 = comment
+                elif x == 9:
+                    test_status9=gauge.render_data_uri()
+                    test_comment9 = comment
+                elif x == 10:
+                    test_status10=gauge.render_data_uri()
+                    test_comment10 = comment
+                x+=1
+                #print('test_status1',test_status1)
+                print('comment=',comment)
             
         except IOError as e:
             print ("Lists load Failure ", e)
@@ -786,7 +948,11 @@ class ReportView(View):
                                                         'passed1':passed1,'failed1':failed1,'failed_percent1':failed_percent1,'passed2':passed2,'failed2':failed2,'failed_percent2':failed_percent2,'passed3':passed3,'failed3':failed3,   
                                                         'cb_histo_data':cb_histo_data,'failed_percent3':failed_percent3,'passed4':passed4,'failed4':failed4,'failed_percent4':failed_percent4,'passed5':passed5,'failed5':failed5,
                                                         'failed_percent5':failed_percent5,'bad_data1':bad_data1,'bad_data2':bad_data2,'bad_data3':bad_data3,'bad_data4':bad_data4,'bad_data5':bad_data5,'il_histo_data2':il_histo_data2,
-                                                        'chart1':chart1,'chart2':chart2,'chart3':chart3,'chart4':chart4,'chart5':chart5,'blank':blank,'total':total,'art_rev_list':art_rev_list,'blank':blank})
+                                                        'chart1':chart1,'chart2':chart2,'chart3':chart3,'chart4':chart4,'chart5':chart5,'blank':blank,'total':total,'art_rev_list':art_rev_list,'blank':blank,'test_status1':test_status1,
+                                                        'test_status2':test_status2,'test_status3':test_status3,'test_status4':test_status4,'test_status5':test_status5,'test_status6':test_status6,'test_status7':test_status7,
+                                                        'test_status8':test_status8,'test_status9':test_status9,'test_status10':test_status10,'test_comment1':test_comment1,'test_comment2':test_comment2,'test_comment3':test_comment3,'test_comment4':test_comment4,
+                                                        'test_comment5':test_comment5,'test_comment6':test_comment6,'test_comment7':test_comment7,'test_comment8':test_comment8,'test_comment9':test_comment9,'test_comment10':test_comment10})
+                                                        
 
 
 def export_users_xls(request):

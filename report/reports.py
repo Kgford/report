@@ -39,15 +39,21 @@ class ExcelReports:
         wb = load_workbook(template_path)
         #print('wb=',wb)
         
+        print('artwork_list1',artwork_list)
         if not artwork_list:
             artwork_list = ['RawData 1',]
         
+        print('artwork_list2',artwork_list)
         #filter blanks
         temp_list = []
         for artwork_rev in artwork_list:
             if not artwork_rev == '':
                 temp_list.append(artwork_rev)
         artwork_list = temp_list
+        print('artwork_list3',artwork_list)
+        if not artwork_list:
+            artwork_list = ['RawData 1',]
+        print('artwork_list4',artwork_list)
         # datasheet can only handle 5 artworks----for now---
         #print('len(artwork_list)=',len(artwork_list))
         if len(artwork_list) >5:
@@ -1036,50 +1042,68 @@ class XY_Hist:
         return xy        
             
 
-class X_Range:
-    def __init__(self,data,Min,Max):
+class SDEV_Dist:
+    def __init__(self,data,sdev,mean):
         self.data = data
-        self.Min = Min
-        self.Max = Max
+        self.sdev = sdev
+        self.mean = mean
+        self.height = max(data)
 
+    def matlab(self): # pur matlab
+        from math import exp, pow
+        temp_list = []
+        import numpy as np
+        variance = pow(self.sdev, 2)
+        x = np.linspace(-3 * self.sdev +  self.mean, 3 * self.sdev + self.mean , 100)
+        x = np.arange(0.4,0.8,0.01)
+        temp_list = np.exp(-np.square(x-self.mean)/2*variance)/(np.sqrt(2*np.pi*variance))
+        return temp_list
     
-    def list(self):
-        span = self.Max - self.Min
-        step = int(len(self.data)+4)
-        stepsize = (span/step)
-        print('step =',step)
-        print('stepsize =',stepsize)
-        # create a linear x_range
-        x_range_list = []
-        for i in range(step + 5):
-            if i==0:
-                x_range_list.append(round(self.Min-stepsize*2,2))
-            elif i==1:
-                x_range_list.append(round(self.Min-stepsize,2))
-            elif i==2:
-                x_range_list.append(round(self.Min,1))
-            else:
-                x_range_list.append(round(self.Min + stepsize*(i-2),2))
-        return x_range_list 
+    def linspace(self): # includes linspace
+        import numpy as np
+        temp_list = np.linspace(-3 * self.sdev +  self.mean, 3 * self.sdev + self.mean , 100)
+        return temp_list
         
-    def list_expanded(self):
-        span = self.Max - self.Min
-        step = int(len(self.data)+8)
-        stepsize = (span/step)
-        print('step =',step)
-        print('stepsize =',stepsize)
-        # create a linear x_range
-        x_range_list = []
-        for i in range(step + 10):
-            if i==0:
-                x_range_list.append(round(self.Min-stepsize*2,3))
-            elif i==1:
-                x_range_list.append(round(self.Min-stepsize,3))
-            elif i==2:
-                x_range_list.append(round(self.Min,3))
-            else:
-                x_range_list.append(round(self.Min + stepsize*(i-2),3))
-        return x_range_list 
+    
+        
+    def gauss(self): # includes height
+        from math import exp, pow
+        temp_list = []
+        variance = pow(self.sdev, 2)
+        for x in self.data:
+            temp_list.append(self.height * exp(-pow(x-self.mean , 2)/(2*variance)))
+        return temp_list
+
+
+class X_Range:
+    def __init__(self,data,Min,Max,Mean):
+        self.data = data
+        span = Max - Min
+        step = int(len(data))
+        self.stepsize = (span/step)
+        print('self.stepsize=',self.stepsize)
+        self.Min = Min-self.stepsize
+        self.Max = Max+self.stepsize
+        self.Mean = Mean
+        print('self.Min=',self.Min)
+        print('self.Max=',self.Max)
+        print('self.Mean=',self.Mean)
+        self.step = int(step) + 2
+
+    def list(self):
+        print('stepsize =',self.stepsize)
+        import numpy as np
+        lower_list = np.linspace(self.Min, self.Mean, self.step)
+        upper_list = np.linspace(self.Mean+self.stepsize,self.Max, self.step)
+        print('lower_lis=',lower_list)
+        print('upper_list=',upper_list)
+        x_range_list = np.concatenate((lower_list,upper_list),axis=None)
+        temp_list = []
+        for temp in x_range_list:
+            temp_list.append(round(temp,3))
+        x_range_list = temp_list    
+        return x_range_list
+
 
         
 

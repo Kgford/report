@@ -19,6 +19,9 @@ class ReportQueue(models.Model):
     partnumber = models.CharField(db_column='PartNumber', max_length=50, blank=True, null=True)  # Field name made lowercase.
     operator = models.CharField(db_column='Operator', max_length=50, blank=True, null=True)  # Field name made lowercase.
     activedate = models.DateTimeField(db_column='ActiveDate', blank=True, null=True)  # Field name made lowercase.
+    percentcomplete = models.IntegerField(db_column='percentcomplete')  # Field name made lowercase. 
+    value = models.IntegerField(db_column='value')  # Field name made lowercase. 
+    maxvalue = models.IntegerField(db_column='maxvalue')  # Field name made lowercase. 
     
     class Meta:
         managed = False
