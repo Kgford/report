@@ -65,10 +65,15 @@ class ExcelReports:
         remove_extra.remove()
         
         x=1
+        z=1
         print('loading data')
         ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='loading data')
         for artwork_rev in artwork_list:
-            if 'RawData 1' in artwork_rev:
+            if not artwork_rev:
+                artwork_rev='RawData 1'
+                report_data = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).all()
+                data_count = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).count()
+            elif 'RawData 1' in artwork_rev:
                 report_data = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).all()
                 data_count = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).count()
             else:
@@ -84,7 +89,7 @@ class ExcelReports:
             if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
                 spec_list = [spec_data.insertionloss,spec_rl,spec_data.isolation,spec_data.amplitudebalance,spec_data.phasebalance,spec_data.ab_ex] 
             elif 'DIRECTIONAL COUPLER' in spectype: 
-                spec_list = [spec_data.insertionloss,spec_data_rl,spec_data.coupling,spec_data.directivity,spec_data.coupledflatness]
+                spec_list = [spec_data.insertionloss,spec_rl,spec_data.coupling,spec_data.directivity,spec_data.coupledflatness]
                 
                 
                 
@@ -94,7 +99,7 @@ class ExcelReports:
                 print('part_num=',part_num)
                 spectype = spec_data.spectype
                 
-                activesheet = "Raw Data" + str(x)
+                activesheet = "Raw Data" + str(z)
                 sheet = wb[activesheet]
                 print('sheet=',sheet)
                 sheet['B4'] = self.operator 
@@ -189,11 +194,17 @@ class ExcelReports:
                 iso_pass = 0
                 ab_pass = 0
                 pb_pass = 0
+                coup_pass = 0
+                dir_pass = 0
+                cf_pass = 0                
                 il_fail = 0
                 rl_fail = 0
                 iso_fail = 0
                 ab_fail = 0
                 pb_fail = 0
+                coup_fail = 0
+                dir_fail = 0
+                cf_fail = 0
                 uut = 1
                 sum_row = 5
                 #print('report_data=',report_data)
@@ -266,27 +277,27 @@ class ExcelReports:
                             testdata3 = sheet.cell(row=rownum, column=6)#Created a variable that contains cell
                             coupling.append(data.coupling)
                             if data.coupling <= spec_list[2]:
-                                iso_pass+=1
+                                coup_pass+=1
                             else:
-                                iso_fail+=1
+                                coup_fail+=1
                                 testdata3 = sheet.cell(row=rownum, column=6)#Created a variable that contains cell
                             
                             sheet.cell(row=rownum, column=8).value= round(data.directivity,2)
                             testdata4 = sheet.cell(row=rownum, column=8)#Created a variable that contains cell
                             directivity.append(data.directivity)
                             if data.directivity <= spec_list[3]:
-                                ab_pass+=1
+                                dir_pass+=1
                             else:
-                                ab_fail+=1
+                                dir_fail+=1
                                 testdata4.font = Font(color='FF3342', bold=True, italic=True) #W
                             
                             sheet.cell(row=rownum, column=10).value= round(data.coupledflatness,2)
                             testdata5 = sheet.cell(row=rownum, column=10)#Created a variable that contains cell
                             coupledflatness.append(data.coupledflatness)
                             if data.coupledflatness <= spec_list[4]:
-                                pb_pass+=1
+                                cf_pass+=1
                             else:
-                                pb_fail+=1
+                                cf_fail+=1
                                 testdata5.font = Font(color='FF3342', bold=True, italic=True) #W
                         rownum+=1
                         uut+=1
@@ -312,6 +323,10 @@ class ExcelReports:
 
                     #print('return_loss=',return_loss)
                     rl_stdev = round(statistics.stdev(return_loss),2) #Standard deviation
+                    if len(return_loss)>1:
+                        rl_var = round(statistics.variance(return_loss),2) #Variance
+                    else:
+                        rl_var = 0 #Variance
                     rl_var = round(statistics.variance(return_loss),2) #Variance
                     rl_avg = round(statistics.mean(return_loss),2) #Mean Average
                     rl_min = round(min(return_loss),2) #Min
@@ -326,52 +341,118 @@ class ExcelReports:
                     sheet['O14'] = round(rl_fail/rownum,2)
                     #print('rl_list=',rl_list)
 
-                    iso_stdev = round(statistics.stdev(isolation),2) #Standard deviation
-                    iso_var = round(statistics.variance(isolation),2) #Variance
-                    iso_avg = round(statistics.mean(isolation),2) #Mean Average
-                    iso_min = round(min(isolation),2) #Min
-                    iso_max = round(max(isolation),2) #Max
-                    iso_list = [iso_min,iso_max,iso_avg,iso_stdev]
-                    sheet['P8'] = iso_avg
-                    sheet['P9'] = iso_min
-                    sheet['P10'] = iso_max
-                    sheet['P11'] = iso_stdev
-                    sheet['P12'] = iso_pass
-                    sheet['P13'] = iso_fail
-                    sheet['P14'] = round(iso_fail/rownum,2)
-                    #print('iso_list=',iso_list)
+                    if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
+                        iso_stdev = round(statistics.stdev(isolation),2) #Standard deviation
+                        if len(isolation)>1:
+                            iso_var = round(statistics.variance(isolation),2) #Variance
+                        else:
+                            iso_var = 0 #Variance
+                        iso_avg = round(statistics.mean(isolation),2) #Mean Average
+                        iso_min = round(min(isolation),2) #Min
+                        iso_max = round(max(isolation),2) #Max
+                        iso_list = [iso_min,iso_max,iso_avg,iso_stdev]
+                        sheet['P8'] = iso_avg
+                        sheet['P9'] = iso_min
+                        sheet['P10'] = iso_max
+                        sheet['P11'] = iso_stdev
+                        sheet['P12'] = iso_pass
+                        sheet['P13'] = iso_fail
+                        sheet['P14'] = round(iso_fail/rownum,2)
+                        #print('iso_list=',iso_list)
 
-                    ab_stdev = round(statistics.stdev(amplitude_balance),2) #Standard deviation
-                    ab_var = round(statistics.variance(amplitude_balance),2) #Variance
-                    ab_avg = round(statistics.mean(amplitude_balance),2) #Mean Average
-                    ab_min = round(min(amplitude_balance),2) #Min
-                    ab_max = round(max(amplitude_balance),2) #Max
-                    ab_list = [ab_min,ab_max,ab_avg,ab_stdev]
-                    sheet['Q8'] = ab_avg
-                    sheet['Q9'] = ab_min
-                    sheet['Q10'] = ab_max
-                    sheet['Q11'] = ab_stdev
-                    sheet['Q12'] = ab_pass
-                    sheet['Q13'] = ab_fail
-                    sheet['Q14'] = round(ab_fail/rownum,2)
-                    #print('ab_list=',ab_list)
+                        ab_stdev = round(statistics.stdev(amplitude_balance),2) #Standard deviation
+                        if len(amplitude_balance)>1:
+                            ab_var = round(statistics.variance(amplitude_balance),2) #Variance
+                        else:
+                            ab_var = 0 #Variance
+                        ab_avg = round(statistics.mean(amplitude_balance),2) #Mean Average
+                        ab_min = round(min(amplitude_balance),2) #Min
+                        ab_max = round(max(amplitude_balance),2) #Max
+                        ab_list = [ab_min,ab_max,ab_avg,ab_stdev]
+                        sheet['Q8'] = ab_avg
+                        sheet['Q9'] = ab_min
+                        sheet['Q10'] = ab_max
+                        sheet['Q11'] = ab_stdev
+                        sheet['Q12'] = ab_pass
+                        sheet['Q13'] = ab_fail
+                        sheet['Q14'] = round(ab_fail/rownum,2)
+                        #print('ab_list=',ab_list)
 
-                    pb_stdev = round(statistics.stdev(phase_balance),2) #Standard deviation
-                    pb_var = round(statistics.variance(phase_balance),2) #Variance
-                    pb_avg = round(statistics.mean(phase_balance),2) #Mean Average
-                    pb_min = round(min(phase_balance),2) #Min
-                    pb_max = round(max(phase_balance),2) #Max
-                    pb_list = [pb_min,pb_max,pb_avg,pb_stdev]
-                    sheet['R8'] = pb_avg
-                    sheet['R9'] = pb_min
-                    sheet['R10'] = pb_max
-                    sheet['R11'] = pb_stdev
-                    sheet['R12'] = pb_pass
-                    sheet['R13'] = pb_fail
-                    sheet['R14'] = round(pb_fail/rownum,2)
-                    #print('pb_list=',pb_list)
+                        pb_stdev = round(statistics.stdev(phase_balance),2) #Standard deviation
+                        if len(phase_balance)>1:
+                            pb_var = round(statistics.variance(phase_balance),2) #Variance
+                        else:
+                            pb_var = 0 #Variance
+                        pb_avg = round(statistics.mean(phase_balance),2) #Mean Average
+                        pb_min = round(min(phase_balance),2) #Min
+                        pb_max = round(max(phase_balance),2) #Max
+                        pb_list = [pb_min,pb_max,pb_avg,pb_stdev]
+                        sheet['R8'] = pb_avg
+                        sheet['R9'] = pb_min
+                        sheet['R10'] = pb_max
+                        sheet['R11'] = pb_stdev
+                        sheet['R12'] = pb_pass
+                        sheet['R13'] = pb_fail
+                        sheet['R14'] = round(pb_fail/rownum,2)
+                        #print('pb_list=',pb_list)
+                        stat_list = [il_list,rl_list,iso_list,ab_list,pb_list]
+                    else:
+                        coup_stdev = round(statistics.stdev(coupling),2) #Standard deviation
+                        if len(coupling)>1:
+                            coup_var = round(statistics.variance(coupling),2) #Variance
+                        else:
+                            coup_var = 0 #Variance
+                        coup_avg = round(statistics.mean(coupling),2) #Mean Average
+                        coup_min = round(min(coupling),2) #Min
+                        coup_max = round(max(coupling),2) #Max
+                        coup_list = [coup_min,coup_max,coup_avg,coup_stdev]
+                        sheet['P8'] = coup_avg
+                        sheet['P9'] = coup_min
+                        sheet['P10'] = coup_max
+                        sheet['P11'] = coup_stdev
+                        sheet['P12'] = coup_pass
+                        sheet['P13'] = coup_fail
+                        sheet['P14'] = round(coup_fail/rownum,2)
+                        #print('iso_list=',iso_list)
 
-                    stat_list = [il_list,rl_list,iso_list,ab_list,pb_list]
+                        dir_stdev = round(statistics.stdev(directivity),2) #Standard deviation
+                        if len(directivity)>1:
+                            dir_var = round(statistics.variance(directivity),2) #Variance
+                        else:
+                            dir_var = 0 #Variance
+                        dir_avg = round(statistics.mean(directivity),2) #Mean Average
+                        dir_min = round(min(directivity),2) #Min
+                        dir_max = round(max(directivity),2) #Max
+                        dir_list = [dir_min,dir_max,dir_avg,dir_stdev]
+                        sheet['Q8'] = dir_avg
+                        sheet['Q9'] = dir_min
+                        sheet['Q10'] = dir_max
+                        sheet['Q11'] = dir_stdev
+                        sheet['Q12'] = dir_pass
+                        sheet['Q13'] = dir_fail
+                        sheet['Q14'] = round(dir_fail/rownum,2)
+                        #print('ab_list=',ab_list)
+
+                        cf_stdev = round(statistics.stdev(coupledflatness),2) #Standard deviation
+                        if len(coupledflatness)>1:
+                            cf_var = round(statistics.variance(coupledflatness),2) #Variance
+                        else:
+                            cf_var = 0 #Variance
+                        cf_avg = round(statistics.mean(coupledflatness),2) #Mean Average
+                        cf_min = round(min(coupledflatness),2) #Min
+                        cf_max = round(max(coupledflatness),2) #Max
+                        cf_list = [cf_min,cf_max,cf_avg,cf_stdev]
+                        sheet['R8'] = cf_avg
+                        sheet['R9'] = cf_min
+                        sheet['R10'] = cf_max
+                        sheet['R11'] = cf_stdev
+                        sheet['R12'] = cf_pass
+                        sheet['R13'] = cf_fail
+                        sheet['R14'] = round(cf_fail/rownum,2)
+                        #print('pb_list=',pb_list)
+                        stat_list = [il_list,rl_list,coup_list,dir_list,cf_list]
+
+                    
                     #print('stat_list=',stat_list)
                     sheet.title = artwork_rev
                     
@@ -379,64 +460,107 @@ class ExcelReports:
                     sheet = wb["Summary"]
                     #print('sheet=',sheet)
                     
-                    
-                    #AVG
-                    sheet['A' + str(sum_row)] = artwork_rev
-                    sheet['B' + str(sum_row-1)] = str(spec_list[0]) + ' Max'
-                    sheet['C' + str(sum_row-1)] = str(spec_list[1]) + ' Max'
-                    sheet['D' + str(sum_row-1)] = str(spec_list[2]) + ' Max'
-                    sheet['E' + str(sum_row-1)] = "'+/- " + str(spec_list[3]) + ' dB'
-                    sheet['F' + str(sum_row-1)] = "'+/- " + str(spec_list[4]) + ' deg'
-                    sheet['B' + str(sum_row)] = il_avg
-                    sheet['C' + str(sum_row)] = rl_avg
-                    sheet['D' + str(sum_row)] = iso_avg
-                    sheet['E' + str(sum_row)] = ab_avg
-                    sheet['F' + str(sum_row)] = pb_avg
-                    sheet['G' + str(sum_row)] = rownum
-                    
-                 
-                    #MIN
-                    sheet['A' + str(sum_row + 14)] = artwork_rev
-                    sheet['B' + str(sum_row + 13)] = spec_list[0]  = str(spec_list[0]) + ' Max'
-                    sheet['C' + str(sum_row + 13)] = str(spec_list[1]) + ' Max'
-                    sheet['D' + str(sum_row + 13)] = str(spec_list[2]) + ' Max'
-                    sheet['E' + str(sum_row + 13)] = "+/- " + str(spec_list[3]) + ' dB'
-                    sheet['F' + str(sum_row + 13)] = "+/- " + str(spec_list[4]) + ' deg'
-                    sheet['B' + str(sum_row + 14)] = il_min
-                    sheet['C' + str(sum_row + 14)] = rl_min
-                    sheet['D' + str(sum_row + 14)] = iso_min
-                    sheet['E' + str(sum_row + 14)] = ab_min
-                    sheet['F' + str(sum_row + 14)] = pb_min
-                    sheet['G' + str(sum_row + 14)] = rownum
-                    #Max
-                    sheet['A' + str(sum_row + 28)] = artwork_rev
-                    sheet['B' + str(sum_row + 27)] = str(spec_list[0]) + ' Max'
-                    sheet['C' + str(sum_row + 27)] = str(spec_list[1]) + ' Max'
-                    sheet['D' + str(sum_row + 27)] = str(spec_list[2]) + ' Max'
-                    sheet['E' + str(sum_row + 27)] = "+/- " + str(spec_list[3]) + ' dB'
-                    sheet['F' + str(sum_row + 27)] = "+/- " + str(spec_list[4]) + ' deg'
-                    sheet['B' + str(sum_row + 28)] = il_max
-                    sheet['C' + str(sum_row + 28)] = rl_max
-                    sheet['D' + str(sum_row + 28)] = iso_max
-                    sheet['E' + str(sum_row + 28)]= ab_max
-                    sheet['F' + str(sum_row + 28)] = pb_max
-                    sheet['G' + str(sum_row + 28)] = rownum
+                    if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
+                        #AVG
+                        sheet['A' + str(sum_row)] = artwork_rev
+                        sheet['B' + str(sum_row-1)] = str(spec_list[0]) + ' Max'
+                        sheet['C' + str(sum_row-1)] = str(spec_list[1]) + ' Max'
+                        sheet['D' + str(sum_row-1)] = str(spec_list[2]) + ' Max'
+                        sheet['E' + str(sum_row-1)] = "'+/- " + str(spec_list[3]) + ' dB'
+                        sheet['F' + str(sum_row-1)] = "'+/- " + str(spec_list[4]) + ' deg'
+                        sheet['B' + str(sum_row)] = il_avg
+                        sheet['C' + str(sum_row)] = rl_avg
+                        sheet['D' + str(sum_row)] = iso_avg
+                        sheet['E' + str(sum_row)] = ab_avg
+                        sheet['F' + str(sum_row)] = pb_avg
+                        sheet['G' + str(sum_row)] = rownum
+                        
+                     
+                        #MIN
+                        sheet['A' + str(sum_row + 14)] = artwork_rev
+                        sheet['B' + str(sum_row + 13)] = spec_list[0]  = str(spec_list[0]) + ' Max'
+                        sheet['C' + str(sum_row + 13)] = str(spec_list[1]) + ' Max'
+                        sheet['D' + str(sum_row + 13)] = str(spec_list[2]) + ' Max'
+                        sheet['E' + str(sum_row + 13)] = "+/- " + str(spec_list[3]) + ' dB'
+                        sheet['F' + str(sum_row + 13)] = "+/- " + str(spec_list[4]) + ' deg'
+                        sheet['B' + str(sum_row + 14)] = il_min
+                        sheet['C' + str(sum_row + 14)] = rl_min
+                        sheet['D' + str(sum_row + 14)] = iso_min
+                        sheet['E' + str(sum_row + 14)] = ab_min
+                        sheet['F' + str(sum_row + 14)] = pb_min
+                        sheet['G' + str(sum_row + 14)] = rownum
+                        #Max
+                        sheet['A' + str(sum_row + 28)] = artwork_rev
+                        sheet['B' + str(sum_row + 27)] = str(spec_list[0]) + ' Max'
+                        sheet['C' + str(sum_row + 27)] = str(spec_list[1]) + ' Max'
+                        sheet['D' + str(sum_row + 27)] = str(spec_list[2]) + ' Max'
+                        sheet['E' + str(sum_row + 27)] = "+/- " + str(spec_list[3]) + ' dB'
+                        sheet['F' + str(sum_row + 27)] = "+/- " + str(spec_list[4]) + ' deg'
+                        sheet['B' + str(sum_row + 28)] = il_max
+                        sheet['C' + str(sum_row + 28)] = rl_max
+                        sheet['D' + str(sum_row + 28)] = iso_max
+                        sheet['E' + str(sum_row + 28)] = ab_max
+                        sheet['F' + str(sum_row + 28)] = pb_max
+                        sheet['G' + str(sum_row + 28)] = rownum
+                    else:
+                                                #AVG
+                        sheet['A' + str(sum_row)] = artwork_rev
+                        sheet['B' + str(sum_row-1)] = str(spec_list[0]) + ' Max'
+                        sheet['C' + str(sum_row-1)] = str(spec_list[1]) + ' Max'
+                        sheet['D' + str(sum_row-1)] = str(spec_list[2]) + ' Max'
+                        sheet['E' + str(sum_row-1)] = "'+/- " + str(spec_list[3]) + ' dB'
+                        sheet['F' + str(sum_row-1)] = "'+/- " + str(spec_list[4]) + ' deg'
+                        sheet['B' + str(sum_row)] = il_avg
+                        sheet['C' + str(sum_row)] = rl_avg
+                        sheet['D' + str(sum_row)] = coup_avg
+                        sheet['E' + str(sum_row)] = dir_avg
+                        sheet['F' + str(sum_row)] = cf_avg
+                        sheet['G' + str(sum_row)] = rownum
+                        
+                     
+                        #MIN
+                        sheet['A' + str(sum_row + 14)] = artwork_rev
+                        sheet['B' + str(sum_row + 13)] = spec_list[0]  = str(spec_list[0]) + ' Max'
+                        sheet['C' + str(sum_row + 13)] = str(spec_list[1]) + ' Max'
+                        sheet['D' + str(sum_row + 13)] = str(spec_list[2]) + ' Max'
+                        sheet['E' + str(sum_row + 13)] = "+/- " + str(spec_list[3]) + ' dB'
+                        sheet['F' + str(sum_row + 13)] = "+/- " + str(spec_list[4]) + ' deg'
+                        sheet['B' + str(sum_row + 14)] = il_min
+                        sheet['C' + str(sum_row + 14)] = rl_min
+                        sheet['D' + str(sum_row + 14)] = coup_min
+                        sheet['E' + str(sum_row + 14)] = dir_min
+                        sheet['F' + str(sum_row + 14)] = cf_min
+                        sheet['G' + str(sum_row + 14)] = rownum
+                        #Max
+                        sheet['A' + str(sum_row + 28)] = artwork_rev
+                        sheet['B' + str(sum_row + 27)] = str(spec_list[0]) + ' Max'
+                        sheet['C' + str(sum_row + 27)] = str(spec_list[1]) + ' Max'
+                        sheet['D' + str(sum_row + 27)] = str(spec_list[2]) + ' Max'
+                        sheet['E' + str(sum_row + 27)] = "+/- " + str(spec_list[3]) + ' dB'
+                        sheet['F' + str(sum_row + 27)] = "+/- " + str(spec_list[4]) + ' deg'
+                        sheet['B' + str(sum_row + 28)] = il_max
+                        sheet['C' + str(sum_row + 28)] = rl_max
+                        sheet['D' + str(sum_row + 28)] = coup_max
+                        sheet['E' + str(sum_row + 28)] = dir_max
+                        sheet['F' + str(sum_row + 28)] = cf_max
+                        sheet['G' + str(sum_row + 28)] = rownum
+
                     #~~~~~~~~~~~~~~~~~~~~~~Summary sheet~~~~~~~~~~~~~~~~~~~~~~~~
                     #rename the sheet to the artworkrev
                     x+=1
                     sum_row+=1
-                
+            z+=1    
             #~~~~~~~~~~~~~~~~~~~~~~~~~charts~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='loading charts')
             trace_num = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Insertion Loss J3').count()
             loadcharts = Charts(len(artwork_list),self.job_num,part_num,spectype,self.operator,self.workstation,wb)
             loadcharts.load()
             print('Charts Loaded')
-             #~~~~~~~~~~~~~~~~~~~~~~~~~Save~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            savenow = SaveReports(self.job_num,part_num,spectype,self.operator,self.workstation,wb)
-            savenow.save()
-            ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='report complete')
-            print("Report for ",self.job_num, " is complete")
+         #~~~~~~~~~~~~~~~~~~~~~~~~~Save~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        savenow = SaveReports(self.job_num,part_num,spectype,self.operator,self.workstation,wb)
+        savenow.save()
+        ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='report complete')
+        print("Report for ",self.job_num, " is complete")
 
 
 class ReportFiles:
@@ -722,7 +846,8 @@ class LoadCharts:
             title1='Phase Balance J3'
             title2='Phase Balance J4'
         else:
-            title='Insertion Loss'
+            title1='Coupled Flatness J3'
+            title2='Coupled Flatness J4'
         for idx in range(5): 
             getser = get_serial_num(self.chart_group,idx)
             serialnumber = getser.uut()
@@ -997,7 +1122,7 @@ class XY_Chart:
         self.test5 = tests[4]
         self.spec1 = specs[0]
         self.spec2 = specs[1]
-        self.spec3 = specs[2]
+        self.spec3 = 0-specs[2]
         self.spec4 = specs[3]
         self.spec5 = specs[4]
         self.test = test
@@ -1043,20 +1168,30 @@ class XY_Hist:
             
 
 class SDEV_Dist:
-    def __init__(self,data,sdev,mean):
+    def __init__(self,spec,data,sdev,Min,Max,mean):
+        #print('##########################################spec=',spec)
+        self.Min = Min 
+        self.Max = Max
         self.data = data
         self.sdev = sdev
         self.mean = mean
+        span = self.Max - self.Min
+        step = int(len(data))
+        self.stepsize = (span/step)
         self.height = max(data)
-
+        
+        
     def matlab(self): # pur matlab
         from math import exp, pow
         temp_list = []
-        import numpy as np
-        variance = pow(self.sdev, 2)
-        x = np.linspace(-3 * self.sdev +  self.mean, 3 * self.sdev + self.mean , 100)
-        x = np.arange(0.4,0.8,0.01)
-        temp_list = np.exp(-np.square(x-self.mean)/2*variance)/(np.sqrt(2*np.pi*variance))
+        try:
+            import numpy as np
+            variance = pow(self.sdev, 2)
+            x = np.linspace(-3 * self.sdev +  self.mean, 3 * self.sdev + self.mean , 100)
+            x = np.arange(0.4,0.8,self.stepsize)
+            temp_list = np.exp(-np.square(x-self.mean)/2*variance)/(np.sqrt(2*np.pi*variance))
+        except ZeroDivisionError as e:
+           print('matlab list error=',e)
         return temp_list
     
     def linspace(self): # includes linspace
@@ -1065,38 +1200,74 @@ class SDEV_Dist:
         return temp_list
         
     
-        
     def gauss(self): # includes height
-        from math import exp, pow
-        temp_list = []
-        variance = pow(self.sdev, 2)
-        for x in self.data:
-            temp_list.append(self.height * exp(-pow(x-self.mean , 2)/(2*variance)))
-        return temp_list
+        chart = []
+        try:      
+            #gaussian distribution
+            import numpy as np
+            variance = np.square(self.sdev)
+            x = np.arange(self.Min,self.Max,self.stepsize)
+            f = (-np.square(x-self.mean)/2*variance)/(np.sqrt(2*np.pi*variance))
+            y=0
+            for sd in f:
+                chart.append((x[y],sd))
+                y+=1
+        except ZeroDivisionError as e:
+           print('gaussian dist error=',e)
+        return chart
+    
+    def gauss_min_max(self): # includes height
+        chart = []
+        answer = [0,0]      
+        try:
+            #gaussian distribution
+            import numpy as np
+            variance = np.square(self.sdev)
+            x = np.arange(self.Min,self.Max,self.stepsize)
+            f = (-np.square(x-self.mean)/2*variance)/(np.sqrt(2*np.pi*variance))
+            y=0
+            for sd in f:
+                chart.append(sd)
+                
+            Min = min(chart)
+            Max = max(chart)
+            answer = [Min,Max]
+        except ZeroDivisionError as e:
+           print('gaussian dist error=',e)
+        return answer   
+     
 
 
 class X_Range:
-    def __init__(self,data,Min,Max,Mean):
+    def __init__(self,data,spec,Min,Max,Mean):
         self.data = data
-        span = Max - Min
+        if spec < Min:
+            self.Min = spec
+        else:
+            self.Min = Min 
+            
+        if spec > Max:
+            self.Max = spec
+        else:
+            self.Max = Max
+            
+        span = self.Max - self.Min
         step = int(len(data))
         self.stepsize = (span/step)
-        print('self.stepsize=',self.stepsize)
-        self.Min = Min-self.stepsize
-        self.Max = Max+self.stepsize
+        #print('self.stepsize=',self.stepsize)
         self.Mean = Mean
-        print('self.Min=',self.Min)
-        print('self.Max=',self.Max)
-        print('self.Mean=',self.Mean)
+        #print('self.Min=',self.Min)
+        #print('self.Max=',self.Max)
+        #print('self.Mean=',self.Mean)
         self.step = int(step) + 2
 
     def list(self):
-        print('stepsize =',self.stepsize)
+        #print('stepsize =',self.stepsize)
         import numpy as np
         lower_list = np.linspace(self.Min, self.Mean, self.step)
         upper_list = np.linspace(self.Mean+self.stepsize,self.Max, self.step)
-        print('lower_lis=',lower_list)
-        print('upper_list=',upper_list)
+        #print('lower_lis=',lower_list)
+        #print('upper_list=',upper_list)
         x_range_list = np.concatenate((lower_list,upper_list),axis=None)
         temp_list = []
         for temp in x_range_list:

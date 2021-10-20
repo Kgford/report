@@ -49,11 +49,8 @@
 						<h1 class="fw-light">IPP Test Report Server</h1>
 						<p>
 							{% if job_num != -1 %}
-								<button type="button" href="{% url 'excel:reports' %}"  style="color:#FFFFFF" class="btn btn-success my-2" >
-								 <a href="{% url 'excel:reports' %}">Reset</a>
-								</button>
-								<button type="submit" id = "_analyze" name = "_analyze" class="btn btn-secondary my-2" onclick="changeAnalyzingValue()">Analyze Data</button>
 								<button type="submit" id = "_report" name = "_report" class="btn btn-primary my-2" onclick="changeReportingValue()">Create Test Report</button>
+								<button type="submit" id = "_analyze" name = "_analyze" class="btn btn-secondary my-2" onclick="changeAnalyzingValue()">Analyze Data</button>
 								<button type="submit" id = "_trace" name = "_trace" class="btn btn-warning my-2" onclick="changeTraceValue()">Create Trace Report</button>
 							{% endif %}
 						</p>
@@ -69,7 +66,7 @@
 						<!-- Customer-->
 						<select id='_job' name ='_job' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
 							{% if job_num == -1%}
-								<option data-desc = '_job'value = "All Part Numbers" >All Job Numbers</option>
+								<option data-desc = '_job' >Job_number</option>
 							{% else %}
 								<option selected>{{job_num}}</option>
 							{% endif %}	
@@ -85,9 +82,9 @@
 						<label for="_part">Part Number</label>
 						<select id='_part' name ='_part' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
 							{% if part_num == -1%}
-								<option data-desc = '_part' value = "All Part Numbers">All Part Numbers</option>
+								<option data-desc = '_part' >Part_number</option>
 							{% else %}
-								<option selected value = "{{part_num}}">{{part_num}}</option>
+								<option selected>{{part_num}}</option>
 							{% endif %}	
 							{% for part in part_list%}
 								<option data-desc = '_part',  value = "{{part}}">{{part}}</option>
@@ -101,9 +98,9 @@
 						<!-- Customer-->
 						<select id='_workstation' name ='_workstation' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
 							{% if workstation == -1%}
-								<option data-desc = '_workstation' value = "All Workstations">All Workstations</option>
+								<option data-desc = '_workstation'>Workstation</option>
 							{% else %}
-								<option selected value = "{{workstation}}">{{workstation}}</option>
+								<option selected>{{workstation}}</option>
 							{% endif %}	
 							{% for station in workstation_list%}
 								<option data-desc = '_workstation', value = "{{workstation}}">{{station}}</option>
@@ -116,9 +113,9 @@
 						<label for="_operator">Operator</label>
 						<select id='_operator' name ='_operator' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
 							{% if job_num == -1%}
-								<option data-desc = '_operator' value = "All Operators">All Operators</option>
+								<option data-desc = '_operator'>Operator</option>
 							{% else %}
-								<option selected value = "{{operator}}">{{operator}}</option>
+								<option selected>{{operator}}</option>
 							{% endif %}	
 							{% for op in operator_list%}
 								<option data-desc = '_operator', value = "{{op}}">{{op}}</option>
@@ -131,9 +128,10 @@
 						<label for="_art">Art Work</label>
 						<select id='_art' name ='_art' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
 							{% if artwork == -1%}
-								<option data-desc = '_art', value = "All Artworks">All Artworks</option>
+								<option data-desc = '_art'>Art Work Rev.</option>
 							{% else %}
-								<option selected, value = "{{artwork}}">{{artwork}}</option>
+								<option selected, value = "All Artworks">{{artwork}}</option>
+								<option data-desc = '_art', value = "{{art}}">All Artworks</option>
 							{% endif %}	
 							{% for art in artwork_list%}
 								<option data-desc = '_art', value = "{{art}}">{{art}}</option>
@@ -268,7 +266,7 @@
 								  <td>{{stat4_min}}</td>
 								  <td>{{stat5_min}}</td>
 								</tr>
-								<tr class="table-active">
+								<tr class="table-dark">
 								  <th>total Tested</th>
 								  <td>{{total}}</td>
 								  <td>{{total}}</td>
@@ -276,7 +274,7 @@
 								  <td>{{total}}</td>
 								  <td>{{total}}</td>
 								</tr>
-								<tr class="table-active">
+								<tr class="table-dark">
 								  <th>missing data (removed)</th>
 								  <td>{{blank}}</td>
 								  <td>{{blank}}</td>
@@ -285,20 +283,12 @@
 								  <td>{{blank}}</td>
 								</tr>
 								<tr class="bg-warning">
-								  <th>bad data (removed)</th>
+								  <th>bad data Avg. (removed)</th>
 								  <td>{{bad1}}</td>
 								  <td>{{bad2}}</td>
 								  <td>{{bad3}}</td>
 								  <td>{{bad4}}</td>
 								  <td>{{bad5}}</td>
-								</tr>
-								<tr class="bg-warning">
-								  <th>bad data Average value</th>
-								  <td>{{bad_data1}}</td>
-								  <td>{{bad_data2}}</td>
-								  <td>{{bad_data3}}</td>
-								  <td>{{bad_data4}}</td>
-								  <td>{{bad_data5}}</td>
 								</tr>
 								<tr class="table-success">
 								  <th>Passed</th>
@@ -335,44 +325,34 @@
 						<embed type="image/svg+xml" src={{il_histo_data|safe}} class="bottom" style='max-width:500px'/>
 						<embed type="image/svg+xml" src={{il_histo_data2|safe}} class="top" style='max-width:500px'/>
 						<embed type="image/svg+xml" src={{chart1|safe}} style='max-width:500px'/>
-					</div>	
-					<div style="position: relative; left: 0; top: 0;">	
+						
 						<embed type="image/svg+xml" src={{rl_histo_data|safe}} class="bottom" style='max-width:500px'/>
 						<embed type="image/svg+xml" src={{rl_histo_data2|safe}} class="top" style='max-width:500px'/>
 						<embed type="image/svg+xml" src={{chart2|safe}} style='max-width:500px'/>
-					</div>
 						{% if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype %}
-							<div style="position: relative; left: 0; top: 0;">	
-								<embed type="image/svg+xml" src={{iso_histo_data|safe}} class="bottom" style='max-width:500px'/>
-								<embed type="image/svg+xml" src={{iso_histo_data2|safe}} class="top" style='max-width:500px'/>
-								<embed type="image/svg+xml" src={{chart3|safe}} style='max-width:500px'/>
-							</div>
-							<div style="position: relative; left: 0; top: 0;">	
-								<embed type="image/svg+xml" src={{ab_histo_data|safe}} class="bottom" style='max-width:500px'/>
-								<embed type="image/svg+xml" src={{ab_histo_data2|safe}} class="top" style='max-width:500px'/>
-								<embed type="image/svg+xml" src={{chart4|safe}} style='max-width:500px'/>
-							</div>
-							<div style="position: relative; left: 0; top: 0;">	
-								<embed type="image/svg+xml" src={{pb_histo_data|safe}} class="bottom" style='max-width:500px'/>
-								<embed type="image/svg+xml" src={{pb_histo_data2|safe}} class="top" style='max-width:500px'/>
-								<embed type="image/svg+xml" src={{chart5|safe}} style='max-width:500px'/>
-							</div>
+							<embed type="image/svg+xml" src={{iso_histo_data|safe}} class="bottom" style='max-width:500px'/>
+							<embed type="image/svg+xml" src={{iso_histo_data2|safe}} class="top" style='max-width:500px'/>
+							<embed type="image/svg+xml" src={{chart3|safe}} style='max-width:500px'/>
+							
+							<embed type="image/svg+xml" src={{ab_histo_data|safe}} class="bottom" style='max-width:500px'/>
+							<embed type="image/svg+xml" src={{ab_histo_data2|safe}} class="top" style='max-width:500px'/>
+							<embed type="image/svg+xml" src={{chart4|safe}} style='max-width:500px'/>
+							
+							<embed type="image/svg+xml" src={{pb__histo_data|safe}} class="bottom" style='max-width:500px'/>
+							<embed type="image/svg+xml" src={{pb__histo_data2|safe}} class="top" style='max-width:500px'/>
+							<embed type="image/svg+xml" src={{chart5|safe}} style='max-width:500px'/>
 						{% else %}
-							<div style="position: relative; left: 0; top: 0;">	
-								<embed type="image/svg+xml" src={{coup_histo_data|safe}} class="bottom" style='max-width:500px'/>
-								<embed type="image/svg+xml" src={{coup_histo_data2|safe}} class="top" style='max-width:500px'/>
-								<embed type="image/svg+xml" src={{chart3|safe}} style='max-width:500px'/>
-							</div>
-							<div style="position: relative; left: 0; top: 0;">	
-								<embed type="image/svg+xml" src={{dir_histo_data|safe}} class="bottom" style='max-width:500px'/>
-								<embed type="image/svg+xml" src={{dir_histo_data2|safe}} class="top" style='max-width:500px'/>
-								<embed type="image/svg+xml" src={{chart4|safe}} style='max-width:500px'/>
-							</div>
-							<div style="position: relative; left: 0; top: 0;">	
-								<embed type="image/svg+xml" src={{cb_histo_data|safe}} class="bottom" style='max-width:500px'/>
-								<embed type="image/svg+xml" src={{cb_histo_data2|safe}} class="top" style='max-width:500px'/>
-								<embed type="image/svg+xml" src={{chart5|safe}} style='max-width:500px'/>
-							</div>
+							<embed type="image/svg+xml" src={{coup_histo_data|safe}} class="bottom" style='max-width:500px'/>
+							<embed type="image/svg+xml" src={{coup_histo_data2|safe}} class="top" style='max-width:500px'/>
+							<embed type="image/svg+xml" src={{chart3|safe}} style='max-width:500px'/>
+							
+							<embed type="image/svg+xml" src={{dir_histo_data|safe}} class="bottom" style='max-width:500px'/>
+							<embed type="image/svg+xml" src={{dir_histo_data2|safe}} class="top" style='max-width:500px'/>
+							<embed type="image/svg+xml" src={{chart4|safe}} style='max-width:500px'/>
+							
+							<embed type="image/svg+xml" src={{cb__histo_data|safe}} class="bottom" style='max-width:500px'/>
+							<embed type="image/svg+xml" src={{cb__histo_data2|safe}} class="top" style='max-width:500px'/>
+							<embed type="image/svg+xml" src={{chart5|safe}} style='max-width:500px'/>
 						{% endif %}
 					</div>
 				</div>
@@ -394,7 +374,7 @@
 											<th>Phase Balance</th>
 											<th>Art Work Rev.</th>
 										{% else %}
-											<th>Serial Number</th>
+											th>Serial Number</th>
 											<th>Insertion Loss</th>
 											<th>Return Loss</th>
 											<th>Coupling</th>
@@ -406,21 +386,17 @@
 								</thead>
 								<tbody>
 								{% load index %}
-								{% if report_data %}
-									{% for data in report_data %}
-										<tr>
-											<td><a class="nav-link">UUT{{forloop.counter}}</td>
-											<td><a class="nav-link">{{test1_list|index:forloop.counter0|stringformat:".2f"}}</td>
-											<td><a class="nav-link">{{test2_list|index:forloop.counter0|stringformat:".2f"}}</td>
-											<td><a class="nav-link">{{test3_list|index:forloop.counter0|stringformat:".2f"}}</td>
-											<td><a class="nav-link">{{test4_list|index:forloop.counter0|stringformat:".2f"}}</td>
-											<td><a class="nav-link">{{test5_list|index:forloop.counter0|stringformat:".2f"}}</td>
-											<td><a class="nav-link">{{art_rev_list|index:forloop.counter0}}</td>
-										</tr>
-									{% endfor %}
-								{% else %}
-									<h3 class="text-center"> No Test data available</h3>
-								{% endif %}	
+								{% for data in report_data %}
+									<tr>
+										<td><a class="nav-link">UUT{{forloop.counter}}</td>
+										<td><a class="nav-link">{{test1_list|index:forloop.counter0|stringformat:".2f"}}</td>
+										<td><a class="nav-link">{{test2_list|index:forloop.counter0|stringformat:".2f"}}</td>
+										<td><a class="nav-link">{{test3_list|index:forloop.counter0|stringformat:".2f"}}</td>
+										<td><a class="nav-link">{{test4_list|index:forloop.counter0|stringformat:".2f"}}</td>
+										<td><a class="nav-link">{{test5_list|index:forloop.counter0|stringformat:".2f"}}</td>
+										<td><a class="nav-link">{{art_rev_list|index:forloop.counter0}}</td>
+									</tr>
+								{% endfor %}
 								</tbody>
 							</table>	
 						</div>
