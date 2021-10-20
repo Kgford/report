@@ -1,0 +1,76 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<link rel="icon" type="image/x-icon" href="{% static 'excel/images/ats_16X16.ico' %}">
+		<title>IPP Report Server</title>	
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="excel Management page">
+		<meta http-equiv="refresh" content="600"> <!-- Refresh every 10 minutes -->
+		<!-- Bootstrap core CSS -->
+		<link rel="stylesheet" href="{% static 'excel/css/bootstrap.css' %}">
+		<link rel="stylesheet" href="{% static 'excel/css/styles.css' %}">
+		<!-- Book Search -->
+		<link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/grid/">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		<link href="https://kendo.cdn.telerik.com/2020.2.617/styles/kendo.common.min.css" rel="stylesheet" />
+		<link href="https://kendo.cdn.telerik.com/2020.2.617/styles/kendo.default.min.css" rel="stylesheet" />
+		<script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+		<script src="https://kendo.cdn.telerik.com/2020.2.617/js/kendo.all.min.js"></script>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+		<script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+        
+		<!-- Custom styles for this template -->
+		<link href="{% static 'excel/css/grid.css' %}" rel="stylesheet">
+		<link href="{% static 'excel/css/styles.css' %}" rel="stylesheet">
+		<style>
+		  .bd-placeholder-img {
+			font-size: 1.125rem;
+			text-anchor: middle;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			user-select: none;
+		  }
+
+		  @media (min-width: 768px) {
+			.bd-placeholder-img-lg {
+			  font-size: 3.5rem;
+			}
+		  }
+		 .bottom
+			{
+			  position: relative;
+			  top: 0;
+			  left: 0;
+			}
+		.top
+			{
+			  position: absolute;
+			  top: 0px;
+			  left: 0px;
+			}
+
+		</style>
+		<style>
+  </style>
+		<script>
+		   function changeReportingValue(){
+			 document.getElementById('_report').innerHTML = 'Generating Report';
+			}
+			function changeAnalyzingValue(){
+			 document.getElementById('_analyze').innerHTML = 'Analyzing Data';
+			}
+			function changeTraceValue(){
+			 document.getElementById('_trace').innerHTML = 'Creating Trace Report';
+			}
+		</script>
+		
+	</head>
+	<body>
+	   {% block body %}
+	   {% endblock %}
+	</body>
+</html>

@@ -649,20 +649,33 @@ class ReportView(View):
                 spec_rl = round(conversions.vswr_to_rl(),3)
                 #print('spec_rl=',spec_rl)
                 spectype = spec_data.spectype
-                if spec1==-1:
-                    if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
-                        spec1 = round(spec_data.insertionloss,3)
-                        spec2 = spec_rl
-                        spec3 = round(spec_data.isolation,3)
-                        spec4 = round(spec_data.amplitudebalance,3)
-                        spec5 = round(spec_data.phasebalance,3)
-                    elif 'DIRECTIONAL COUPLER' in spectype: 
-                        spec1 = round(spec_data.insertionloss,3)
-                        spec2 = spec_rl
-                        spec3 = round(spec_data.coupling,3)
-                        spec4 = round(spec_data.directivity,3)
-                        spec5 = round(spec_data.coupledflatness,3)
-                    
+                try:
+                    if spec1==-1:
+                        if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
+                            if spec_data.insertionloss:
+                                spec1 = round(spec_data.insertionloss,3)
+                            if spec_rl:
+                                spec2 = spec_rl
+                            if spec_data.isolation:
+                                spec3 = round(spec_data.isolation,3)
+                            if spec_data.amplitudebalance:
+                                spec4 = round(spec_data.amplitudebalance,3)
+                            if spec_data.phasebalance:
+                                spec5 = round(spec_data.phasebalance,3)
+                        elif 'DIRECTIONAL COUPLER' in spectype: 
+                            if spec_data.insertionloss:
+                                spec1 = round(spec_data.insertionloss,3)
+                            if spec_rl:
+                                spec2 = spec_rl
+                            if spec_data.coupling:
+                                spec3 = round(spec_data.coupling,3)
+                            if spec_data.directivity:
+                                spec4 = round(spec_data.directivity,3)
+                            if spec_data.coupledflatness:
+                                spec5 = round(spec_data.coupledflatness,3)
+                except ValueError as e:
+                    print('error = ',e) 
+                   
                 total=0
                 temp_list = []
                 print('spectype=',spectype)
