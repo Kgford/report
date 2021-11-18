@@ -139,6 +139,7 @@ class Specifications(models.Model):
     isolation2 = models.FloatField(db_column='Isolation2', blank=True, null=True)  # Field name made lowercase.
     amplitudebalance = models.FloatField(db_column='AmplitudeBalance', blank=True, null=True)  # Field name made lowercase.
     coupling = models.FloatField(db_column='Coupling', blank=True, null=True)  # Field name made lowercase.
+    coupling2 = models.FloatField(db_column='Coupling2', blank=True, null=True)  # Field name made lowercase.
     coupplusminus = models.FloatField(db_column='COUPPlusMinus', blank=True, null=True)  # Field name made lowercase.
     directivity = models.FloatField(db_column='Directivity', blank=True, null=True)  # Field name made lowercase.
     phasebalance = models.FloatField(db_column='PhaseBalance', blank=True, null=True)  # Field name made lowercase.
@@ -199,6 +200,22 @@ class Specifications(models.Model):
     dir_stop1 = models.FloatField(db_column='DIR_stop1', blank=True, null=True)  # Field name made lowercase.
     dir_stop2 = models.FloatField(db_column='DIR_stop2', blank=True, null=True)  # Field name made lowercase.
     dir_tf = models.IntegerField(db_column='DIR_tf', blank=True, null=True)  # Field name made lowercase.
+    il2 = models.FloatField(db_column='IL2', blank=True, null=True)  # Field name made lowercase.
+    il_exp_tf = models.BooleanField(db_column='IL_exp_tf', blank=True, null=True)  # Field name made lowercase.
+    il_ex = models.FloatField(db_column='IL_ex', blank=True, null=True)  # Field name made lowercase.
+    il_start1 = models.FloatField(db_column='IL_start1', blank=True, null=True)  # Field name made lowercase.
+    il_start2 = models.FloatField(db_column='IL_start2', blank=True, null=True)  # Field name made lowercase.
+    il_stop1 = models.FloatField(db_column='IL_stop1', blank=True, null=True)  # Field name made lowercase.
+    il_stop2 = models.FloatField(db_column='IL_stop2', blank=True, null=True)  # Field name made lowercase.
+    il_tf = models.IntegerField(db_column='IL_tf', blank=True, null=True)  # Field name made lowercase.
+    cf_exp_tf = models.BooleanField(db_column='CF_exp_tf', blank=True, null=True)  # Field name made lowercase.
+    cf_ex = models.FloatField(db_column='CF_ex', blank=True, null=True)  # Field name made lowercase.
+    cf_start1 = models.FloatField(db_column='CF_start1', blank=True, null=True)  # Field name made lowercase.
+    cf_start2 = models.FloatField(db_column='CF_start2', blank=True, null=True)  # Field name made lowercase.
+    cf_stop1 = models.FloatField(db_column='CF_stop1', blank=True, null=True)  # Field name made lowercase.
+    cf_stop2 = models.FloatField(db_column='CF_stop2', blank=True, null=True)  # Field name made lowercase.
+    cf_tf = models.IntegerField(db_column='CF_tf', blank=True, null=True)  # Field name made lowercase.
+
 
     class Meta:
         managed = False
@@ -230,6 +247,7 @@ class Testdata(models.Model):
     coupling2 = models.FloatField(db_column='Coupling2', blank=True, null=True)  # Field name made lowercase.
     directivity2 = models.FloatField(db_column='Directivity2', blank=True, null=True)  # Field name made lowercase.
     phasebalance2 = models.FloatField(db_column='PhaseBalance2', blank=True, null=True)  # Field name made lowercase.
+    insertionloss2 = models.FloatField(db_column='insertionloss2', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -277,6 +295,8 @@ class Trace(models.Model):
     xtitle = models.CharField(db_column='XTitle', max_length=100, blank=True, null=True)  # Field name made lowercase.
     ytitle = models.CharField(db_column='YTitle', max_length=100, blank=True, null=True)  # Field name made lowercase.
     notes = models.CharField(db_column='Notes', max_length=255, blank=True, null=True)  # Field name made lowercase.
+    artwork_rev = models.CharField(db_column='artwork_rev', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    Operator = models.CharField(db_column='Operator', max_length=100, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False

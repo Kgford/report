@@ -1,9 +1,14 @@
-from openpyxl import load_workbook
+import xlwt
+from xlutils.copy import copy # http://pypi.python.org/pypi/xlutils
+from xlrd import open_workbook # http://pypi.python.org/pypi/xlrd
 from openpyxl import Workbook
-from openpyxl.styles import PatternFill#Connect cell styles
-from openpyxl.workbook import Workbook
+from openpyxl import load_workbook,drawing
+from openpyxl.styles import PatternFill, Alignment#Connect cell styles
+from openpyxl.styles.borders import Border, Side
+from openpyxl import load_workbook
 from openpyxl.styles import Font, Fill#Connect styles for text
 from openpyxl.styles import colors#Connect colors for text and cells
+from openpyxl.chart import LineChart,ScatterChart,Reference,Series
 
 from django.http import HttpResponse
 from report.overhead import TimeCode, Security, StringThings,Conversions
@@ -12,6 +17,495 @@ import os
 import statistics 
 
 
+class CreateSheets:
+    def __init__ (self, sheet_name,worksheet):
+        self.sheet_name = sheet_name
+        self.worksheet = worksheet   
+         
+        print('self.sheet_name=',self.sheet_name)
+        print('self.worksheet=',self.worksheet)
+    
+    def set_outside_thin_border(self, cell_range):
+        rows = self.worksheet[cell_range]
+        side = Side(border_style='thin', color="FF000000")
+
+        rows = list(rows)  # we convert iterator to list for simplicity, but it's not memory efficient solution
+        max_y = len(rows) - 1  # index of the last row
+        for pos_y, cells in enumerate(rows):
+            max_x = len(cells) - 1  # index of the last cell
+            for pos_x, cell in enumerate(cells):
+                border = Border(
+                    left=cell.border.left,
+                    right=cell.border.right,
+                    top=cell.border.top,
+                    bottom=cell.border.bottom
+                )
+                if pos_x == 0:
+                    border.left = side
+                if pos_x == max_x:
+                    border.right = side
+                if pos_y == 0:
+                    border.top = side
+                if pos_y == max_y:
+                    border.bottom = side
+
+                # set new border only if it's one of the edge cells
+                if pos_x == 0 or pos_x == max_x or pos_y == 0 or pos_y == max_y:
+                    cell.border = border
+    
+                
+    def set_outside_thick_border(self, cell_range):
+        rows = self.worksheet[cell_range]
+        side = Side(border_style='thick', color="FF000000")
+
+        rows = list(rows)  # we convert iterator to list for simplicity, but it's not memory efficient solution
+        max_y = len(rows) - 1  # index of the last row
+        for pos_y, cells in enumerate(rows):
+            max_x = len(cells) - 1  # index of the last cell
+            for pos_x, cell in enumerate(cells):
+                border = Border(
+                    left=cell.border.left,
+                    right=cell.border.right,
+                    top=cell.border.top,
+                    bottom=cell.border.bottom
+                )
+                if pos_x == 0:
+                    border.left = side
+                if pos_x == max_x:
+                    border.right = side
+                if pos_y == 0:
+                    border.top = side
+                if pos_y == max_y:
+                    border.bottom = side
+
+                # set new border only if it's one of the edge cells
+                if pos_x == 0 or pos_x == max_x or pos_y == 0 or pos_y == max_y:
+                    cell.border = border
+    
+    def set_border_range(self, cell_range):
+        thin = Side(border_style="thin", color="000000")#Border style, color
+        border = Border(left=thin, right=thin, top=thin, bottom=thin)#Position of border
+
+        for row in self.worksheet[cell_range]:
+            for cell in row:
+                cell.border = border
+    
+    
+    def chart_data(self):
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set row heights~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        self.worksheet.row_dimensions[1].height = 30.60
+        self.worksheet.row_dimensions[1].height = 16.50
+        self.worksheet.row_dimensions[1].height = 16.50
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set row heights~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set column witdhs~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # set the width of the column
+        self.worksheet.column_dimensions['A'].width = 12.11
+        self.worksheet.column_dimensions['B'].width = 12.11 
+        self.worksheet.column_dimensions['C'].width = 12.11 
+        self.worksheet.column_dimensions['D'].width = 12.11 
+        self.worksheet.column_dimensions['E'].width = 8.11 
+        self.worksheet.column_dimensions['F'].width = 15.32 
+        self.worksheet.column_dimensions['G'].width = 19.40
+       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set column witdhs~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        print('merging cells')
+        
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~mearge rows~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        self.worksheet.merge_cells(start_row=1, start_column=4, end_row=1, end_column=7) #first row
+        
+        self.worksheet.merge_cells(start_row=2, start_column=4, end_row=2, end_column=5)  #second row
+        self.worksheet.merge_cells(start_row=2, start_column=6, end_row=2, end_column=7) #second row
+        self.worksheet.merge_cells(start_row=3, start_column=4, end_row=3, end_column=5)  #third row
+        self.worksheet.merge_cells(start_row=3, start_column=6, end_row=3, end_column=7)  #third row
+        self.worksheet.merge_cells(start_row=4, start_column=4, end_row=4, end_column=5)  #fourth row 
+        self.worksheet.merge_cells(start_row=4, start_column=6, end_row=4, end_column=7)  #fourth row
+        self.worksheet.merge_cells(start_row=5, start_column=4, end_row=5, end_column=6)  #fith row
+        self.worksheet.merge_cells(start_row=5, start_column=6, end_row=5, end_column=7)  #fith row
+        self.worksheet.merge_cells(start_row=53, start_column=2, end_row=53, end_column=5) #53 row
+        self.worksheet.merge_cells(start_row=54, start_column=1, end_row=54, end_column=3) #54 row
+        self.worksheet.merge_cells(start_row=54, start_column=4, end_row=54, end_column=5) #54 row
+        self.worksheet.merge_cells(start_row=54, start_column=6, end_row=54, end_column=6) #54 row
+        self.worksheet.merge_cells(start_row=54, start_column=8, end_row=54, end_column=10) #54 row
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~mearge rows~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                
+        print('at image') 
+        
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~add logo~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        image_name = "\\\ippdc\\Test Automation\\Excel_Templates\\logo.png"
+        img = drawing.image.Image(image_name)
+        img.anchor = 'A2' # Or whatever cell location you want to use.
+        self.worksheet.add_image(img)
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~add logo~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~add words~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        a1 = self.worksheet['D1']
+        font = Font(name='Arial',size=22,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+        a1.font = font
+        a1.alignment = Alignment(horizontal='center')
+        self.worksheet['A1']='Chart Data'
+        
+        d2 = self.worksheet['D2']
+        d3 = self.worksheet['D3']
+        d4 = self.worksheet['D4']
+        d5 = self.worksheet['D5']
+        font = Font(name='Arial',size=10,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+        d2.font = font
+        d2.alignment = Alignment(horizontal='right')
+        d3.font = font
+        d3.alignment = Alignment(horizontal='right')
+        d4.font = font
+        d4.alignment = Alignment(horizontal='right')
+        d5.font = font
+        d5.alignment = Alignment(horizontal='right')
+        self.worksheet['D2']='Job Number:'
+        self.worksheet['D3']='Part Number:'
+        self.worksheet['D4']='Part Type:'
+        self.worksheet['D5']='Artwork Rev:'
+        
+        b53 = self.worksheet['B53']
+        a54 = self.worksheet['A54']
+        d54 = self.worksheet['D54']
+        f54 = self.worksheet['F54']
+        h54 = self.worksheet['H54']
+        font = Font(name='Arial',size=12,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+        b53.font = font
+        b53.alignment = Alignment(horizontal='center')
+        a54.font = font
+        a54.alignment = Alignment(horizontal='center')
+        f54.font = font
+        f54.alignment = Alignment(horizontal='center')
+        h54.font = font
+        h54.alignment = Alignment(horizontal='center')
+        self.worksheet['B53']='Test Data Follows:'
+        self.worksheet['A54']='Chart 1'
+        self.worksheet['D54']='Chart 2:'
+        self.worksheet['F54']='Chart 3'
+        self.worksheet['H54']='Chart 4'
+        
+        a55 = self.worksheet['A55']
+        b55 = self.worksheet['B55']
+        c55 = self.worksheet['C55']
+        d55 = self.worksheet['D55']
+        e55 = self.worksheet['E55']
+        f55 = self.worksheet['F55']
+        g55 = self.worksheet['G55']
+        h55 = self.worksheet['H55']
+        i55 = self.worksheet['I55']
+        j55 = self.worksheet['J55']
+        font = Font(name='Arial',size=10,bold=False,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+        a55.font = font
+        a55.alignment = Alignment(horizontal='center')
+        b55.font = font
+        b55.alignment = Alignment(horizontal='center')
+        c55.font = font
+        c55.alignment = Alignment(horizontal='center')
+        d55.font = font
+        d55.alignment = Alignment(horizontal='center')
+        e55.font = font
+        e55.alignment = Alignment(horizontal='center')
+        f55.font = font
+        f55.alignment = Alignment(horizontal='center')
+        g55.font = font
+        g55.alignment = Alignment(horizontal='center')
+        h55.font = font
+        h55.alignment = Alignment(horizontal='center')
+        i55.font = font
+        i55.alignment = Alignment(horizontal='center')
+        j55.font = font
+        j55.alignment = Alignment(horizontal='center')
+        self.worksheet['A55']='Freq MHz'
+        self.worksheet['B55']='Trace 1:'
+        self.worksheet['C55']='Trace 2'
+        self.worksheet['D55']='Freq MHz'
+        self.worksheet['E55']='Trace 1:'
+        self.worksheet['F55']='Freq MHz'
+        self.worksheet['G55']='Trace 1:'
+        self.worksheet['H55']='Freq MHz'
+        self.worksheet['I55']='Trace 1:'
+        self.worksheet['J55']='Trace 2'
+        
+        
+    def tabular_data(self):
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set row heights~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        print('in styling')
+        
+        # set the height of the row1
+        self.worksheet.row_dimensions[1].height = 30.6
+        self.worksheet.row_dimensions[2].height = 30.6
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set row heights~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set column witdhs~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # set the width of the column
+        self.worksheet.column_dimensions['A'].width = 15.44 
+        self.worksheet.column_dimensions['B'].width = 7.11 
+        self.worksheet.column_dimensions['C'].width = 6.11 
+        self.worksheet.column_dimensions['D'].width = 6.11 
+        self.worksheet.column_dimensions['E'].width = 6.11 
+        self.worksheet.column_dimensions['F'].width = 6.11 
+        self.worksheet.column_dimensions['G'].width = 6.11 
+        self.worksheet.column_dimensions['H'].width = 9.00 
+        self.worksheet.column_dimensions['I'].width = 8.00 
+        self.worksheet.column_dimensions['J'].width = 7.00
+        self.worksheet.column_dimensions['K'].width = 8.11
+
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set column witdhs~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        print('merging cells')
+        
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~mearge rows~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        self.worksheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=11) #first row
+        
+        self.worksheet.merge_cells(start_row=2, start_column=5, end_row=2, end_column=7)  #second row
+        self.worksheet.merge_cells(start_row=2, start_column=8, end_row=2, end_column=11) #second row
+        self.worksheet.merge_cells(start_row=3, start_column=2, end_row=3, end_column=4)  #third row
+        self.worksheet.merge_cells(start_row=3, start_column=5, end_row=3, end_column=7)  #third row
+        self.worksheet.merge_cells(start_row=3, start_column=8, end_row=3, end_column=11) #third row
+        self.worksheet.merge_cells(start_row=4, start_column=2, end_row=4, end_column=4)  #fourth row 
+        self.worksheet.merge_cells(start_row=4, start_column=5, end_row=4, end_column=7)  #fourth row
+        self.worksheet.merge_cells(start_row=4, start_column=8, end_row=4, end_column=11) #fourth row
+        self.worksheet.merge_cells(start_row=5, start_column=2, end_row=5, end_column=4)  #fith row
+        self.worksheet.merge_cells(start_row=5, start_column=5, end_row=5, end_column=7)  #fith row
+        self.worksheet.merge_cells(start_row=5, start_column=9, end_row=5, end_column=10) #fith row
+        
+        
+        self.worksheet.merge_cells(start_row=7, start_column=2, end_row=7, end_column=11) #seventh row
+        
+        self.worksheet.merge_cells(start_row=8, start_column=2, end_row=8, end_column=3) #Nineteenth row
+        self.worksheet.merge_cells(start_row=8, start_column=4, end_row=8, end_column=5) #Nineteenth row
+        self.worksheet.merge_cells(start_row=8, start_column=6, end_row=8, end_column=7) #Nineteenth row
+        self.worksheet.merge_cells(start_row=8, start_column=8, end_row=8, end_column=9) #Nineteenth row
+        self.worksheet.merge_cells(start_row=8, start_column=10, end_row=8, end_column=11)#Nineteenth row
+        
+        self.worksheet.merge_cells(start_row=9, start_column=2, end_row=9, end_column=3) #Nineteenth row
+        self.worksheet.merge_cells(start_row=9, start_column=4, end_row=9, end_column=5) #Nineteenth row
+        self.worksheet.merge_cells(start_row=9, start_column=6, end_row=9, end_column=7) #Nineteenth row
+        self.worksheet.merge_cells(start_row=9, start_column=8, end_row=9, end_column=9) #Nineteenth row
+        self.worksheet.merge_cells(start_row=9, start_column=10, end_row=9, end_column=11)#Nineteenth row
+        
+        self.worksheet.merge_cells(start_row=10, start_column=2, end_row=10, end_column=3) #Nineteenth row
+        self.worksheet.merge_cells(start_row=10, start_column=4, end_row=10, end_column=5) #Nineteenth row
+        self.worksheet.merge_cells(start_row=10, start_column=6, end_row=10, end_column=7) #Nineteenth row
+        self.worksheet.merge_cells(start_row=10, start_column=8, end_row=10, end_column=9) #Nineteenth row
+        self.worksheet.merge_cells(start_row=10, start_column=10, end_row=10, end_column=11)#Nineteenth row
+        
+        self.worksheet.merge_cells(start_row=11, start_column=2, end_row=11, end_column=3) #Nineteenth row
+        self.worksheet.merge_cells(start_row=11, start_column=4, end_row=11, end_column=5) #Nineteenth row
+        self.worksheet.merge_cells(start_row=11, start_column=6, end_row=11, end_column=7) #Nineteenth row
+        self.worksheet.merge_cells(start_row=11, start_column=8, end_row=11, end_column=9) #Nineteenth row
+        self.worksheet.merge_cells(start_row=11, start_column=10, end_row=11, end_column=11)#Nineteenth row
+        
+        self.worksheet.merge_cells(start_row=12, start_column=2, end_row=12, end_column=3) #Nineteenth row
+        self.worksheet.merge_cells(start_row=12, start_column=4, end_row=12, end_column=5) #Nineteenth row
+        self.worksheet.merge_cells(start_row=12, start_column=6, end_row=12, end_column=7) #Nineteenth row
+        self.worksheet.merge_cells(start_row=12, start_column=8, end_row=12, end_column=9) #Nineteenth row
+        self.worksheet.merge_cells(start_row=12, start_column=10, end_row=12, end_column=11)#Nineteenth row
+        
+        self.worksheet.merge_cells(start_row=13, start_column=2, end_row=13, end_column=3) #Nineteenth row
+        self.worksheet.merge_cells(start_row=13, start_column=4, end_row=13, end_column=5) #Nineteenth row
+        self.worksheet.merge_cells(start_row=13, start_column=6, end_row=13, end_column=7) #Nineteenth row
+        self.worksheet.merge_cells(start_row=13, start_column=8, end_row=13, end_column=9) #Nineteenth row
+        self.worksheet.merge_cells(start_row=13, start_column=10, end_row=13, end_column=11)#Nineteenth row
+        
+        self.worksheet.merge_cells(start_row=14, start_column=2, end_row=14, end_column=3) #Nineteenth row
+        self.worksheet.merge_cells(start_row=14, start_column=4, end_row=14, end_column=5) #Nineteenth row
+        self.worksheet.merge_cells(start_row=14, start_column=6, end_row=14, end_column=7) #Nineteenth row
+        self.worksheet.merge_cells(start_row=14, start_column=8, end_row=14, end_column=9) #Nineteenth row
+        self.worksheet.merge_cells(start_row=14, start_column=10, end_row=14, end_column=11)#Nineteenth row
+        
+        self.worksheet.merge_cells(start_row=15, start_column=2, end_row=15, end_column=3) #Nineteenth row
+        self.worksheet.merge_cells(start_row=15, start_column=4, end_row=15, end_column=5) #Nineteenth row
+        self.worksheet.merge_cells(start_row=15, start_column=6, end_row=15, end_column=7) #Nineteenth row
+        self.worksheet.merge_cells(start_row=15, start_column=8, end_row=15, end_column=9) #Nineteenth row
+        self.worksheet.merge_cells(start_row=15, start_column=10, end_row=15, end_column=11)#Nineteenth row
+        
+        self.worksheet.merge_cells(start_row=16, start_column=2, end_row=16, end_column=3) #Nineteenth row
+        self.worksheet.merge_cells(start_row=16, start_column=4, end_row=16, end_column=5) #Nineteenth row
+        self.worksheet.merge_cells(start_row=16, start_column=6, end_row=16, end_column=7) #Nineteenth row
+        self.worksheet.merge_cells(start_row=16, start_column=8, end_row=16, end_column=9) #Nineteenth row
+        self.worksheet.merge_cells(start_row=16, start_column=10, end_row=16, end_column=11)#Nineteenth row
+        
+        
+        self.worksheet.merge_cells(start_row=18, start_column=2, end_row=18, end_column=11) #Eighteenth row
+        
+        
+        self.worksheet.merge_cells(start_row=19, start_column=1, end_row=20, end_column=1) #Nineteenth row
+        self.worksheet.merge_cells(start_row=19, start_column=2, end_row=19, end_column=3) #Nineteenth row
+        self.worksheet.merge_cells(start_row=19, start_column=4, end_row=19, end_column=5) #Nineteenth row
+        self.worksheet.merge_cells(start_row=19, start_column=6, end_row=19, end_column=7) #Nineteenth row
+        self.worksheet.merge_cells(start_row=19, start_column=8, end_row=19, end_column=9) #Nineteenth row
+        self.worksheet.merge_cells(start_row=19, start_column=10, end_row=19, end_column=11)#Nineteenth row
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~mearge rows~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                
+        print('setting borders')
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set borders~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        self.set_border_range('A1:K5')
+        self.set_border_range('B8:K8')
+        self.set_border_range('A9:K16')
+        self.set_border_range('A19:K20')
+        self.set_outside_thick_border('A2:K5')
+        self.set_outside_thick_border('B8:K8')
+        self.set_outside_thick_border('A9:K16')
+        self.set_outside_thick_border('A19:K20')
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set borders~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        print('at image') 
+        
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~add logo~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        image_name = "\\\ippdc\\Test Automation\\Excel_Templates\\logo.png"
+        img = drawing.image.Image(image_name)
+        img.anchor = 'A2' # Or whatever cell location you want to use.
+        self.worksheet.add_image(img)
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~add logo~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
+        print('adding color')
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~add color~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        for col_range in range(1, 12):
+            cell_title = self.worksheet.cell(9, col_range)
+            cell_title.fill = PatternFill(start_color="e2eb34", end_color="e2eb34", fill_type="solid") #Yellow
+            cell_title = self.worksheet.cell(14, col_range)
+            cell_title.fill = PatternFill(start_color="5ceb34", end_color="5ceb34", fill_type="solid") #Green
+            cell_title = self.worksheet.cell(15, col_range)
+            cell_title.fill = PatternFill(start_color="eb3434", end_color="eb3434", fill_type="solid")#Green
+            cell_title = self.worksheet.cell(16, col_range)
+            cell_title.fill = PatternFill(start_color="eb3434", end_color="eb3434", fill_type="solid") #Red
+            
+        for col_range in range(2, 12):
+            cell_title = self.worksheet.cell(20, col_range)
+            cell_title.fill = PatternFill(start_color="e2eb34", end_color="e2eb34", fill_type="solid") #Yellow
+        print('finished color')
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~add color~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~add words~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        a1 = self.worksheet['A1']
+        font = Font(name='Arial',size=22,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+        a1.font = font
+        a1.alignment = Alignment(horizontal='center')
+        self.worksheet['A1']='Test Data'
+        
+        e2 = self.worksheet['E2']
+        e3 = self.worksheet['E3']
+        e4 = self.worksheet['E4']
+        e5 = self.worksheet['E5']
+        a4 = self.worksheet['A4']
+        a5 = self.worksheet['A5']
+        a9 = self.worksheet['A9']
+        i5 = self.worksheet['I5']
+        font = Font(name='Arial',size=10,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+        e2.font = font
+        e2.alignment = Alignment(horizontal='right')
+        e3.font = font
+        e3.alignment = Alignment(horizontal='right')
+        e4.font = font
+        e4.alignment = Alignment(horizontal='right')
+        e5.font = font
+        e5.alignment = Alignment(horizontal='right')
+        a4.font = font
+        a4.alignment = Alignment(horizontal='right')
+        a5.font = font
+        a5.alignment = Alignment(horizontal='right')
+        a9.font = font
+        a9.alignment = Alignment(horizontal='right')
+        i5.font = font
+        i5.alignment = Alignment(horizontal='right')
+        self.worksheet['E2']='Job Number:'
+        self.worksheet['E3']='Part Number:'
+        self.worksheet['E4']='Part Type:'
+        self.worksheet['E5']='Artwork Rev:'
+        self.worksheet['A4']='Operator:'
+        self.worksheet['A5']='Workstation:'
+        self.worksheet['I5']='Location:'
+        
+        font = Font(name='Arial',size=10,bold=False,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+        a9 = self.worksheet['A9']
+        a10 = self.worksheet['A10']
+        a11 = self.worksheet['A11']
+        a12 = self.worksheet['A12']
+        a13 = self.worksheet['A13']
+        a14 = self.worksheet['A14']
+        a15 = self.worksheet['A15']
+        a16 = self.worksheet['A16']
+        a9.font = font
+        a9.alignment = Alignment(horizontal='right')
+        a10.font = font
+        a10.alignment = Alignment(horizontal='right')
+        a11.font = font
+        a11.alignment = Alignment(horizontal='right')
+        a12.font = font
+        a12.alignment = Alignment(horizontal='right')
+        a13.font = font
+        a13.alignment = Alignment(horizontal='right')
+        a14.font = font
+        a14.alignment = Alignment(horizontal='right')
+        a15.alignment = Alignment(horizontal='right')
+        a16.alignment = Alignment(horizontal='right')
+        self.worksheet['A9']='Specification'
+        self.worksheet['A10']='Average'
+        self.worksheet['A11']='Minumum'
+        self.worksheet['A12']='Maximum'
+        self.worksheet['A13']='standard Deviation'
+        self.worksheet['A14']='Qty Passed'
+        font = Font(name='Arial',size=10,bold=False,italic=False,vertAlign=None,underline='none',strike=False,color='FFFFFFFF')
+        a15.font = font
+        a16.font = font
+        self.worksheet['A15']='Qty Failed'
+        self.worksheet['A16']='% Failed'
+        
+        font = Font(name='Arial',size=9,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+        a19 = self.worksheet['A19']
+        b8 = self.worksheet['B8']
+        d8 = self.worksheet['D8']
+        f8 = self.worksheet['F8']
+        h8 = self.worksheet['H8']
+        j8 = self.worksheet['J8']
+        b7 = self.worksheet['B7']
+        a19.font = font
+        a19.alignment = Alignment(horizontal='center')
+        b8.font = font
+        b8.alignment = Alignment(horizontal='center')
+        d8.font = font
+        d8.alignment = Alignment(horizontal='center')
+        f8.font = font
+        f8.alignment = Alignment(horizontal='center')
+        h8.font = font
+        h8.alignment = Alignment(horizontal='center')
+        j8.font = font
+        j8.alignment = Alignment(horizontal='center')
+        b7.alignment = Alignment(horizontal='center')
+        b7.font = font
+        
+        self.worksheet['B7']='Statistics'
+        self.worksheet['B8']='IL'
+        self.worksheet['D8']='RL'
+        self.worksheet['F8']='ISO'
+        self.worksheet['H8']='AB'
+        self.worksheet['J8']='PB'
+        self.worksheet['A19']='Serial Number'
+        
+        
+        b18 = self.worksheet['B18']
+        b19 = self.worksheet['B19']
+        d19 = self.worksheet['D19']
+        f19 = self.worksheet['F19']
+        h19 = self.worksheet['H19']
+        j19 = self.worksheet['J19']
+        b18.font = font
+        b18.alignment = Alignment(horizontal='center')
+        b19.font = font
+        b19.alignment = Alignment(horizontal='center')
+        d19.font = font
+        d19.alignment = Alignment(horizontal='center')
+        f19.font = font
+        f19.alignment = Alignment(horizontal='center')
+        h19.font = font
+        h19.alignment = Alignment(horizontal='center')
+        j19.font = font
+        j19.alignment = Alignment(horizontal='center')
+        self.worksheet['B18']='Data'
+        self.worksheet['B19']='Insertion Loss'
+        self.worksheet['D19']='Return loss'
+        self.worksheet['F19']='Isolation'
+        self.worksheet['H19']='Amplitude Balance'
+        self.worksheet['J19']='Phase Balance'
+    
+
 class ExcelReports:
     def __init__ (self, job_num,operator,workstation):
         self.job_num = job_num
@@ -19,6 +513,7 @@ class ExcelReports:
         self.workstation = workstation
         #print('job_num=',self.job_num)
                
+    
     def test_data(self):
         job_list = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
         part_list = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).order_by('partnumber').values_list('partnumber', flat=True).distinct()
@@ -36,8 +531,12 @@ class ExcelReports:
         template_path = paths.template()
         #print('template_path=',template_path)
         
-        wb = load_workbook(template_path)
-        #print('wb=',wb)
+        wb = Workbook()
+        print('workbook=',wb)
+        print('wb.sheetnames=',wb.sheetnames)
+        
+        sheet = wb['Sheet']
+        sheet.title = 'Summary'
         
         print('artwork_list1',artwork_list)
         if not artwork_list:
@@ -49,36 +548,34 @@ class ExcelReports:
         for artwork_rev in artwork_list:
             if not artwork_rev == '':
                 temp_list.append(artwork_rev)
+        
+        
         artwork_list = temp_list
         print('artwork_list3',artwork_list)
         if not artwork_list:
-            artwork_list = ['RawData 1',]
+            artwork_list = ['UNKN REV',]
         print('artwork_list4',artwork_list)
-        # datasheet can only handle 5 artworks----for now---
-        #print('len(artwork_list)=',len(artwork_list))
-        if len(artwork_list) >5:
-            group = 5
-        else:
-            group = len(artwork_list)
+        unknown_rev='UNKN REV_0'
         
-        remove_extra = DeleteSheets(group,wb)
-        remove_extra.remove()
-        
+                
         x=1
         z=1
         print('loading data')
         ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='loading data')
         for artwork_rev in artwork_list:
             if not artwork_rev:
-                artwork_rev='RawData 1'
+                unknown_rev='UNKN REV_0'
                 report_data = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).all()
                 data_count = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).count()
-            elif 'RawData 1' in artwork_rev:
+            elif 'UNKN REV' in artwork_rev:
+                unknown_rev='UNKN REV_0'
                 report_data = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).all()
                 data_count = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).count()
             else:
                 report_data = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).filter(artwork_rev=artwork_rev).all()
                 data_count = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).filter(artwork_rev=artwork_rev).count()
+            
+            print('data_count=',data_count)
             
             conversions = Conversions(spec_data.vswr,'')
             spec_rl = round(conversions.vswr_to_rl(),2)
@@ -98,9 +595,21 @@ class ExcelReports:
                 part_num = report_data[0].partnumber
                 print('part_num=',part_num)
                 spectype = spec_data.spectype
-                
-                activesheet = "Raw Data" + str(z)
-                sheet = wb[activesheet]
+                if artwork_rev == None or artwork_rev =='':
+                    #artwork_rev = 'UNKN REV'
+                    #unknown_rev='UNKN REV_0'
+                    num=int(unknown_rev[9])
+                    print('num=',num)
+                    unknown_rev = unknown_rev[:-1]
+                    artwork_rev=unknown_rev + str(num+1)
+                    print('artwork_rev=',artwork_rev)
+                    
+                #create new sheet and format 
+                sheet = wb.create_sheet(artwork_rev) 
+                makesheet=CreateSheets(artwork_rev,sheet)
+                makesheet.tabular_data()
+                sheet = wb[artwork_rev]
+                        
                 print('sheet=',sheet)
                 sheet['B4'] = self.operator 
                 sheet['B5'] = self.workstation 
@@ -111,27 +620,49 @@ class ExcelReports:
                 
                 #~~~~~~~~~~~~configure  the tests~~~~~~~~~~~~~
                 if 'DIRECTIONAL COUPLER' in spectype:
-                    sheet['F6'] = "Coupling"
-                    sheet['H6'] = "Directivity"
-                    sheet['J6'] = "Coupling Flatness"
+                    sheet['F19'] = "Coupling"
+                    sheet['H19'] = "Directivity"
+                    sheet['J19'] = "Coupling Flatness"
                 elif 'BALUN' in spectype:
-                    sheet['F6'] = "No Test"
-                    sheet['H6'] = "Amplitude Balance"
-                    sheet['J6'] = "Phase Balance"
+                    sheet['F19'] = "No Test"
+                    sheet['H19'] = "Amplitude Balance"
+                    sheet['J19'] = "Phase Balance"
+                elif 'TRANSFORMER' in spectype:
+                    sheet['F19'] = "No Test"
+                    sheet['H19'] = "No Test"
+                    sheet['J19'] = "No Test"
                 else:
-                    sheet['F6'] = "Isolation"
-                    sheet['H6'] = "Amplitude Balance"
-                    sheet['J6'] = "Phase Balance"
+                    sheet['F19'] = "Isolation"
+                    sheet['H19'] = "Amplitude Balance"
+                    sheet['J19'] = "Phase Balance"
                 #~~~~~~~~~~~~choose the tests~~~~~~~~~~~~~
                 
                 #~~~~~~~~~~~~~~~~~~~~~~~~~~format the sheet for data~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 #Mearge split cells for normal data
-                if spec_data.ab_exp_tf:  # Dual Band AB only Don't mearge AB cels
+                if spec_data.ab_exp_tf or spec_data.dir_exp_tf:  # Dual Band AB/DIR only Don't mearge AB cels
                     for x in range(int(data_count) + 1):
                         sheet.merge_cells(start_row=x+7, start_column=2, end_row=x+7, end_column=3) #IL
                         sheet.merge_cells(start_row=x+7, start_column=4, end_row=x+7, end_column=5) #RL
                         sheet.merge_cells(start_row=x+7, start_column=6, end_row=x+7, end_column=7)  #ISO/Coup
                         sheet.merge_cells(start_row=x+7, start_column=10, end_row=x+7, end_column=11) #PB/COUP Flat
+                elif spec_data.il_exp_tf:  # Dual Band IL only Don't mearge if spec_data.il_exp_tf:  # Dual Band AB only Don't mearge AB cels
+                    for x in range(int(data_count) + 1):
+                        sheet.merge_cells(start_row=x+7, start_column=4, end_row=x+7, end_column=5) #RL
+                        sheet.merge_cells(start_row=x+7, start_column=6, end_row=x+7, end_column=7)  #ISO/Coup
+                        sheet.merge_cells(start_row=x+7, start_column=8, end_row=x+7, end_column=9) #AB/DIR
+                        sheet.merge_cells(start_row=x+7, start_column=10, end_row=x+7, end_column=11) #PB/COUP Flat cels
+                elif spec_data.coup_exp_tf or spec_data.iso_exp_tf:  # Dual Band Coupling/Isolation only Don't mearge if spec_data.coup_exp_tf:  
+                    for x in range(int(data_count) + 1):
+                        sheet.merge_cells(start_row=x+7, start_column=2, end_row=x+7, end_column=3) #IL
+                        sheet.merge_cells(start_row=x+7, start_column=4, end_row=x+7, end_column=5) #RL
+                        sheet.merge_cells(start_row=x+7, start_column=8, end_row=x+7, end_column=9) #AB/DIR
+                        sheet.merge_cells(start_row=x+7, start_column=10, end_row=x+7, end_column=11) #PB/COUP Flat    
+                elif spec_data.pb_exp_tf or spec_data.cf_exp_tf:  # Dual Band PB/Coup Flatness only Don't mearge if spec_data.pb_exp_tf:  
+                    for x in range(int(data_count) + 1):
+                        sheet.merge_cells(start_row=x+7, start_column=2, end_row=x+7, end_column=3) #IL
+                        sheet.merge_cells(start_row=x+7, start_column=4, end_row=x+7, end_column=5) #RL
+                        sheet.merge_cells(start_row=x+7, start_column=6, end_row=x+7, end_column=7)  #ISO/Coup
+                        sheet.merge_cells(start_row=x+7, start_column=8, end_row=x+7, end_column=9) #AB/DIR
                 else:
                     for x in range(int(data_count) + 1):
                         sheet.merge_cells(start_row=x+7, start_column=2, end_row=x+7, end_column=3) #IL
@@ -143,50 +674,80 @@ class ExcelReports:
                 
                 # ~~~~~~~~~~~~~~~~~~~~~~~~~~Load the specs ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 if ('90 DEGREE COUPLER' in spectype or 'BALUN' in spectype) and spec_data.ab_exp_tf:  # Dual Band AB only
-                    sheet['B7'] = str(spec_data.insertionloss) + ' Max'
-                    sheet['D7'] = str(spec_rl) + ' Max'
-                    sheet['F7'] = str(spec_data.isolation) + ' Max'
-                    sheet['H7'] = "+/- " + str(spec_data.amplitudebalance) + ' dB'
-                    sheet['I7'] = "+/- " + str(spec_data.SpecAB_exp) + ' dB'
-                    sheet['J7'] = "+/- " + str(spec_data.phasebalance) + ' deg'
-                    sheet['N7'] = str(spec_data.insertionloss) + ' Max'
-                    sheet['O7'] = str(spec_rl) + ' Max'
-                    sheet['P7'] = str(spec_data.isolation) + ' Max'
-                    sheet['Q7'] = "+/- " + str(spec_data.amplitudebalance) + ' dB'
-                    sheet['R7'] = "+/- " + str(spec_data.phasebalance) + ' deg'
+                    sheet['B20'] = str(spec_data.insertionloss) + ' Max'
+                    sheet['D20'] = str(spec_rl) + ' Max'
+                    sheet['F20'] = str(spec_data.isolation) + ' Max'
+                    sheet['H20'] = "+/- " + str(spec_data.amplitudebalance) + ' dB'
+                    sheet['I20'] = "+/- " + str(spec_data.SpecAB_exp) + ' dB'
+                    sheet['J20'] = "+/- " + str(spec_data.phasebalance) + ' deg'
+                    sheet['B9'] = str(spec_data.insertionloss) + ' Max'
+                    sheet['D9'] = str(spec_rl) + ' Max'
+                    sheet['F9'] = str(spec_data.isolation) + ' Max'
+                    sheet['H9'] = "+/- " + str(spec_data.amplitudebalance) + ' dB'
+                    sheet['J9'] = "+/- " + str(spec_data.phasebalance) + ' deg'
                 elif '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
-                    sheet['B7'] = str(spec_data.insertionloss) + ' Max'
-                    sheet['D7'] = str(spec_rl) + ' Max'
-                    sheet['F7'] = str(spec_data.isolation) + ' Max'
-                    sheet['H7'] = "+/- " + str(spec_data.amplitudebalance) + ' dB'
-                    sheet['J7'] = "+/- " + str(spec_data.phasebalance) + ' deg'
-                    sheet['N7'] = str(spec_data.insertionloss) + ' Max'
-                    sheet['O7'] = str(spec_rl) + ' Max'
-                    sheet['P7'] = str(spec_data.isolation) + ' Max'
-                    sheet['Q7'] = "+/- " + str(spec_data.amplitudebalance) + ' dB'
-                    sheet['R7'] = "+/- " + str(spec_data.phasebalance) + ' deg'
+                    sheet['B20'] = str(spec_data.insertionloss) + ' Max'
+                    sheet['D20'] = str(spec_rl) + ' Max'
+                    sheet['F20'] = str(spec_data.isolation) + ' Max'
+                    sheet['H20'] = "+/- " + str(spec_data.amplitudebalance) + ' dB'
+                    sheet['J20'] = "+/- " + str(spec_data.phasebalance) + ' deg'
+                    sheet['B9'] = str(spec_data.insertionloss) + ' Max'
+                    sheet['D9'] = str(spec_rl) + ' Max'
+                    sheet['F9'] = str(spec_data.isolation) + ' Max'
+                    sheet['H9'] = "+/- " + str(spec_data.amplitudebalance) + ' dB'
+                    sheet['J9'] = "+/- " + str(spec_data.phasebalance) + ' deg'
                 elif 'DIRECTIONAL COUPLER' in spectype:
-                    sheet['B7'] = str(spec_data.insertionloss) + ' Max'
-                    sheet['D7'] = str(spec_rl) + ' Max'
-                    sheet['F7'] = str(spec_data.coupling) + ' Max'
-                    sheet['H7'] = "+/- " + str(spec_data.directivity) + ' dB'
-                    sheet['J7'] = "+/- " + str(spec_data.coupledflatness) + ' deg'
-                    sheet['N7'] = str(spec_data.insertionloss) + ' Max'
-                    sheet['O7'] = str(spec_rl) + ' Max'
-                    sheet['P7'] = str(spec_data.coupling) + ' Max'
-                    sheet['Q7'] = "+/- " + str(spec_data.directivity) + ' dB'
-                    sheet['R7'] = "+/- " + str(spec_data.coupledflatness) + ' deg'
-
+                    sheet['B20'] = str(spec_data.insertionloss) + ' Max'
+                    sheet['D20'] = str(spec_rl) + ' Max'
+                    sheet['F20'] = str(spec_data.coupling) + ' Max'
+                    sheet['H20'] = "+/- " + str(spec_data.directivity) + ' dB'
+                    sheet['J20'] = "+/- " + str(spec_data.coupledflatness) + ' deg'
+                    sheet['B9'] = str(spec_data.insertionloss) + ' Max'
+                    sheet['D9'] = str(spec_rl) + ' Max'
+                    sheet['F9'] = str(spec_data.coupling) + ' Max'
+                    sheet['H9'] = "+/- " + str(spec_data.directivity) + ' dB'
+                    sheet['J9'] = "+/- " + str(spec_data.coupledflatness) + ' deg'
+                elif 'TRANSFORMER' in spectype and spec_data.il_exp_tf:  # Dual Band IL only
+                    sheet['B20'] = str(spec_data.insertionloss) + ' Max'
+                    sheet['B21'] = str(spec_data.il2) + ' Max'
+                    sheet['D20'] = str(spec_rl) + ' Max'
+                    sheet['F20'] = 'N/A'
+                    sheet['H20'] = 'N/A'
+                    sheet['J20'] = 'N/A'
+                    sheet['B9'] = 'N/A'
+                    sheet['D9'] = 'N/A'
+                    sheet['F9'] = 'N/A'
+                    sheet['H9'] = 'N/A'
+                    sheet['J9'] = 'N/A'
+                elif 'TRANSFORMER' in spectype:
+                    sheet['B20'] = str(spec_data.insertionloss) + ' Max'
+                    sheet['D20'] = str(spec_rl) + ' Max'
+                    sheet['F20'] = 'N/A'
+                    sheet['H20'] = 'N/A'
+                    sheet['J20'] = 'N/A'
+                    sheet['B9'] = 'N/A'
+                    sheet['D9'] = 'N/A'
+                    sheet['F9'] = 'N/A'
+                    sheet['H9'] = 'N/A'
+                    sheet['J9'] = 'N/A'
                 #Tabular data
-                rownum = 8
-                insertion_loss = []
-                return_loss = []
-                isolation = []
-                coupling = []
-                amplitude_balance = []
-                phase_balance = []
-                directivity = []
-                coupledflatness = []
+                rownum = 21
+                insertion_loss1 = []
+                return_loss1 = []
+                isolation1 = []
+                coupling1 = []
+                amplitude_balance1 = []
+                phase_balance1 = []
+                directivity1 = []
+                coupledflatness1 = []
+                insertion_loss2 = []
+                return_loss2 = []
+                isolation2 = []
+                coupling2 = []
+                amplitude_balance2 = []
+                phase_balance2 = []
+                directivity2 = []
+                coupledflatness2 = []
                 
                 stat_list = []
                 il_pass = 0
@@ -212,243 +773,311 @@ class ExcelReports:
                     if data.serialnumber[3] == " ":
                         sheet.cell(row=rownum, column=1).value= 'UUT ' + str(uut)
                         #print('data.serialnumber=',data.serialnumber)
-                        sheet.cell(row=rownum, column=2).value= round(data.insertionloss,2)
-                        testdata1 = sheet.cell(row=rownum, column=2)#Created a variable that contains cell
-                        insertion_loss.append(data.insertionloss)
-                        if data.insertionloss <= spec_list[0]:
-                            il_pass+=1
-                        else:
-                            il_fail+=1
-                            testdata1.font = Font(color='FF3342', bold=True, italic=True) #W
                         
-                        sheet.cell(row=rownum, column=4).value= round(data.returnloss,2)
-                        testdata2 = sheet.cell(row=rownum, column=4)#Created a variable that contains cell
-                        return_loss.append(data.returnloss)
-                        if data.returnloss <= spec_list[1]:
-                            rl_pass+=1
+                        ##~~~~~~~~~~~~~~~~~~~~~~~~IL Dual Band ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+                        if spec_data.il_exp_tf:
+                            if data.insertionloss and data.insertionloss2:
+                                sheet.cell(row=rownum, column=2).value= round(data.insertionloss,2)
+                                sheet.cell(row=rownum, column=3).value= round(data.insertionloss2,2)
+                                testdata1a = sheet.cell(row=rownum, column=2)#Created a variable that contains cell
+                                testdata1b = sheet.cell(row=rownum, column=3)#Created a variable that contains cell
+                                insertionloss.append(data.insertionloss)
+                                insertionloss2.append(data.insertionloss2)
+                                if data.insertionloss <= spec_data.insertionloss and data.insertionloss2 <= spec_data.il2:
+                                    il_pass+=1
+                                else:
+                                    il_fail+=1
+                                    if data.insertionloss > spec_data.insertionloss:
+                                        testdata1a.font = Font(color='FF3342', bold=True, italic=True) #W
+                                    if data.ainsertionloss2 > spec_data.il2:
+                                        testdata1b.font = Font(color='FF3342', bold=True, italic=True) #W
+                        ##~~~~~~~~~~~~~~~~~~~~~~~~IL Dual Band ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
                         else:
-                            rl_fail+=1
-                            testdata2.font = Font(color='FF3342', bold=True, italic=True) #W
+                            if data.insertionloss:
+                                sheet.cell(row=rownum, column=2).value= round(data.insertionloss,2)
+                                testdata1 = sheet.cell(row=rownum, column=2)#Created a variable that contains cell
+                                insertion_loss1.append(data.insertionloss)
+                                if data.insertionloss <= spec_data.insertionloss:
+                                    il_pass+=1
+                                else:
+                                    il_fail+=1
+                                    testdata1.font = Font(color='FF3342', bold=True, italic=True) #W
+                        
+                        if data.returnloss:
+                            sheet.cell(row=rownum, column=4).value= round(data.returnloss,2)
+                            testdata2 = sheet.cell(row=rownum, column=4)#Created a variable that contains cell
+                            return_loss1.append(data.returnloss)
+                            if data.returnloss <= spec_rl:
+                                rl_pass+=1
+                            else:
+                                rl_fail+=1
+                                testdata2.font = Font(color='FF3342', bold=True, italic=True) #W
                         
                         if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
-                            sheet.cell(row=rownum, column=6).value= round(data.isolation,2)
-                            testdata3 = sheet.cell(row=rownum, column=6)#Created a variable that contains cell
-                            isolation.append(data.isolation)
-                            if data.isolation <= spec_list[2]:
-                                iso_pass+=1
-                            else:
-                                iso_fail+=1
-                                testdata3.font = Font(color='FF3342', bold=True, italic=True) #W
+                            if data.isolation:
+                                sheet.cell(row=rownum, column=6).value= round(data.isolation,2)
+                                testdata3 = sheet.cell(row=rownum, column=6)#Created a variable that contains cell
+                                isolation1.append(data.isolation)
+                                if data.isolation <= spec_data.isolation:
+                                    iso_pass+=1
+                                else:
+                                    iso_fail+=1
+                                    testdata3.font = Font(color='FF3342', bold=True, italic=True) #W
                             ##~~~~~~~~~~~~~~~~~~~~~~~~AB Dual Band ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
                             if spec_data.ab_exp_tf:
-                                sheet.cell(row=rownum, column=8).value= round(data.amplitudebalance1,2)
-                                sheet.cell(row=rownum, column=9).value= round(data.amplitudebalance2,2)
-                                testdata4a = sheet.cell(row=rownum, column=8)#Created a variable that contains cell
-                                testdata4b = sheet.cell(row=rownum, column=8)#Created a variable that contains cell
-                                amplitude_balance.append(data.amplitudebalance)
-                                if data.amplitudebalance1 <= spec_list[3] and data.amplitudebalance2 <= spec_list[5]:
-                                    ab_pass+=1
-                                else:
-                                    ab_fail+=1
-                                    if data.amplitudebalance1 > spec_list[3]:
-                                        testdata4a.font = Font(color='FF3342', bold=True, italic=True) #W
-                                    if data.amplitudebalance2 > spec_list[5]:
-                                        testdata4b.font = Font(color='FF3342', bold=True, italic=True) #W
+                                if data.amplitudebalance1 and data.amplitudebalance2:
+                                    sheet.cell(row=rownum, column=8).value= round(data.amplitudebalance1,2)
+                                    sheet.cell(row=rownum, column=9).value= round(data.amplitudebalance2,2)
+                                    testdata4a = sheet.cell(row=rownum, column=8)#Created a variable that contains cell
+                                    testdata4b = sheet.cell(row=rownum, column=9)#Created a variable that contains cell
+                                    amplitude_balance1.append(data.amplitudebalance)
+                                    amplitude_balance2.append(data.amplitudebalance2)
+                                    if data.amplitudebalance1 <= spec_list[3] and data.amplitudebalance2 <= spec_list[5]:
+                                        ab_pass+=1
+                                    else:
+                                        ab_fail+=1
+                                        if data.amplitudebalance1 > spec_list[3]:
+                                            testdata4a.font = Font(color='FF3342', bold=True, italic=True) #W
+                                        if data.amplitudebalance2 > spec_list[5]:
+                                            testdata4b.font = Font(color='FF3342', bold=True, italic=True) #W
                             ##~~~~~~~~~~~~~~~~~~~~~~~~AB Dual Band ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
                             else:
-                                sheet.cell(row=rownum, column=8).value= round(data.amplitudebalance,2)
-                                testdata4 = sheet.cell(row=rownum, column=8)#Created a variable that contains cell
-                                amplitude_balance.append(data.amplitudebalance)
-                                if data.amplitudebalance <= spec_list[3]:
-                                    ab_pass+=1
-                                else:
-                                    ab_fail+=1
-                                    testdata4.font = Font(color='FF3342', bold=True, italic=True) #W
+                                if data.amplitudebalance:
+                                    sheet.cell(row=rownum, column=8).value= round(data.amplitudebalance,2)
+                                    testdata4 = sheet.cell(row=rownum, column=8)#Created a variable that contains cell
+                                    amplitude_balance1.append(data.amplitudebalance)
+                                    if data.amplitudebalance <= spec_list[3]:
+                                        ab_pass+=1
+                                    else:
+                                        ab_fail+=1
+                                        testdata4.font = Font(color='FF3342', bold=True, italic=True) #W
 
-                            sheet.cell(row=rownum, column=10).value= round(data.phasebalance,2)
-                            testdata5 = sheet.cell(row=rownum, column=10)#Created a variable that contains cell
-                            phase_balance.append(data.phasebalance)
-                            if data.phasebalance <= spec_list[4]:
-                                pb_pass+=1
-                            else:
-                                pb_fail+=1
+                            if data.phasebalance:
+                                sheet.cell(row=rownum, column=10).value= round(data.phasebalance,2)
+                                testdata5 = sheet.cell(row=rownum, column=10)#Created a variable that contains cell
+                                phase_balance1.append(data.phasebalance)
+                                if data.phasebalance <= spec_list[4]:
+                                    pb_pass+=1
+                                else:
+                                    pb_fail+=1
                         else:
-                            sheet.cell(row=rownum, column=6).value= round(data.coupling,2)
-                            testdata3 = sheet.cell(row=rownum, column=6)#Created a variable that contains cell
-                            coupling.append(data.coupling)
-                            if data.coupling <= spec_list[2]:
-                                coup_pass+=1
+                            ##~~~~~~~~~~~~~~~~~~~~~~~~COUP Dual Band ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+                            if spec_data.coup_exp_tf:
+                                if data.coupling and data.coupling2:
+                                    sheet.cell(row=rownum, column=6).value= round(data.coupling,2)
+                                    sheet.cell(row=rownum, column=7).value= round(data.coupling2,2)
+                                    testdata3a = sheet.cell(row=rownum, column=6)#Created a variable that contains cell
+                                    testdata3b = sheet.cell(row=rownum, column=7)#Created a variable that contains cell
+                                    coupling1.append(data.coupling)
+                                    coupling2.append(data.coupling2)
+                                    if data.coupling <= spec_data.coupling and data.coupling2 <= spec_data.coupling2:
+                                        coup_pass+=1
+                                    else:
+                                        coup_fail+=1
+                                        if data.coupling > spec_data.coupling:
+                                            testdata3a.font = Font(color='FF3342', bold=True, italic=True) #W
+                                        if coupling2 > spec_data.coupling2:
+                                            testdata3b.font = Font(color='FF3342', bold=True, italic=True) #W
+                            ##~~~~~~~~~~~~~~~~~~~~~~~~COUP Dual Band ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
                             else:
-                                coup_fail+=1
-                                testdata3 = sheet.cell(row=rownum, column=6)#Created a variable that contains cell
+                                if data.coupling:
+                                    sheet.cell(row=rownum, column=6).value= round(data.coupling,2)
+                                    testdata3 = sheet.cell(row=rownum, column=6)#Created a variable that contains cell
+                                    coupling1.append(data.coupling)
+                                    if data.coupling <= spec_data.coupling:
+                                        coup_pass+=1
+                                    else:
+                                        coup_fail+=1
+                                        testdata3 = sheet.cell(row=rownum, column=6)#Created a variable that contains cell
                             
-                            sheet.cell(row=rownum, column=8).value= round(data.directivity,2)
-                            testdata4 = sheet.cell(row=rownum, column=8)#Created a variable that contains cell
-                            directivity.append(data.directivity)
-                            if data.directivity <= spec_list[3]:
-                                dir_pass+=1
-                            else:
-                                dir_fail+=1
-                                testdata4.font = Font(color='FF3342', bold=True, italic=True) #W
+                            if data.directivity:
+                                sheet.cell(row=rownum, column=8).value= round(data.directivity,2)
+                                testdata4 = sheet.cell(row=rownum, column=8)#Created a variable that contains cell
+                                directivity1.append(data.directivity)
+                                if data.directivity <= spec_list[3]:
+                                    dir_pass+=1
+                                else:
+                                    dir_fail+=1
+                                    testdata4.font = Font(color='FF3342', bold=True, italic=True) #W
                             
-                            sheet.cell(row=rownum, column=10).value= round(data.coupledflatness,2)
-                            testdata5 = sheet.cell(row=rownum, column=10)#Created a variable that contains cell
-                            coupledflatness.append(data.coupledflatness)
-                            if data.coupledflatness <= spec_list[4]:
-                                cf_pass+=1
-                            else:
-                                cf_fail+=1
-                                testdata5.font = Font(color='FF3342', bold=True, italic=True) #W
-                        rownum+=1
+                            ##~~~~~~~~~~~~~~~~~~~~~~~~CF Dual Band ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+                            if spec_data.cf_exp_tf:
+                                if data.coupledflatness and data.coupledflatness2:
+                                    sheet.cell(row=rownum, column=10).value= round(data.coupledflatness,2)
+                                    sheet.cell(row=rownum, column=11).value= round(data.coupledflatness2,2)
+                                    testdata5a = sheet.cell(row=rownum, column=10)#Created a variable that contains cell
+                                    testdata5b = sheet.cell(row=rownum, column=11)#Created a variable that contains cell
+                                    coupledflatness1.append(data.coupledflatness)
+                                    coupledflatness2.append(data.coupledflatness2)
+                                    if data.coupledflatness <= spec_data.coupledflatness and data.coupledflatness2 <= spec_data.coupledflatness2:
+                                        cf_pass+=1
+                                    else:
+                                        cf_fail+=1
+                                        if data.coupledflatness > spec_data.coupledflatness:
+                                            testdata5a.font = Font(color='FF3342', bold=True, italic=True) #W
+                                        if coupledflatness2 > spec_data.coupledflatness2:
+                                            testdata5b.font = Font(color='FF3342', bold=True, italic=True) #W
+                            ##~~~~~~~~~~~~~~~~~~~~~~~~AB Dual Band ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+                            else:    
+                                if data.coupledflatness:
+                                    sheet.cell(row=rownum, column=10).value= round(data.coupledflatness,2)
+                                    testdata5 = sheet.cell(row=rownum, column=10)#Created a variable that contains cell
+                                    coupledflatness1.append(data.coupledflatness)
+                                    if data.coupledflatness <= spec_list[4]:
+                                        cf_pass+=1
+                                    else:
+                                        cf_fail+=1
+                                        testdata5.font = Font(color='FF3342', bold=True, italic=True) #W
+                            rownum+=1
                         uut+=1
                     
                 #~~~~~~~~~~~~~~~~Statics and Summary ~~~~~~~~~~~~~~~~~~~~
-                if len(insertion_loss) > 1:# must have at least two tests
+                if len(insertion_loss1) > 1:# must have at least two tests
                     list_names = ['Min','Max','Avg','Stdev']
-                    #print('insertion_loss=',insertion_loss)
-                    il_stdev = round(statistics.stdev(insertion_loss),2) #Standard deviation
-                    il_var = round(statistics.variance(insertion_loss),2) #Variance
-                    il_avg = round(statistics.mean(insertion_loss),2) #Mean Average
-                    il_min = round(min(insertion_loss),2) #Min
-                    il_max = round(max(insertion_loss),2) #Max
-                    sheet['N8'] = il_avg
-                    sheet['N9'] = il_min
-                    sheet['N10'] = il_max
-                    sheet['N11'] = il_stdev
-                    sheet['N12'] = il_pass
-                    sheet['N13'] = il_fail
-                    sheet['N14'] = round(il_fail/rownum,2)
+                    #print('insertion_loss1=',insertion_loss1)
+                    il_stdev = round(statistics.stdev(insertion_loss1),2) #Standard deviation
+                    il_var = round(statistics.variance(insertion_loss1),2) #Variance
+                    il_avg = round(statistics.mean(insertion_loss1),2) #Mean Average
+                    il_min = round(min(insertion_loss1),2) #Min
+                    il_max = round(max(insertion_loss1),2) #Max
+                    sheet['B10'] = il_avg
+                    sheet['B11'] = il_min
+                    sheet['B12'] = il_max
+                    sheet['B13'] = il_stdev
+                    sheet['B14'] = il_pass
+                    sheet['B15'] = il_fail
+                    sheet['B16'] = round(il_fail/rownum,2)
                     il_list = [il_min,il_max,il_avg,il_stdev]
                     #print('il_list=',il_list)
 
-                    #print('return_loss=',return_loss)
-                    rl_stdev = round(statistics.stdev(return_loss),2) #Standard deviation
-                    if len(return_loss)>1:
-                        rl_var = round(statistics.variance(return_loss),2) #Variance
+                    #print('return_loss1=',return_loss1)
+                    rl_stdev = round(statistics.stdev(return_loss1),2) #Standard deviation
+                    if len(return_loss1)>1:
+                        rl_var = round(statistics.variance(return_loss1),2) #Variance
                     else:
                         rl_var = 0 #Variance
-                    rl_var = round(statistics.variance(return_loss),2) #Variance
-                    rl_avg = round(statistics.mean(return_loss),2) #Mean Average
-                    rl_min = round(min(return_loss),2) #Min
-                    rl_max = round(max(return_loss),2) #Max
+                    rl_var = round(statistics.variance(return_loss1),2) #Variance
+                    rl_avg = round(statistics.mean(return_loss1),2) #Mean Average
+                    rl_min = round(min(return_loss1),2) #Min
+                    rl_max = round(max(return_loss1),2) #Max
                     rl_list = [rl_min,rl_max,rl_avg,rl_stdev]
-                    sheet['O8'] = rl_avg
-                    sheet['O9'] = rl_min
-                    sheet['O10'] = rl_max
-                    sheet['O11'] = rl_stdev
-                    sheet['O12'] = rl_pass
-                    sheet['O13'] = rl_fail
-                    sheet['O14'] = round(rl_fail/rownum,2)
+                    sheet['D10'] = rl_avg
+                    sheet['D11'] = rl_min
+                    sheet['D12'] = rl_max
+                    sheet['D13'] = rl_stdev
+                    sheet['D14'] = rl_pass
+                    sheet['D14'] = rl_fail
+                    sheet['D16'] = round(rl_fail/rownum,2)
                     #print('rl_list=',rl_list)
 
                     if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
-                        iso_stdev = round(statistics.stdev(isolation),2) #Standard deviation
-                        if len(isolation)>1:
-                            iso_var = round(statistics.variance(isolation),2) #Variance
+                        iso_stdev = round(statistics.stdev(isolation1),2) #Standard deviation
+                        if len(isolation1)>1:
+                            iso_var = round(statistics.variance(isolation1),2) #Variance
                         else:
                             iso_var = 0 #Variance
-                        iso_avg = round(statistics.mean(isolation),2) #Mean Average
-                        iso_min = round(min(isolation),2) #Min
-                        iso_max = round(max(isolation),2) #Max
+                        iso_avg = round(statistics.mean(isolation1),2) #Mean Average
+                        iso_min = round(min(isolation1),2) #Min
+                        iso_max = round(max(isolation1),2) #Max
                         iso_list = [iso_min,iso_max,iso_avg,iso_stdev]
-                        sheet['P8'] = iso_avg
-                        sheet['P9'] = iso_min
-                        sheet['P10'] = iso_max
-                        sheet['P11'] = iso_stdev
-                        sheet['P12'] = iso_pass
-                        sheet['P13'] = iso_fail
-                        sheet['P14'] = round(iso_fail/rownum,2)
+                        sheet['F10'] = iso_avg
+                        sheet['F11'] = iso_min
+                        sheet['F12'] = iso_max
+                        sheet['F13'] = iso_stdev
+                        sheet['F14'] = iso_pass
+                        sheet['F15'] = iso_fail
+                        sheet['F16'] = round(iso_fail/rownum,2)
                         #print('iso_list=',iso_list)
 
-                        ab_stdev = round(statistics.stdev(amplitude_balance),2) #Standard deviation
-                        if len(amplitude_balance)>1:
-                            ab_var = round(statistics.variance(amplitude_balance),2) #Variance
+                        ab_stdev = round(statistics.stdev(amplitude_balance1),2) #Standard deviation
+                        if len(amplitude_balance1)>1:
+                            ab_var = round(statistics.variance(amplitude_balance1),2) #Variance
                         else:
                             ab_var = 0 #Variance
-                        ab_avg = round(statistics.mean(amplitude_balance),2) #Mean Average
-                        ab_min = round(min(amplitude_balance),2) #Min
-                        ab_max = round(max(amplitude_balance),2) #Max
+                        ab_avg = round(statistics.mean(amplitude_balance1),2) #Mean Average
+                        ab_min = round(min(amplitude_balance1),2) #Min
+                        ab_max = round(max(amplitude_balance1),2) #Max
                         ab_list = [ab_min,ab_max,ab_avg,ab_stdev]
-                        sheet['Q8'] = ab_avg
-                        sheet['Q9'] = ab_min
-                        sheet['Q10'] = ab_max
-                        sheet['Q11'] = ab_stdev
-                        sheet['Q12'] = ab_pass
-                        sheet['Q13'] = ab_fail
-                        sheet['Q14'] = round(ab_fail/rownum,2)
+                        sheet['H10'] = ab_avg
+                        sheet['H11'] = ab_min
+                        sheet['H12'] = ab_max
+                        sheet['H13'] = ab_stdev
+                        sheet['H14'] = ab_pass
+                        sheet['H15'] = ab_fail
+                        sheet['H16'] = round(ab_fail/rownum,2)
                         #print('ab_list=',ab_list)
 
-                        pb_stdev = round(statistics.stdev(phase_balance),2) #Standard deviation
-                        if len(phase_balance)>1:
-                            pb_var = round(statistics.variance(phase_balance),2) #Variance
+                        pb_stdev = round(statistics.stdev(phase_balance1),2) #Standard deviation
+                        if len(phase_balance1)>1:
+                            pb_var = round(statistics.variance(phase_balance1),2) #Variance
                         else:
                             pb_var = 0 #Variance
-                        pb_avg = round(statistics.mean(phase_balance),2) #Mean Average
-                        pb_min = round(min(phase_balance),2) #Min
-                        pb_max = round(max(phase_balance),2) #Max
+                        pb_avg = round(statistics.mean(phase_balance1),2) #Mean Average
+                        pb_min = round(min(phase_balance1),2) #Min
+                        pb_max = round(max(phase_balance1),2) #Max
                         pb_list = [pb_min,pb_max,pb_avg,pb_stdev]
-                        sheet['R8'] = pb_avg
-                        sheet['R9'] = pb_min
-                        sheet['R10'] = pb_max
-                        sheet['R11'] = pb_stdev
-                        sheet['R12'] = pb_pass
-                        sheet['R13'] = pb_fail
-                        sheet['R14'] = round(pb_fail/rownum,2)
+                        sheet['J10'] = pb_avg
+                        sheet['J11'] = pb_min
+                        sheet['J12'] = pb_max
+                        sheet['J13'] = pb_stdev
+                        sheet['J14'] = pb_pass
+                        sheet['J15'] = pb_fail
+                        sheet['J15'] = round(pb_fail/rownum,2)
                         #print('pb_list=',pb_list)
                         stat_list = [il_list,rl_list,iso_list,ab_list,pb_list]
                     else:
-                        coup_stdev = round(statistics.stdev(coupling),2) #Standard deviation
-                        if len(coupling)>1:
-                            coup_var = round(statistics.variance(coupling),2) #Variance
+                        coup_stdev = round(statistics.stdev(coupling1),2) #Standard deviation
+                        if len(coupling1)>1:
+                            coup_var = round(statistics.variance(coupling1),2) #Variance
                         else:
                             coup_var = 0 #Variance
-                        coup_avg = round(statistics.mean(coupling),2) #Mean Average
-                        coup_min = round(min(coupling),2) #Min
-                        coup_max = round(max(coupling),2) #Max
+                        coup_avg = round(statistics.mean(coupling1),2) #Mean Average
+                        coup_min = round(min(coupling1),2) #Min
+                        coup_max = round(max(coupling1),2) #Max
                         coup_list = [coup_min,coup_max,coup_avg,coup_stdev]
-                        sheet['P8'] = coup_avg
-                        sheet['P9'] = coup_min
-                        sheet['P10'] = coup_max
-                        sheet['P11'] = coup_stdev
-                        sheet['P12'] = coup_pass
-                        sheet['P13'] = coup_fail
-                        sheet['P14'] = round(coup_fail/rownum,2)
+                        sheet['B10'] = coup_avg
+                        sheet['B11'] = coup_min
+                        sheet['B12'] = coup_max
+                        sheet['B13'] = coup_stdev
+                        sheet['B14'] = coup_pass
+                        sheet['B15'] = coup_fail
+                        sheet['B16'] = round(coup_fail/rownum,2)
                         #print('iso_list=',iso_list)
 
-                        dir_stdev = round(statistics.stdev(directivity),2) #Standard deviation
-                        if len(directivity)>1:
-                            dir_var = round(statistics.variance(directivity),2) #Variance
+                        dir_stdev = round(statistics.stdev(directivity1),2) #Standard deviation
+                        if len(directivity1)>1:
+                            dir_var = round(statistics.variance(directivity1),2) #Variance
                         else:
                             dir_var = 0 #Variance
-                        dir_avg = round(statistics.mean(directivity),2) #Mean Average
-                        dir_min = round(min(directivity),2) #Min
-                        dir_max = round(max(directivity),2) #Max
+                        dir_avg = round(statistics.mean(directivity1),2) #Mean Average
+                        dir_min = round(min(directivity1),2) #Min
+                        dir_max = round(max(directivity1),2) #Max
                         dir_list = [dir_min,dir_max,dir_avg,dir_stdev]
-                        sheet['Q8'] = dir_avg
-                        sheet['Q9'] = dir_min
-                        sheet['Q10'] = dir_max
-                        sheet['Q11'] = dir_stdev
-                        sheet['Q12'] = dir_pass
-                        sheet['Q13'] = dir_fail
-                        sheet['Q14'] = round(dir_fail/rownum,2)
+                        sheet['D10'] = dir_avg
+                        sheet['D11'] = dir_min
+                        sheet['D12'] = dir_max
+                        sheet['D13'] = dir_stdev
+                        sheet['D14'] = dir_pass
+                        sheet['D15'] = dir_fail
+                        sheet['D16'] = round(dir_fail/rownum,2)
                         #print('ab_list=',ab_list)
 
-                        cf_stdev = round(statistics.stdev(coupledflatness),2) #Standard deviation
-                        if len(coupledflatness)>1:
-                            cf_var = round(statistics.variance(coupledflatness),2) #Variance
+                        cf_stdev = round(statistics.stdev(coupledflatness1),2) #Standard deviation
+                        if len(coupledflatness1)>1:
+                            cf_var = round(statistics.variance(coupledflatness1),2) #Variance
                         else:
                             cf_var = 0 #Variance
-                        cf_avg = round(statistics.mean(coupledflatness),2) #Mean Average
-                        cf_min = round(min(coupledflatness),2) #Min
-                        cf_max = round(max(coupledflatness),2) #Max
+                        cf_avg = round(statistics.mean(coupledflatness1),2) #Mean Average
+                        cf_min = round(min(coupledflatness1),2) #Min
+                        cf_max = round(max(coupledflatness1),2) #Max
                         cf_list = [cf_min,cf_max,cf_avg,cf_stdev]
-                        sheet['R8'] = cf_avg
-                        sheet['R9'] = cf_min
-                        sheet['R10'] = cf_max
-                        sheet['R11'] = cf_stdev
-                        sheet['R12'] = cf_pass
-                        sheet['R13'] = cf_fail
-                        sheet['R14'] = round(cf_fail/rownum,2)
+                        sheet['F10'] = cf_avg
+                        sheet['F11'] = cf_min
+                        sheet['F12'] = cf_max
+                        sheet['F13'] = cf_stdev
+                        sheet['F14'] = cf_pass
+                        sheet['F15'] = cf_fail
+                        sheet['F16'] = round(cf_fail/rownum,2)
                         #print('pb_list=',pb_list)
                         stat_list = [il_list,rl_list,coup_list,dir_list,cf_list]
 
@@ -548,15 +1177,17 @@ class ExcelReports:
                     #~~~~~~~~~~~~~~~~~~~~~~Summary sheet~~~~~~~~~~~~~~~~~~~~~~~~
                     #rename the sheet to the artworkrev
                     x+=1
-                    sum_row+=1
-            z+=1    
+                    
+            z+=1  
+            sum_row+=1            
             #~~~~~~~~~~~~~~~~~~~~~~~~~charts~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='loading charts')
             trace_num = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Insertion Loss J3').count()
-            loadcharts = Charts(len(artwork_list),self.job_num,part_num,spectype,self.operator,self.workstation,wb)
-            loadcharts.load()
+            loadcharts=LoadCharts(self.job_num,part_num,spectype,wb,artwork_rev)
+            loadcharts.charts()
             print('Charts Loaded')
-         #~~~~~~~~~~~~~~~~~~~~~~~~~Save~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
+        #~~~~~~~~~~~~~~~~~~~~~~~~~Save~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         savenow = SaveReports(self.job_num,part_num,spectype,self.operator,self.workstation,wb)
         savenow.save()
         ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='report complete')
@@ -616,149 +1247,321 @@ class ReportFiles:
         return new_path
         
 class SaveReports:
-    def __init__ (self, job_num,part_num,spec_type,operator,workstation,wb):
+    def __init__ (self, job_num,part_num,spec_type,operator,workstation,workbook):
         self.job_num = job_num
         self.part_num = part_num
         self.spec_type = spec_type
         self.operator = operator
         self.workstation = workstation
-        self.wb = wb
+        self.workbook = workbook
         
     def save(self):
         paths = ReportFiles(self.job_num,self.part_num,self.spec_type)
         data_path = paths.data_path()
-        self.wb.save(data_path + "TestData " + self.job_num + ".xlsx")
+        self.workbook.save(data_path + "TestData " + self.job_num + ".xlsx")
         ReportQueue.objects.using('TEST').filter(reportstatus='in process').filter(jobnumber = self.job_num).filter(partnumber=self.part_num).filter(operator=self.operator).filter(workstation=self.workstation).update(reportstatus='complete')
 
 
 
 
-
-class Charts:
-    def __init__ (self, rev_num,job_num,part_num,spec_type,operator,workstation,wb):
-        self.rev_num = rev_num
-        self.job_num = job_num
-        self.part_num = part_num
+'''
+rows = [
+    ['Date', 'Batch 1', 'Batch 2', 'Batch 3'],
+    [date(2015,9, 1), 40, 30, 25],
+    [date(2015,9, 2), 40, 25, 30],
+    [date(2015,9, 3), 50, 30, 45],
+    [date(2015,9, 4), 30, 25, 40],
+    [date(2015,9, 5), 25, 35, 30],
+    [date(2015,9, 6), 20, 40, 35],
+]
+'''
+class MakeCharts:
+    def __init__ (self,sheet,spec_type,chartdata):
+        self.sheet = sheet
         self.spec_type = spec_type
-        self.operator = operator
-        self.workstation = workstation
-        self.wb = wb
-        print('loading charts')
+        self.chartdata = chartdata
+        #print('loading Makecharts')
+        print('chartdata=',chartdata)
+    
+    def chart1(self):
+        print('self.spec_type=',self.spec_type)
+        chart1 = LineChart()
+        chart1.style = 12
+        chart1.y_axis.title = 'dB'
+        chart1.x_axis.title = 'Frequency MHz'
+        if not self.chartdata:
+            return 0
+        try:
+            chart1.x_axis.scaling.min = min([sublist[1] for sublist in self.chartdata])
+            chart1.x_axis.scaling.max = max([sublist[1] for sublist in self.chartdata])
+        except IndexError as e:
+            return 0
+                
+        chart1.legend = None
+        chart1.width = 14
+        chart1.height = 7
+        if '90 DEGREE COUPLER' in self.spec_type or 'BALUN' in self.spec_type: # type with 2 IL traces
+            chart1.title='Insertion Loss'
+            #~~~~~~~~~~~~~~~~~~~~~~~~~Calculate y-Axis~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            try:
+                t1_min=min([sublist[2] for sublist in self.chartdata])
+                t2_min=min([sublist[3] for sublist in self.chartdata])
+            except IndexError as e:
+                return 0
+            
+            if t2_min<t1_min:
+                y_min= t2_min
+            else:
+                y_min=t1_min
+            
+            t1_max=max([sublist[2] for sublist in self.chartdata])
+            t2_max=max([sublist[3] for sublist in self.chartdata])
+            if t2_max>t1_max:
+                y_max=t2_max
+            else:
+                y_max=t1_max
+            
+            y_delta=y_max-y_min
+            chart1.y_axis.scaling.min = y_min-(2*y_delta)
+            chart1.y_axis.scaling.max = y_max+(2*y_delta)
+            data = Reference(self.sheet, min_col=1, min_row=56, max_col=3, max_row=257)
+            chart1.add_data(data, titles_from_data=False)
+             #~~~~~~~~~~~~~~~~~~~~~~~~~Calculate y-Axis~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        else:
+            chart1.title = "Insertion Loss"
+            if not self.chartdata:
+                return 0
+            try:
+                y_min=min([sublist[2] for sublist in self.chartdata])
+                y_max=max([sublist[2] for sublist in self.chartdata])
+            except IndexError as e:
+                return 0
+            
+            y_delta=y_max-y_min
+            chart1.y_axis.scaling.min = y_min-(2*y_delta)
+            chart1.y_axis.scaling.max = y_max+(2*y_delta)
+            data = Reference(self.sheet, min_col=1, min_row=56, max_col=2, max_row=257)
+            chart1.add_data(data, titles_from_data=False)
+        self.sheet.add_chart(chart1, "A6")
+    
+    def chart2(self):
+        print('self.spec_type=',self.spec_type)
+        chart2 = LineChart()
+        chart2.style = 12
+        chart2.y_axis.title = 'dB'
+        chart2.x_axis.title = 'Frequency MHz'
+        if not self.chartdata:
+            return 0
+        try:
+            chart2.x_axis.scaling.min = min([sublist[1] for sublist in self.chartdata])
+            chart2.x_axis.scaling.max = max([sublist[1] for sublist in self.chartdata])
+        except IndexError as e:
+            return 0
+       
+        chart2.legend = None
+        chart2.width = 14
+        chart2.height = 7
+        chart2.title = "Return Loss"
+        if not self.chartdata:
+            return 0
+        try:
+            y_min=min([sublist[2] for sublist in self.chartdata])
+            y_max=max([sublist[2] for sublist in self.chartdata])
+        except IndexError as e:
+            return 0
+       
+        y_delta=y_max-y_min
+        chart2.y_axis.scaling.min = y_min-(2*y_delta)
+        chart2.y_axis.scaling.max = y_max+(2*y_delta)
+        chart_titles = ['Frequency', 'Return Loss']
+        chart_titles.append(self.chartdata)
+        data = Reference(self.sheet, min_col=4, min_row=56, max_col=5, max_row=257)
+        chart2.add_data(data, titles_from_data=False)
+        self.sheet.add_chart(chart2, "A18")  
+
+    def chart3(self):
+        print('self.spec_type=',self.spec_type)
+        chart3 = LineChart()
+        chart3.style = 12
+        chart3.y_axis.title = 'dB'
+        chart3.x_axis.title = 'Frequency MHz'
+        if not self.chartdata:
+            return 0
+        try:
+            chart3.x_axis.scaling.min = min([sublist[1] for sublist in self.chartdata])
+            chart3.x_axis.scaling.max = max([sublist[1] for sublist in self.chartdata])
+        except IndexError as e:
+            return 0
         
-    def load(self):
-        if self.rev_num==1:
-            charts = LoadCharts(self.job_num,self.part_num,self.spec_type,self.operator,self.workstation,1,self.wb)
-            #print('charts=',charts)
-            charts.chart1()
-            charts.chart2()
-            charts.chart3()
-            charts.chart4()
-        elif self.rev_num==2:
-            charts = LoadCharts(self.job_num,self.part_num,self.spec_type,self.operator,self.workstation,1,self.wb)
-            charts.chart1()
-            charts.chart2()
-            charts.chart3()
-            charts.chart4()
-            charts = LoadCharts(self.job_num,self.part_num,self.spec_type,self.operator,self.workstation,2,self.wb)
-            charts.chart1()
-            charts.chart2()
-            charts.chart3()
-            charts.chart4()
-        elif self.rev_num==3:
-            charts = LoadCharts(self.job_num,self.part_num,self.spec_type,self.operator,self.workstation,1,self.wb)
-            charts.chart1()
-            charts.chart2()
-            charts.chart3()
-            charts.chart4()
-            charts = LoadCharts(self.job_num,self.part_num,self.spec_type,self.operator,self.workstation,2,self.wb)
-            charts.chart1()
-            charts.chart2()
-            charts.chart3()
-            charts.chart4()
-            charts = LoadCharts(self.job_num,self.part_num,self.spec_type,self.operator,self.workstation,3,self.wb)
-            charts.chart1()
-            charts.chart2()
-            charts.chart3()
-            charts.chart4()
-        elif self.rev_num==4:
-            charts = LoadCharts(self.job_num,self.part_num,self.spec_type,self.operator,self.workstation,1,self.wb)
-            charts.chart1()
-            charts.chart2()
-            charts.chart3()
-            charts.chart4()
-            charts = LoadCharts(self.job_num,self.part_num,self.spec_type,self.operator,self.workstation,2,self.wb)
-            charts.chart1()
-            charts.chart2()
-            charts.chart3()
-            charts.chart4()
-            charts = LoadCharts(self.job_num,self.part_num,self.spec_type,self.operator,self.workstation,3,self.wb)
-            charts.chart1()
-            charts.chart2()
-            charts.chart3()
-            charts.chart4()
-            charts = LoadCharts(self.job_num,self.part_num,self.spec_type,self.operator,self.workstation,4,self.wb)
-            charts.chart1()
-            charts.chart2()
-            charts.chart3()
-            charts.chart4()
-        elif self.rev_num==5:
-            charts = LoadCharts(self.job_num,self.part_num,self.spec_type,self.operator,self.workstation,1,self.wb)
-            charts.chart1()
-            charts.chart2()
-            charts.chart3()
-            charts.chart4()
-            ccharts = LoadCharts(self.job_num,self.part_num,self.spec_type,self.operator,self.workstation,2,self.wb)
-            charts.chart1()
-            charts.chart2()
-            charts.chart3()
-            charts.chart4()
-            charts = LoadCharts(self.job_num,self.part_num,self.spec_type,self.operator,self.workstation,3,self.wb)
-            charts.chart1()
-            charts.chart2()
-            charts.chart3()
-            charts.chart4()
-            charts = LoadCharts(self.job_num,self.part_num,self.spec_type,self.operator,self.workstation,4,self.wb)
-            charts.chart1()
-            charts.chart2()
-            charts.chart3()
-            charts.chart4()
-            charts = LoadCharts(self.job_num,self.part_num,self.spec_type,self.operator,self.workstation,5,self.wb)
-            charts.chart1()
-            charts.chart2()
-            charts.chart3()
-            charts.chart4()
+        chart3.legend = None
+        chart3.width = 14
+        chart3.height = 7
+        chart3.title = "Isolation"
+        if not self.chartdata:
+            return 0
+        try:
+            y_min=min([sublist[2] for sublist in self.chartdata])
+            y_max=max([sublist[2] for sublist in self.chartdata])
+        except IndexError as e:
+            return 0
+        y_delta=y_max-y_min
+        chart3.y_axis.scaling.min = y_min-(2*y_delta)
+        chart3.y_axis.scaling.max = y_max+(2*y_delta)
+        chart_titles = ['Frequency', 'Isolation Loss']
+        chart_titles.append(self.chartdata)
+        data = Reference(self.sheet, min_col=6, min_row=56, max_col=7, max_row=257)
+        chart3.add_data(data, titles_from_data=False)
+        self.sheet.add_chart(chart3, "A29")     
 
+    def chart4(self):
+        print('self.spec_type=',self.spec_type)
+        chart4 = LineChart()
+        chart4.style = 12
+        chart4.y_axis.title = 'dB'
+        chart4.x_axis.title = 'Frequency MHz'
+        if not self.chartdata:
+            return 0
+        if not self.chartdata:
+            return 0
+        try:
+            chart4.x_axis.scaling.min = min([sublist[1] for sublist in self.chartdata])
+            chart4.x_axis.scaling.max = max([sublist[1] for sublist in self.chartdata])
+        except IndexError as e:
+            return 0
+        
+        chart4.legend = None
+        chart4.width = 14
+        chart4.height = 7
+        if '90 DEGREE COUPLER' in self.spec_type or 'BALUN' in self.spec_type:
+            chart4.title='Phase Balance'
+            title1='Phase Balance J3'
+            title2='Phase Balance J4'
+        else:
+            chart4.title='Coupled Flatness'
+            title1='Coupled Flatness J3' 
+            title2='Coupled Flatness J4'  
+        #~~~~~~~~~~~~~~~~~~~~~~~~~Calculate y-Axis~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        if not self.chartdata:
+            return 0
+        try:
+            t1_min=min([sublist[2] for sublist in self.chartdata])
+            t2_min=min([sublist[3] for sublist in self.chartdata])
+        except IndexError as e:
+            return 0
+        
+        if t2_min<t1_min:
+            y_min= t2_min
+        else:
+            y_min=t1_min
+        try:
+            t1_max=max([sublist[2] for sublist in self.chartdata])
+            t2_max=max([sublist[3] for sublist in self.chartdata])
+        except IndexError as e:
+            return 0
+        
+        if t2_max>t1_max:
+            y_max=t2_max
+        else:
+            y_max=t1_max
+        
+        y_delta=y_max-y_min
+        chart4.y_axis.scaling.min = y_min-(2*y_delta)
+        chart4.y_axis.scaling.max = y_max+(2*y_delta)
+         #~~~~~~~~~~~~~~~~~~~~~~~~~Calculate y-Axis~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+        chart_titles = ['Frequency', title1, title2]
+        chart_titles.append(self.chartdata)
+        data = Reference(self.sheet, min_col=8, min_row=56, max_col=10, max_row=257)
+        chart4.add_data(data, titles_from_data=False)
+        self.sheet.add_chart(chart4, "A40)")
 
-
+         
+        
 
 class LoadCharts:    
-    def __init__ (self, job_num,part_num,spec_type,operator,workstation,chart_group,wb):
+    def __init__ (self, job_num,part_num,spec_type,workbook,artwork_rev):
         self.job_num = job_num
         self.part_num = part_num
         self.spec_type = spec_type
-        self.operator = operator
-        self.workstation = workstation
-        self.chart_group = chart_group
-        self.wb = wb
-        #print('loading charts')
+        self.workbook = workbook
+        self.artwork_rev=artwork_rev
+        print('loading charts')
     
-    def chart1(self): 
+    def charts(self):
+        chart1_data = []
+        chart_data = []
+        chart_title = []
+        chart3_chart_data = []
+        chart4_chart_data = []
+       
+        f = []
+        d = []
+        d1 = []
+        d2 = []
+        rows = []
+        
+        #~~~~~~~~~~~~~~~~~~~~Chart1~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         print('self.spec_type=',self.spec_type)
+        title='Insertion Loss'
         if '90 DEGREE COUPLER' in self.spec_type or 'BALUN' in self.spec_type:
             title1='Insertion Loss J3'
             title2='Insertion Loss J4'
         else:
             title='Insertion Loss'
+           
+        
         for idx in range(5): 
-            getser = get_serial_num(self.chart_group,idx)
-            serialnumber = getser.uut()
-            sheet = self.wb[serialnumber]
+            serialnumber = 'UUT' + str(idx+1)
+            print('serialnumber=',serialnumber)
+            #create new sheet and format
+            new_sheetname = str(self.artwork_rev) + '_UUT' + str(idx+1)    
+            print('new_sheetname=',new_sheetname)
+            sheet = self.workbook.create_sheet(new_sheetname) 
+            makesheet=CreateSheets(new_sheetname,sheet)
+            makesheet.chart_data()
+           
+           #~~~~~~~~~~~Load Header~~~~~~
+            sheet = self.workbook[new_sheetname]
+            sheet['F2'] = self.job_num
+            sheet['F3'] = self.part_num
+            sheet['F4'] = self.spec_type
+            #~~~~~~~~~~~Load Header~~~~~~
+            
             if '90 DEGREE COUPLER' in self.spec_type or 'BALUN' in self.spec_type:
-                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
-                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').first()
+                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
+                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
                 #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss J3~~~~~~~~~~~~~~~~~~~~~~~~
-                #print('trace_id=',trace_id1)
+                print('trace_id=',trace_id1)
                 trace_points = []
+                f_list = []
+                d1_list=[]
+                x=0
+                if not trace_id1:
+                    serialnumber = 'UUT ' + str(idx+1)
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
+                if not trace_id1:
+                    serialnumber = 'UUT  ' + str(idx+1)
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').first()    
+                if not trace_id1:
+                    serialnumber = 'UUT' + str(idx+1)
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').first()
+                if not trace_id1:
+                    serialnumber = 'UUT ' + str(idx+1)
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').first()
+                if not trace_id1:
+                    serialnumber = 'UUT  ' + str(idx+1)
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').first()   
+                
                 if trace_id1:
                     if trace_id1[0] > 171666:
                         trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id1[0]).all()
@@ -769,10 +1572,13 @@ class LoadCharts:
                     for point in trace_points:
                         sheet.cell(row=rownum, column=1).value= round(point.xdata,0)
                         sheet.cell(row=rownum, column=2).value= round(point.ydata,0)
-                        #print('rownum=',rownum,' point.xdata=',point.xdata)
+                        #print('rownum=',rownum,' point.xdata=',point.xdata,' point.ydata=',point.ydata)
+                        f_list.append(round(point.xdata,2))
+                        d1_list.append(round(point.ydata,2))
                         rownum+=1
-                 #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss J4~~~~~~~~~~~~~~~~~~~~~~~~
+                #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss J4~~~~~~~~~~~~~~~~~~~~~~~~
                 trace_points = []
+                title='Insertion Loss'
                 if trace_id2:
                     if trace_id2[0] > 171666:
                         trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id2[0]).all()
@@ -781,12 +1587,38 @@ class LoadCharts:
                     rownum=56
                     for point in trace_points:
                         sheet.cell(row=rownum, column=3).value= round(point.ydata,0)
+                        d2=round(point.ydata,2)
+                        chart_data.append([title,f_list[x],d1_list[x],d2])
+                        #print('f=',f_list[x],'d1=',d1_list[x],'d2=',d2)
                         rownum+=1 
+                        x+=1 
             else:
                 #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss ~~~~~~~~~~~~~~~~~~~~~~~~
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).values_list('id').first()
-                #print('trace_id=',trace_id[0])
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
+                
+                print('trace_id=',trace_id[0])
                 trace_points = []
+                if not trace_id:
+                    serialnumber = 'UUT ' + str(idx+1)
+                    print('serialnumber=',serialnumber)
+                    trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
+                if not trace_id:
+                    serialnumber = 'UUT  ' + str(idx+1)
+                    print('serialnumber=',serialnumber)
+                    trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first() 
+                if not trace_id:
+                    serialnumber = 'UUT' + str(idx+1)
+                    print('serialnumber=',serialnumber)
+                    trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).values_list('id').first()
+                if not trace_id:
+                    serialnumber = 'UUT ' + str(idx+1)
+                    print('serialnumber=',serialnumber)
+                    trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).values_list('id').first()
+                if not trace_id:
+                    serialnumber = 'UUT  ' + str(idx+1)
+                    print('serialnumber=',serialnumber)
+                    trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).values_list('id').first()
+                
                 if trace_id:
                     if trace_id[0] > 171666:
                         trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id[0]).all()
@@ -797,18 +1629,46 @@ class LoadCharts:
                     for point in trace_points:
                         sheet.cell(row=rownum, column=1).value= round(point.xdata,0)
                         sheet.cell(row=rownum, column=2).value= round(point.ydata,0)
-                        #print('rownum=',rownum,' point.xdata=',point.xdata)
+                        #print('rownum=',rownum,' point.xdata=',point.xdata,' point.ydata=',point.ydata)
+                        f=round(point.xdata,2)
+                        d=round(point.ydata,2)
                         rownum+=1
+                        chart_data.append([title,f,d])
+                        print('chart_data=',chart_data)
+            if chart_data:            
+                load_chart= MakeCharts(sheet,self.spec_type,chart_data)
+                load_chart.chart1()
             
-       
-    def chart2(self):
-        for idx in range(5): 
-            getser = get_serial_num(self.chart_group,idx)
-            serialnumber = getser.uut()
-            sheet = self.wb[serialnumber]
+                
+            #~~~~~~~~~~~~~~~~~~~~Chart1~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            
+            #~~~~~~~~~~~~~~~~~~~~Chart2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
+            title='Return Loss'
             #~~~~~~~~~~~~~~~~~~~~~~Return Loss~~~~~~~~~~~~~~~~~~~~~~~~
-            trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).values_list('id').first()       
+            trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()       
             trace_points = []
+            if not trace_id:
+                serialnumber = 'UUT ' + str(idx+1)
+                print('serialnumber=',serialnumber)
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()  
+            if not trace_id:
+                serialnumber = 'UUT  ' + str(idx+1)
+                print('serialnumber=',serialnumber)
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()  
+            if not trace_id:
+                serialnumber = 'UUT' + str(idx+1)
+                print('serialnumber=',serialnumber)
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).values_list('id').first()
+            if not trace_id:
+                serialnumber = 'UUT ' + str(idx+1)
+                print('serialnumber=',serialnumber)
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).values_list('id').first()
+            if not trace_id:
+                serialnumber = 'UUT  ' + str(idx+1)
+                print('serialnumber=',serialnumber)
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).values_list('id').first()
+            
             if trace_id:
                 if trace_id[0] > 171666:
                     trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id[0]).all()
@@ -818,17 +1678,41 @@ class LoadCharts:
                 for point in trace_points:
                     sheet.cell(row=rownum, column=4).value= round(point.xdata,0)
                     sheet.cell(row=rownum, column=5).value= round(point.ydata,0)
+                    f=round(point.xdata,2)
+                    d=round(point.ydata,2)
                     rownum+=1
-        
-          
-    def chart3(self): 
-        for idx in range(5): 
-            getser = get_serial_num(self.chart_group,idx)
-            serialnumber = getser.uut()
-            sheet = self.wb[serialnumber]
+                    chart_data.append([title,f,d])
+            if chart_data:
+                load_chart= MakeCharts(sheet,self.spec_type,chart_data)
+                load_chart.chart2()
+            #~~~~~~~~~~~~~~~~~~~~Chart2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            
+            #~~~~~~~~~~~~~~~~~~~~Chart3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             #~~~~~~~~~~~~~~~~~~~~~~isolation~~~~~~~~~~~~~~~~~~~~~~~~
-            trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).values_list('id').first()    
+            trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()    
             trace_points = []
+            title='Isolation'
+            if not trace_id:
+                serialnumber = 'UUT ' + str(idx+1)
+                print('serialnumber=',serialnumber)
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()  
+            if not trace_id:
+                serialnumber = 'UUT  ' + str(idx+1)
+                print('serialnumber=',serialnumber)
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()  
+            if not trace_id:
+                serialnumber = 'UUT' + str(idx+1)
+                print('serialnumber=',serialnumber)
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).values_list('id').first()
+            if not trace_id:
+                serialnumber = 'UUT ' + str(idx+1)
+                print('serialnumber=',serialnumber)
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).values_list('id').first()
+            if not trace_id:
+                serialnumber = 'UUT  ' + str(idx+1)
+                print('serialnumber=',serialnumber)
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).values_list('id').first()
+            
             if trace_id:
                 if trace_id[0] > 171666:
                     trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id[0]).all()
@@ -838,224 +1722,99 @@ class LoadCharts:
                 for point in trace_points:
                     sheet.cell(row=rownum, column=6).value= round(point.xdata,0)
                     sheet.cell(row=rownum, column=7).value= round(point.ydata,0)
+                    f=round(point.xdata,2)
+                    d=round(point.ydata,2)
                     rownum+=1
+                    chart_data.append([title,f,d])
             
-    
-    def chart4(self):
-        if '90 DEGREE COUPLER' in self.spec_type or 'BALUN' in self.spec_type:
-            title1='Phase Balance J3'
-            title2='Phase Balance J4'
-        else:
-            title1='Coupled Flatness J3'
-            title2='Coupled Flatness J4'
-        for idx in range(5): 
-            getser = get_serial_num(self.chart_group,idx)
-            serialnumber = getser.uut()
-            sheet = self.wb[serialnumber]
+            if chart_data:
+                load_chart= MakeCharts(sheet,self.spec_type,chart_data)
+                load_chart.chart3()
+            #~~~~~~~~~~~~~~~~~~~~Chart3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
-            trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
-            trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').first()
-        
+            #~~~~~~~~~~~~~~~~~~~~Chart4~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            title = 'Phase Balance'
+            if '90 DEGREE COUPLER' in self.spec_type or 'BALUN' in self.spec_type:
+                title1='Phase Balance J3'
+                title2='Phase Balance J4'
+            else:
+                title1='Coupled Flatness J3'
+                title2='Coupled Flatness J4'
+            for idx in range(5): 
+                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
+                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
             
-            #~~~~~~~~~~~~~~~~~~~~~~Phase Balance J3~~~~~~~~~~~~~~~~~~~~~~~~
-            trace_points = []
-            if trace_id1:
-                if trace_id1[0] > 171666:
-                    trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id1[0]).all()
-                else:
-                    trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id1[0]).all()
-                rownum=56
-                for point in trace_points:
-                    sheet.cell(row=rownum, column=8).value= round(point.xdata,0)
-                    sheet.cell(row=rownum, column=9).value= round(point.ydata,0)
-                    rownum+=1
-            #~~~~~~~~~~~~~~~~~~~~~~Phase Balance J4~~~~~~~~~~~~~~~~~~~~~~~~
-            trace_points = []
-            if trace_id2:
-                if trace_id2[0] > 171666:
-                    trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id2[0]).all()
-                else:
-                    trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id2[0]).all()
-                rownum=56
-                for point in trace_points:
-                    sheet.cell(row=rownum, column=10).value= round(point.ydata,0)
-                    rownum+=1    
-              
-class DeleteSheets:    
-    def __init__ (self,chart_group,wb):
-        self.chart_group = chart_group
-        self.wb = wb 
-        #print('IN delete self.chart_group=',self.chart_group)
-            
-    def remove(self):
-        if self.chart_group==1:    
-            # Clean up the template
-            #print(self.wb.sheetnames)
-            sheetDelete = self.wb["Raw Data2"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["Raw Data3"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["Raw Data4"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["Raw Data5"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 6"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 7"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 8"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 9"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 10"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 11"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 12"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 13"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 14"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 15"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 16"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 17"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 18"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 19"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 20"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 21"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 22"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 23"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 24"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 25"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-        elif self.chart_group==2:
-            sheetDelete = self.wb["Raw Data3"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["Raw Data4"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["Raw Data5"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 11"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 12"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 13"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 14"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 15"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 16"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 17"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 18"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 19"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 20"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 21"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 22"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 23"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 24"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 25"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-        elif self.chart_group==4:
-            sheetDelete = self.wb["Raw Data4"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["Raw Data5"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 11"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 12"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 13"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 14"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-            sheetDelete = self.wb["UUT 15"]
-            self.wb.remove(sheetDelete)  #Sheet will be deleted
-        #~~~~~~~~~~~~~~~~~~~~~~Clean up the Template~~~~~~~~~~~~~~~~~~~~~~~~
-
-    
+                #~~~~~~~~~~~~~~~~~~~~~~Phase Balance J3~~~~~~~~~~~~~~~~~~~~~~~~
+                trace_points = []
+                f_list = []
+                d1_list=[]
+                if not trace_id1:
+                    serialnumber = 'UUT ' + str(idx+1)
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()  
+                if not trace_id1:
+                    serialnumber = 'UUT  ' + str(idx+1)
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first() 
+                if not trace_id1:
+                    serialnumber = 'UUT' + str(idx+1)
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()  
+                if not trace_id1:
+                    serialnumber = 'UUT ' + str(idx+1)
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').first()  
+                if not trace_id1:
+                    serialnumber = 'UUT  ' + str(idx+1)
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').first()  
                 
-        
-class get_serial_num:
-    def __init__ (self,chart_group,idx):
-        self.chart_group = chart_group
-        self.idx = idx
-        #print('self.idx=',self.idx)       
+                if trace_id1:
+                    if trace_id1[0] > 171666:
+                        trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id1[0]).all()
+                    else:
+                        trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id1[0]).all()
+                    rownum=56
+                    for point in trace_points:
+                        sheet.cell(row=rownum, column=8).value= round(point.xdata,0)
+                        sheet.cell(row=rownum, column=9).value= round(point.ydata,0)
+                        f_list.append(round(point.xdata,2))
+                        d1_list.append(round(point.ydata,2))
+                        rownum+=1
+                #~~~~~~~~~~~~~~~~~~~~~~Phase Balance J4~~~~~~~~~~~~~~~~~~~~~~~~
+                trace_points = []
+                x=0
+                if trace_id2:
+                    if trace_id2[0] > 171666:
+                        trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id2[0]).all()
+                    else:
+                        trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id2[0]).all()
+                    rownum=56
+                    for point in trace_points:
+                        sheet.cell(row=rownum, column=10).value= round(point.ydata,0)
+                        d2=round(point.ydata,2)
+                        #print('d2=',d2)
+                        #print('f_list[x]=',f_list[x])
+                        #print('d1_list[x]=',d1_list[x])
+                       
+                        chart_data.append([title,f_list[x],d1_list[x],d2])
+                        rownum+=1 
+                        x+=1    
             
-    def uut(self):
-        serialnumber = "UUT 1"
-        if self.chart_group==1 and self.idx ==0:
-            serialnumber = "UUT 1"
-        elif self.chart_group==1 and self.idx ==1:
-            serialnumber = "UUT 2"
-        elif self.chart_group==1 and self.idx ==2:
-            serialnumber = "UUT 3"
-        elif self.chart_group==1 and self.idx ==3:
-            serialnumber = "UUT 4"
-        elif self.chart_group==1 and self.idx ==4:
-            serialnumber = "UUT 5"
-        elif self.chart_group==2 and self.idx ==0:
-            serialnumber = "UUT 6"
-        elif self.chart_group==2 and self.idx ==1:
-            serialnumber = "UUT 7"
-        elif self.chart_group==2 and self.idx ==2:
-            serialnumber = "UUT 8" 
-        elif self.chart_group==2 and self.idx ==3:
-            serialnumber = "UUT 9" 
-        elif self.chart_group==2 and self.idx ==4:
-            serialnumber = "UUT 10" 
-        elif self.chart_group==3 and self.idx ==0:
-            serialnumber = "UUT 11"
-        elif self.chart_group==3 and self.idx ==1:
-            serialnumber = "UUT 12"
-        elif self.chart_group==3 and self.idx ==2:
-            serialnumber = "UUT 13"
-        elif self.chart_group==3 and self.idx ==3:
-            serialnumber = "UUT 14"
-        elif self.chart_group==3 and self.idx ==4:
-            serialnumber = "UUT 15"
-        elif self.chart_group==4 and self.idx ==0:
-            serialnumber = "UUT 16"
-        elif self.chart_group==4 and self.idx ==1:
-            serialnumber = "UUT 17"
-        elif self.chart_group==4 and self.idx ==2:
-            serialnumber = "UUT 18"
-        elif self.chart_group==4 and self.idx ==3:
-            serialnumber = "UUT 19"
-        elif self.chart_group==4 and self.idx ==4:
-            serialnumber = "UUT 20"    
-        elif self.chart_group==5 and self.idx ==0:
-            serialnumber = "UUT 21"
-        elif self.chart_group==5 and self.idx ==1:
-            serialnumber = "UUT 22"
-        elif self.chart_group==5 and self.idx ==2:
-            serialnumber = "UUT 23"
-        elif self.chart_group==5 and self.idx ==3:
-            serialnumber = "UUT 24"
-        elif self.chart_group==5 and self.idx ==4:
-            serialnumber = "UUT 25"    
+                if chart_data:
+                    load_chart= MakeCharts(sheet,self.spec_type,chart_data)
+                    load_chart.chart4()
+                else:
+                    
+                    #sheet.remove(sheet)
                 
-        return serialnumber
+  
+ 
   
 class Statistics:  
     def __init__(self,test1,test2,test3,test4,test5):

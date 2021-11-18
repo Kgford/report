@@ -10,7 +10,7 @@ import os
 from django import forms
 from django.views import View
 from report.overhead import TimeCode, Security, StringThings,Conversions
-from report.reports import ExcelReports,Statistics,Histogram_data,XY_Chart,X_Range,SDEV_Dist
+from report.reports import ExcelReports,Statistics,Histogram_data,XY_Chart,X_Range,SDEV_Dist,CreateSheets
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
@@ -203,7 +203,7 @@ class ReportView(View):
             
             workstation_list = Workstation.objects.using('TEST').order_by('computername').values_list('computername', flat=True).distinct()
             operator_list = Effeciency.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
-            job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
+            job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).order_by('-jobnumber').distinct()
             part_list = Testdata.objects.using('TEST').order_by('partnumber').values_list('partnumber', flat=True).distinct()
             workstation_status = ReportQueue.objects.using('TEST').filter(reportstatus='test running').values_list('workstation','jobnumber','partnumber','operator','value','maxvalue').all()
             x=1
@@ -214,15 +214,15 @@ class ReportView(View):
                 efficiency = Effeciency.objects.using('TEST').filter(workstation=station).filter(jobnumber=jobs).filter(operator=opera).last()
                 print('efficiency=',efficiency)
                 if efficiency:
-                    comment = 'Workstation: ' + str(station) + '\nOperator: ' + str(opera) + '\nJob: ' + str(jobs) + '\nPart: ' + str(parts) + '\nOperator Effeciency: ' + str(efficiency.effeciencystatus)
+                    comment = 'Workstation: ' + str(station) + '\nOperator: ' + str(opera) + '\nJob: ' + str(jobs) + '\nPart: ' + str(parts) + '\nTotal Parts: ' + str(efficiency.totaluuts) + '\nParts Complete: ' + str(efficiency.completeuuts) + '\nOperator Effeciency: ' + str(efficiency.effeciencystatus)
                 else:
                     comment = 'Workstation: ' + str(station) + '\nOperator: ' + str(opera) + '\nJob: ' + str(jobs)
                 percent_formatter = lambda x: '{:.10g}%'.format(x)
                 dollar_formatter = lambda x: '{:.10g}$'.format(x)
                 gauge.value_formatter = percent_formatter
-                if value > maxvalue:
-                    value = maxvalue-1
-                gauge.add('', [{'value': int(value), 'max_value': int(maxvalue)}])
+                                
+                new_val = ((value/maxvalue) * 100)
+                gauge.add('', [{'value': int(new_val), 'max_value': 100}])
                 print('value=',value,' maxvalue=',maxvalue)
                 if x == 1:
                     test_status1=gauge.render_data_uri()
@@ -495,9 +495,9 @@ class ReportView(View):
                 part_num = part.partnumber
                 workstation= part.workstation
                 spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()
-                job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
+                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
+                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
                 operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('workstation').values_list('workstation', flat=True).distinct()
                 reporting = ExcelReports(job_num,operator,workstation)
@@ -508,9 +508,9 @@ class ReportView(View):
                 part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
                 if part:
                     part_num = part.partnumber
-                job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
+                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
+                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
                 operator_list = Testdata.objects.using('TEST').filter(operator=operator).filter(artwork_rev=artwork).order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Testdata.objects.using('TEST').filter(operator=operator).filter(artwork_rev=artwork).order_by('workstation').values_list('workstation', flat=True).distinct()
                 spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()                
@@ -519,9 +519,9 @@ class ReportView(View):
                 part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
                 if part:
                     part_num = part.partnumber
-                job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(artwork_rev=artwork).order_by('partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(artwork_rev=artwork).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
+                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(artwork_rev=artwork).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
+                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(artwork_rev=artwork).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
                 operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(artwork_rev=artwork).order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(artwork_rev=artwork).order_by('workstation').values_list('workstation', flat=True).distinct()
                 spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()               
@@ -530,9 +530,9 @@ class ReportView(View):
                 part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
                 if part:
                     part_num = part.partnumber
-                job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).order_by('partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
+                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
+                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
                 operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).order_by('workstation').values_list('workstation', flat=True).distinct()
                 spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()              
@@ -541,9 +541,9 @@ class ReportView(View):
                 part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
                 if part:
                     part_num = part.partnumber
-                job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).order_by('partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
+                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
+                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
                 operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).order_by('workstation').values_list('workstation', flat=True).distinct()
                 spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()               
@@ -552,9 +552,9 @@ class ReportView(View):
                 part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
                 if part:
                     part_num = part.partnumber
-                job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(operator=operator).order_by('partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(operator=operator).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
+                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(operator=operator).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
+                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(operator=operator).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
                 operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(operator=operator).order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(operator=operator).order_by('workstation').values_list('workstation', flat=True).distinct()
                 spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()                
@@ -563,17 +563,17 @@ class ReportView(View):
                 part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
                 if part:
                     part_num = part.partnumber
-                job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(artwork_rev=artwork).order_by('partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(artwork_rev=artwork).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
+                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(artwork_rev=artwork).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
+                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(artwork_rev=artwork).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
                 operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(artwork_rev=artwork).order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(artwork_rev=artwork).order_by('workstation').values_list('workstation', flat=True).distinct()
                 spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()               
                 report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(artwork_rev=artwork).all()
             elif job_num!=-1:
-                job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
+                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
+                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
                 operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('workstation').values_list('workstation', flat=True).distinct()
                 part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
@@ -582,42 +582,42 @@ class ReportView(View):
                 spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()               
                 report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).all()
             elif job_num ==-1 and part_num !=-1 and workstation !=-1 and operator !=-1 and artwork !=-1:
-                job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
+                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
+                artwork_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
                 operator_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('workstation').values_list('workstation', flat=True).distinct()
                 spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()              
                 report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).all()
             elif job_num ==-1 and part_num !=-1 and workstation !=-1 and operator !=-1:
-                job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).order_by('partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
+                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
+                artwork_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
                 operator_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).order_by('workstation').values_list('workstation', flat=True).distinct()
                 spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()               
                 report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).all()
             elif job_num ==-1 and part_num !=-1 and workstation !=-1:
-                job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).order_by('partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
+                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
+                artwork_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
                 operator_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).order_by('workstation').values_list('workstation', flat=True).distinct()
                 spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()               
                 report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).all()
             elif job_num ==-1 and part_num !=-1 and operator!=-1:
-                job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(operator=operator).order_by('partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(operator=operator).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
+                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(operator=operator).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
+                artwork_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(operator=operator).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
                 operator_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(operator=operator).order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(operator=operator).order_by('workstation').values_list('workstation', flat=True).distinct()
                 spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()               
                 report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(operator=operator).all()
                 print('we are here8')
             elif job_num ==-1 and part_num !=-1 and artwork!=-1:
-                job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).order_by('partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
+                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
+                artwork_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
                 operator_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).order_by('workstation').values_list('workstation', flat=True).distinct()
                 spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
@@ -625,8 +625,8 @@ class ReportView(View):
                 print('we are here9')
             else:
                 got_enough=False
-                job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').order_by('partnumber').values_list('partnumber', flat=True).distinct() 
+                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
+                part_list = Testdata.objects.using('TEST').order_by('-partnumber').values_list('partnumber', flat=True).distinct() 
                 operator_list = Effeciency.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Workstation.objects.using('TEST').order_by('computername').values_list('computername', flat=True).distinct()
                 print('we are here10')
@@ -936,8 +936,7 @@ class ReportView(View):
                         il_histo_data2 = xy_chart.render_data_uri()
                         #print('rl_histo=',rl_histo)
                         custom_style = Style(colors=('#991593','#201599'),title_font_size=39, label_font_size=17)
-                        hist = pygal.Histogram(fill=True,style=custom_style, human_readable=True,show_x_labels=False,
-                                                value_font_family='googlefont:Raleway',value_font_size=30,value_colors=('white',))
+                        hist = pygal.Histogram(fill=True,style=custom_style, human_readable=True,show_x_labels=False)
                         hist.x_labels = x_range_list
                         hist.add('IL Histogram', il_histo)
                         hist.title = 'IL Histogram' 
@@ -997,8 +996,7 @@ class ReportView(View):
                     try:
                         rl_histo_data2 = xy_chart.render_data_uri()
                         #print('rl_histo=',rl_histo)
-                        custom_style = Style(colors=('#47ff7b','#201599'),title_font_size=39, label_font_size=17,
-                                            value_font_family='googlefont:Raleway',value_font_size=30,value_colors=('white',))
+                        custom_style = Style(colors=('#47ff7b','#201599'),title_font_size=39, label_font_size=17)
                       
                       
                         hist = pygal.Histogram(fill=True,style=custom_style, human_readable=True,show_x_labels=False,print_values=True)
@@ -1063,8 +1061,7 @@ class ReportView(View):
                             iso_histo_data2 = xy_chart.render_data_uri()
                             #~~~~~~~~~~~~~~~~ ISO Histogram Chart~~~~~~~~~~~~~~~~~~~~
                             #print('rl_histo=',rl_histo)
-                            custom_style = Style(colors=('#ffd138','#201599'),title_font_size=39, label_font_size=17,
-                                            value_font_family='googlefont:Raleway',value_font_size=30,value_colors=('white',))
+                            custom_style = Style(colors=('#ffd138','#201599'),title_font_size=39, label_font_size=17)
                             hist = pygal.Histogram(fill=True,style=custom_style, human_readable=True,show_x_labels=False,print_values=True)
                             hist.x_labels = x_range_list
                             hist.add('ISO Histogram', iso_histo)
@@ -1126,8 +1123,7 @@ class ReportView(View):
                         try:
                             ab_histo_data2 = xy_chart.render_data_uri()
                             #print('rl_histo=',rl_histo)
-                            custom_style = Style(colors=('#130fff','#201599'),title_font_size=39, label_font_size=17,
-                                            value_font_family='googlefont:Raleway',value_font_size=30,value_colors=('white',))
+                            custom_style = Style(colors=('#130fff','#201599'),title_font_size=39, label_font_size=17)
                             hist = pygal.Histogram(fill=True,style=custom_style, human_readable=True,show_x_labels=False,print_values=True)
                             hist.x_labels = x_range_list
                             hist.add('AB Histogram', ab_histo)
@@ -1418,15 +1414,15 @@ class ReportView(View):
                 efficiency = Effeciency.objects.using('TEST').filter(workstation=station).filter(jobnumber=jobs).filter(operator=opera).last()
                 print('efficiency=',efficiency)
                 if efficiency:
-                    comment = 'Workstation: ' + str(station) + '\nOperator: ' + str(opera) + '\nJob: ' + str(jobs) + '\nPart: ' + str(parts) + '\nOperator Effeciency: ' + str(efficiency.effeciencystatus)
+                    comment = 'Workstation: ' + str(station) + '\nOperator: ' + str(opera) + '\nJob: ' + str(jobs) + '\nPart: ' + str(parts) + '\nTotal Parts: ' + str(efficiency.totaluuts) + '\nParts Complete: ' + str(efficiency.completeuuts) + '\nOperator Effeciency: ' + str(efficiency.effeciencystatus)
                 else:
                     comment = 'Workstation: ' + str(station) + '\nOperator: ' + str(opera) + '\nJob: ' + str(jobs)
                 percent_formatter = lambda x: '{:.10g}%'.format(x)
                 dollar_formatter = lambda x: '{:.10g}$'.format(x)
                 gauge.value_formatter = percent_formatter
-                if value > maxvalue:
-                    value = maxvalue-1
-                gauge.add('', [{'value': int(value), 'max_value': int(maxvalue)}])
+                                
+                new_val = ((value/maxvalue) * 100)
+                gauge.add('', [{'value': int(new_val), 'max_value': 100}])
                 print('value=',value,' maxvalue=',maxvalue)
                 if x == 1:
                     test_status1=gauge.render_data_uri()
@@ -1497,6 +1493,8 @@ def export_users_xls(request):
 
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet('Users Data') # this will make a sheet named Users Data
+    
+    
 
     # Sheet header, first row
     row_num = 0
@@ -1525,10 +1523,19 @@ def export_users_xls(request):
 #This code will explain how to Style your Excel File. The bellow code will explain Wrap text in the cell, background color, border, and text color.    
 def export_styling_xls(request):
     response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="users.xls"'
+    response['Content-Disposition'] = 'attachment; filename="users.xlsx"'
 
-    wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet('Styling Data') # this will make a sheet named Users Data - First Sheet
+    wb = Workbook()
+    sheet = wb['Sheet']
+    sheet.title = 'Summary'
+    sheet = wb.create_sheet('Styling Data') # this will make a sheet named Users Data - First Sheet
+       
+    makesheet=CreateSheets('Styling Data',sheet)
+    makesheet.tabular_data()
+    print('we are here after sytling')
+    
+    
+    '''
     styles = dict(
         bold = 'font: bold 1',
         italic = 'font: italic 1',
@@ -1541,6 +1548,8 @@ def export_styling_xls(request):
         # Heavy borders
         bordered = 'border: top thick, right thick, bottom thick, left thick;',
         # 16 pt red text
+        bordered = 'border: top thick, right thick, bottom thick, left thick;',
+        # 16 pt red text
         big_red = 'font: height 320, color red;',
     )
 
@@ -1548,7 +1557,8 @@ def export_styling_xls(request):
         style = xlwt.easyxf(styles[k])
         ws.write(idx, 0, k)
         ws.write(idx, 1, styles[k], style)
-
+    '''
+    
     wb.save(response)
 
     return response
