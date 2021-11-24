@@ -220,10 +220,11 @@ class ReportView(View):
                 percent_formatter = lambda x: '{:.10g}%'.format(x)
                 dollar_formatter = lambda x: '{:.10g}$'.format(x)
                 gauge.value_formatter = percent_formatter
-                                
-                new_val = ((value/maxvalue) * 100)
-                gauge.add('', [{'value': int(new_val), 'max_value': 100}])
-                print('value=',value,' maxvalue=',maxvalue)
+                if value:
+                    print('value=',value,' maxvalue=',maxvalue)
+                    new_val = ((value/maxvalue) * 100)
+                    gauge.add('', [{'value': int(new_val), 'max_value': 100}])
+                    print('value=',value,' maxvalue=',maxvalue)
                 if x == 1:
                     test_status1=gauge.render_data_uri()
                     test_comment1 = comment
@@ -485,6 +486,7 @@ class ReportView(View):
             print('workstation=',workstation)
             print('operator=',operator)
             print('artwork=',artwork)
+            print('report=',report)
             print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
             
             got_enough=True
@@ -500,10 +502,13 @@ class ReportView(View):
                 artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
                 operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('workstation').values_list('workstation', flat=True).distinct()
+                #print('excel report start')
                 reporting = ExcelReports(job_num,operator,workstation)
                 reporting.test_data()
+                #print('excel report end')
                 spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()               
                 report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).all()
+                #print('we are here',report_data)
             elif job_num !=-1 and workstation !=-1 and operator !=-1 and artwork !=-1:
                 part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
                 if part:
@@ -577,10 +582,12 @@ class ReportView(View):
                 operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('workstation').values_list('workstation', flat=True).distinct()
                 part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
+                print('artwork_list',artwork_list)
                 if part:
                     part_num = part.partnumber
                 spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()               
                 report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).all()
+                print('we are here',report_data)
             elif job_num ==-1 and part_num !=-1 and workstation !=-1 and operator !=-1 and artwork !=-1:
                 job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
                 part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
@@ -631,7 +638,7 @@ class ReportView(View):
                 workstation_list = Workstation.objects.using('TEST').order_by('computername').values_list('computername', flat=True).distinct()
                 print('we are here10')
             
-            print('report_data',report_data)
+            #print('report_data',report_data)
             if got_enough and spec_data and report_data:
                 #filter blanks
                 temp_list = []
@@ -641,17 +648,17 @@ class ReportView(View):
                 artwork_list = temp_list
                 
                 
-                #print('artwork_list=',artwork_list)
-                #print('job_num=',job_num)
+                print('artwork_list=',artwork_list)
+                print('job_num=',job_num)
                 print('spec_data=',spec_data)
                 #print('spec_data.vswr=',spec_data.vswr)
                 conversions = Conversions(spec_data.vswr,'')
                 spec_rl = round(conversions.vswr_to_rl(),3)
                 #print('spec_rl=',spec_rl)
-                spectype = spec_data.spectype
+                print('spectype=',spec_data.spectype)
                 try:
-                    if spec1==-1:
-                        if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
+                    if spec1!=-1:
+                        if '90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype:
                             if spec_data.insertionloss:
                                 spec1 = round(spec_data.insertionloss,3)
                             if spec_rl:
@@ -662,7 +669,7 @@ class ReportView(View):
                                 spec4 = round(spec_data.amplitudebalance,3)
                             if spec_data.phasebalance:
                                 spec5 = round(spec_data.phasebalance,3)
-                        elif 'DIRECTIONAL COUPLER' in spectype: 
+                        elif 'DIRECTIONAL COUPLER' in spec_data.spectype: 
                             if spec_data.insertionloss:
                                 spec1 = round(spec_data.insertionloss,3)
                             if spec_rl:
@@ -678,85 +685,84 @@ class ReportView(View):
                    
                 total=0
                 temp_list = []
-                print('spectype=',spectype)
+                print('spectype=',spec_data.spectype)
+                print('report_data=',report_data)
+                good_data=True
                 for data in report_data:
-                    if data.serialnumber[3] == " ":
+                    #~~~~~~~~~~~~~~~Check for good data~~~~~~~~~~~~~~~~~
+                    #print('IL&RL ',data.insertionloss,data.insertionloss)
+                    if not data.insertionloss and not data.returnloss:
+                        good_data=False
+                        #print('no good')
+                    if '90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype:
+                        #print('ISo&AM&PB ',data.isolation,data.phasebalance)
+                        if not data.isolation and not data.phasebalance: 
+                            good_data=False
+                            #print('no good')
+                        if spec_data.ab_exp_tf :
+                            if not data.amplitudebalance1:
+                                good_data=False
+                                #print('no good')
+                        else:
+                            if not data.amplitudebalance:
+                                good_data=False
+                                #print('no good')
+                    else:
+                        #print('coup&dir&cf ',data.coupling,data.directivity,data.coupledflatness)
+                        if not data.coupling and not data.directivity and not data.coupledflatness: 
+                            good_data=False
+                            #print('no good')
+                    #~~~~~~~~~~~~~~~Check for good data~~~~~~~~~~~~~~~~~
+                    if good_data:
                         go = True
                         if data.insertionloss:  #does data.insertionloss: have any data? 
                             if data.insertionloss > spec1 * 3:
                                 bad1_list.append(data.insertionloss)
                                 print('bad1=',data.insertionloss,'spec=',spec1 * 3)
-                                go = False
-                        else:
-                            go = False
-                        
                         if data.returnloss:  #does data.returnloss: have any data? 
                             if data.returnloss < spec2 * 3:
                                 bad2_list.append(data.returnloss)
                                 print('bad2=',data.returnloss,'spec=',spec2 * 3)
-                                go = False
-                        else:
-                            go = False
-                            
-                        if ('90 DEGREE COUPLER' in spectype or 'BALUN' in spectype) and data.isolation:  #does data.isolation: have any data?      
+                        
+                        if ('90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype) and data.isolation:  #does data.isolation: have any data?      
                             if abs(data.isolation) > spec3 * 3:  
                                 bad3_list.append(data.isolation)
                                 print('bad3=',abs(data.isolation),'spec=',spec3 * 3)
-                                go = False
-                        elif ('90 DEGREE COUPLER' in spectype or 'BALUN' in spectype):#Only go false if 90 Degree with no data
-                            go = False
                         
-                        if ('90 DEGREE COUPLER' in spectype or 'BALUN' in spectype) and data.amplitudebalance:  #does data.amplitudebalance have any data?      
+                        if ('90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype) and data.amplitudebalance:  #does data.amplitudebalance have any data?      
                             if abs(data.amplitudebalance) > spec4 * 3:  
                                 bad4_list.append(data.amplitudebalance)
                                 print('bad4=',abs(data.amplitudebalance),'spec=',spec4 * 3)
-                                go = False
-                        elif ('90 DEGREE COUPLER' in spectype or 'BALUN' in spectype):#Only go false if 90 Degree  with no data
-                            go = False
-                        
-                        if ('90 DEGREE COUPLER' in spectype or 'BALUN' in spectype) and data.phasebalance:  #does data.coupling have any data?  
+                       
+                        if ('90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype) and data.phasebalance:  #does data.coupling have any data?  
                             if abs(data.phasebalance) > spec5 * 3:  
                                 bad5_list.append(data.phasebalance)
                                 print('bad5=',abs(data.phasebalance),'spec=',spec5 * 3)
-                                go = False
-                        elif ('90 DEGREE COUPLER' in spectype or 'BALUN' in spectype): #Only go false if 90 Degree  with no data
-                            go = False
                             
-                        if 'DIRECTIONAL COUPLER' in spectype and data.coupling: #does data.coupling have any data?
+                        if 'DIRECTIONAL COUPLER' in spec_data.spectype and data.coupling: #does data.coupling have any data?
                             if abs(data.coupling) > spec3 * 3:  
                                 bad3_list.append(data.coupling)
-                                go = False
-                        elif 'DIRECTIONAL COUPLER' in spectype : #Only go false if Directional with no data 
-                            go = False
-                            
-                        if 'DIRECTIONAL COUPLER' in spectype and data.directivity:#does data.directivity have any data?
+                                
+                        if 'DIRECTIONAL COUPLER' in spec_data.spectype and data.directivity:#does data.directivity have any data?
                             if abs(data.directivity) > spec4 * 3:  
                                 bad4_list.append(data.directivity)
-                                go = False
-                        elif 'DIRECTIONAL COUPLER' in spectype: #Only go false if Directional  with no data
-                            go = False
-                            
-                        if 'DIRECTIONAL COUPLER' in spectype  and data.coupledflatness: #does data.coupledflatness have any data?
-                            if 'DIRECTIONAL COUPLER' in spectype  and abs(data.coupledflatness) > spec5 * 3:  
+                        if 'DIRECTIONAL COUPLER' in spec_data.spectype  and data.coupledflatness: #does data.coupledflatness have any data?
+                            if 'DIRECTIONAL COUPLER' in spec_data.spectype  and abs(data.coupledflatness) > spec5 * 3:  
                                 bad5_list.append(data.coupledflatness)
-                                go = False
-                        elif'DIRECTIONAL COUPLER' in spectype: #Only go false if Directional  with no data
-                            go = False
-                            
-                        #print('go nogo=',go)
-                        if go:
-                            temp_list.append(data)
-                            art_rev_list.append(data.artwork_rev)
-                            test1_list.append(data.insertionloss)
-                            test2_list.append(data.returnloss)
-                            if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
-                                test3_list.append(data.isolation)
-                                test4_list.append(data.amplitudebalance)
-                                test5_list.append(data.phasebalance)
-                            else:
-                                test3_list.append(data.coupling)
-                                test4_list.append(data.directivity)
-                                test5_list.append(data.coupledflatness)
+                             
+                        
+                        temp_list.append(data)
+                        art_rev_list.append(data.artwork_rev)
+                        test1_list.append(data.insertionloss)
+                        test2_list.append(data.returnloss)
+                        if '90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype:
+                            test3_list.append(data.isolation)
+                            test4_list.append(data.amplitudebalance)
+                            test5_list.append(data.phasebalance)
+                        else:
+                            test3_list.append(data.coupling)
+                            test4_list.append(data.directivity)
+                            test5_list.append(data.coupledflatness)
                     else:
                         blank+=1
                     total+=1
@@ -792,14 +798,6 @@ class ReportView(View):
                     else:
                         bad_data5 = round(statistics.mean(bad5_list),2)
                 
-                
-                
-                print('bad_data1=',bad_data1)
-                print('bad_data2=',bad_data2)
-                print('bad_data3=',bad_data3)
-                print('bad_data4=',bad_data4)
-                print('bad_data5=',bad_data5)
-                #print('art_rev_list=',art_rev_list)
                 report_data = temp_list 
                 
                 if len(test1_list) > 1:# must have at least two tests
@@ -1024,7 +1022,7 @@ class ReportView(View):
                     #~~~~~~~~~~~~~~~~~ RL Data XY Chart~~~~~~~~~~~~~~~~~~~~~
                      
                     #print('rl_histo_data=',rl_histo_data)
-                    if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
+                    if '90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype:
                         histo_data = Histogram_data(test_list,spec_list,'test3')
                         iso_histo = histo_data.Hist_data()
                         
@@ -1420,10 +1418,10 @@ class ReportView(View):
                 percent_formatter = lambda x: '{:.10g}%'.format(x)
                 dollar_formatter = lambda x: '{:.10g}$'.format(x)
                 gauge.value_formatter = percent_formatter
-                                
-                new_val = ((value/maxvalue) * 100)
-                gauge.add('', [{'value': int(new_val), 'max_value': 100}])
-                print('value=',value,' maxvalue=',maxvalue)
+                if value:                
+                    new_val = ((value/maxvalue) * 100)
+                    gauge.add('', [{'value': int(new_val), 'max_value': 100}])
+                    print('value=',value,' maxvalue=',maxvalue)
                 if x == 1:
                     test_status1=gauge.render_data_uri()
                     test_comment1 = comment
@@ -1469,7 +1467,7 @@ class ReportView(View):
             print ("Lists load Failure ", e)
             print('error = ',e)     
         return render (self.request,"excel/index.html",{'job_num':job_num,'part_num':part_num,'workstation':workstation,'operator':operator,'start_date':start_date,'end_date':end_date,'artwork_list':artwork_list,'artwork':artwork,
-                                                        'job_list':job_list,'part_list':part_list,'workstation_list':workstation_list,'operator_list':operator_list,'spec1':spec1,'spec2':spec1,'spec3':spec3,'spectype':spectype,
+                                                        'job_list':job_list,'part_list':part_list,'workstation_list':workstation_list,'operator_list':operator_list,'spec1':spec1,'spec2':spec1,'spec3':spec3,'spectype':spec_data.spectype,
                                                         'spec4':spec4,'spec5':spec5,'report_data':report_data,'test1_list':test1_list,'test2_list':test2_list,'test3_list':test3_list,'test4_list':test4_list,'test5_list':test5_list,
                                                         'stat1_min':stat1_min,'stat1_max':stat1_max,'stat1_avg':stat1_avg,'stat1_std':stat1_std,'stat2_min':stat2_min,'stat2_max':stat2_max,'stat2_avg':stat2_avg,'stat2_std':stat2_std,
                                                         'stat3_min':stat3_min,'stat3_max':stat3_max,'stat3_avg':stat3_avg,'stat3_std':stat3_std,'stat4_min':stat4_min,'stat4_max':stat4_max,'stat4_avg':stat4_avg,'stat4_std':stat4_std,

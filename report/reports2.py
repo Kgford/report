@@ -19,10 +19,9 @@ import time
 
 
 class CreateSheets:
-    def __init__ (self, sheet_name,worksheet,artwork_len):
+    def __init__ (self, sheet_name,worksheet):
         self.sheet_name = sheet_name
-        self.worksheet = worksheet 
-        self.artwork_len = artwork_len          
+        self.worksheet = worksheet   
          
         print('self.sheet_name=',self.sheet_name)
         print('self.worksheet=',self.worksheet)
@@ -93,133 +92,37 @@ class CreateSheets:
                 cell.border = border
     
     
-    def summary(self):
-        
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~mearge rows~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        self.worksheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=6) #first row
-        
-        print('Summary setting widths')
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set column witdhs~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # set the width of the column
-        self.worksheet.column_dimensions['A'].width = 12.22
-        self.worksheet.column_dimensions['B'].width = 12.89
-        self.worksheet.column_dimensions['C'].width = 15.67
-        self.worksheet.column_dimensions['D'].width = 17.43
-        self.worksheet.column_dimensions['E'].width = 18.00
-        self.worksheet.column_dimensions['F'].width = 18.57
-        self.worksheet.column_dimensions['G'].width = 12.00
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set column witdhs~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        
-        
-        
-        print('Adding fonts and words')
-        row=1
-        font = Font(name='Arial',size=18,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='7FFF00')
-        aa=self.worksheet['A'+str(row)]
-        aa.font=font
-        aa.alignment = Alignment(horizontal='center')
-        self.worksheet['A'+str(row)]='Summary Data'
-        
-        row=3
-        font = Font(name='Arial',size=10,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
-        g=self.worksheet['G'+str(row)]
-        g.font=font
-        g.alignment = Alignment(horizontal='center')
-        self.worksheet['G'+str(row)]='Total Tested'
-        h=self.worksheet['H'+str(row)]
-        h.font=font
-        h.alignment = Alignment(horizontal='center')
-        self.worksheet['H'+str(row)]=' Passed'
-        i=self.worksheet['I'+str(row)]
-        i.font=font
-        i.alignment = Alignment(horizontal='center')
-        self.worksheet['I'+str(row)]='Failed'
-        
-        for x in range(3):
-            print('x in range=',x)
-            if x==0:
-                row=3
-            else:
-                row = row + 3 + self.artwork_len 
-                
-            for col_range in range(2, 7):
-                cell_title = self.worksheet.cell(row+1, col_range)
-                cell_title.fill = PatternFill(start_color="e2eb34", end_color="e2eb34", fill_type="solid") #Yellow
-            
-            print('summary row=',row,' artwork_len=',self.artwork_len)
-            font = Font(name='Arial',size=10,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
-            a=self.worksheet['A'+str(row)]
-            a.font=font
-            a.alignment = Alignment(horizontal='center')
-            self.worksheet['A'+str(row)]='Artwork Rev'
-            print('Summary setting borders')
-            self.set_border_range('B' + str(row) + ':F' + str(row+1)) 
-            print('Summary setting borders')
-            if x == 0:
-                meas='Avg'
-                
-            elif x==1:
-                
-                meas='Min'
-            elif x==1:
-                meas='Max'    
-            
-            b=self.worksheet['B'+str(row)]
-            b.font=font
-            b.alignment = Alignment(horizontal='center')
-            self.worksheet['B'+str(row)]= meas + '. IL (dB)'
-            c=self.worksheet['C'+str(row)]
-            c.font=font
-            c.alignment = Alignment(horizontal='center')
-            self.worksheet['C'+str(row)]= meas + '. RL (dB)'
-            d=self.worksheet['D'+str(row)]
-            d.font=font
-            d.alignment = Alignment(horizontal='center')
-            self.worksheet['D'+str(row)]= meas + '. Isolation (dB)'
-            e=self.worksheet['E'+str(row)]
-            e.font=font
-            e.alignment = Alignment(horizontal='center')
-            self.worksheet['E'+str(row)]= meas + '. Amp Bal (dB)'
-            f=self.worksheet['F'+str(row)]
-            f.font=font
-            f.alignment = Alignment(horizontal='center')
-            self.worksheet['F'+str(row)]= meas + '. Phase Bal (dB)'
-            
-    
-    
     def chart_data(self):
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set row heights~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        self.worksheet.row_dimensions[1].height = 13.8
-        self.worksheet.row_dimensions[2].height = 11.40
-        self.worksheet.row_dimensions[3].height = 11.40
-        self.worksheet.row_dimensions[4].height = 11.40
-        self.worksheet.row_dimensions[5].height = 11.40
+        self.worksheet.row_dimensions[1].height = 30.60
+        self.worksheet.row_dimensions[1].height = 16.50
+        self.worksheet.row_dimensions[1].height = 16.50
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set row heights~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set column witdhs~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # set the width of the column
-        self.worksheet.column_dimensions['A'].width = 10.50
-        self.worksheet.column_dimensions['B'].width = 10.50 
-        self.worksheet.column_dimensions['C'].width = 13.8
-        self.worksheet.column_dimensions['D'].width = 8.00
-        self.worksheet.column_dimensions['E'].width = 6.78 
-        self.worksheet.column_dimensions['F'].width = 22.21
+        self.worksheet.column_dimensions['A'].width = 11.33
+        self.worksheet.column_dimensions['B'].width = 11.33 
+        self.worksheet.column_dimensions['C'].width = 14.72
+        self.worksheet.column_dimensions['D'].width = 8.78 
+        self.worksheet.column_dimensions['E'].width = 7.56 
+        self.worksheet.column_dimensions['F'].width = 18.00
         self.worksheet.column_dimensions['G'].width = 19.40
        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set column witdhs~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         print('merging cells')
         
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~mearge rows~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        self.worksheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=6) #first row
+        self.worksheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=5) #first row
         
         self.worksheet.merge_cells(start_row=2, start_column=4, end_row=2, end_column=5)  #second row
         self.worksheet.merge_cells(start_row=3, start_column=4, end_row=3, end_column=5)  #third row
         self.worksheet.merge_cells(start_row=4, start_column=4, end_row=4, end_column=5)  #fourth row 
         self.worksheet.merge_cells(start_row=5, start_column=4, end_row=5, end_column=5)  #fith row
-        self.worksheet.merge_cells(start_row=47, start_column=2, end_row=47, end_column=5) #53 row
-        self.worksheet.merge_cells(start_row=48, start_column=1, end_row=48, end_column=3) #48 row
-        self.worksheet.merge_cells(start_row=48, start_column=4, end_row=48, end_column=5) #48 row
-        self.worksheet.merge_cells(start_row=48, start_column=6, end_row=48, end_column=7) #48 row
-        self.worksheet.merge_cells(start_row=48, start_column=8, end_row=48, end_column=10) #48 row
+        self.worksheet.merge_cells(start_row=53, start_column=2, end_row=53, end_column=5) #53 row
+        self.worksheet.merge_cells(start_row=54, start_column=1, end_row=54, end_column=3) #54 row
+        self.worksheet.merge_cells(start_row=54, start_column=4, end_row=54, end_column=5) #54 row
+        self.worksheet.merge_cells(start_row=54, start_column=6, end_row=54, end_column=7) #54 row
+        self.worksheet.merge_cells(start_row=54, start_column=8, end_row=54, end_column=10) #54 row
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~mearge rows~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 
         print('at image') 
@@ -232,8 +135,8 @@ class CreateSheets:
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~add logo~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
        
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~add words~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        a1 = self.worksheet['A1']
-        font = Font(name='Arial',size=12,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+        a1 = self.worksheet['D1']
+        font = Font(name='Arial',size=22,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
         a1.font = font
         a1.alignment = Alignment(horizontal='center')
         self.worksheet['A1']='Chart Data'
@@ -615,14 +518,14 @@ class ExcelReports:
         print('running report')
         ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='running report')
         
-        if report_data:
-            part_num = report_data[0].partnumber
-            spec_data = Specifications.objects.using('TEST').filter(jobnumber=self.job_num).last()
-            spectype = spec_data.spectype
-            paths = ReportFiles(self.job_num,part_num,spectype)
-            data_path = paths.data_path()
-            template_path = paths.template()
-            #print('template_path=',template_path)
+        
+        part_num = report_data[0].partnumber
+        spec_data = Specifications.objects.using('TEST').filter(jobnumber=self.job_num).first()
+        spectype = spec_data.spectype
+        paths = ReportFiles(self.job_num,part_num,spectype)
+        data_path = paths.data_path()
+        template_path = paths.template()
+        #print('template_path=',template_path)
         
         wb = Workbook()
         print('workbook=',wb)
@@ -651,10 +554,10 @@ class ExcelReports:
         x=1
         z=1
         print('loading data')
-        sum_row = 5
         ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='loading data')
         for artwork_rev in artwork_list:
             if 'UNKN REV' in artwork_rev:
+                
                 report_data = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).all()
                 data_count = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).count()
             else:
@@ -669,7 +572,7 @@ class ExcelReports:
             print('spec_rl=',spec_rl)
             print('spec_data=',spec_data)
             print('report_data=',report_data)
-            #time.sleep(20)
+            time.sleep(20)
             if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
                 spec_list = [spec_data.insertionloss,spec_rl,spec_data.isolation,spec_data.amplitudebalance,spec_data.phasebalance,spec_data.ab_ex] 
             elif 'DIRECTIONAL COUPLER' in spectype: 
@@ -684,27 +587,17 @@ class ExcelReports:
                     #artwork_rev = 'UNKN REV'
                     #unknown_rev='UNKN REV_0'
                     num=int(unknown_rev[9])
-                    #print('num=',num)
+                    print('num=',num)
                     unknown_rev = unknown_rev[:-1]
                     artwork_rev=unknown_rev + str(num+1)
-                    #print('artwork_rev=',artwork_rev)
+                    print('artwork_rev=',artwork_rev)
                     
                 #create new sheet and format 
-                print('making data sheet',artwork_rev)
                 sheet = wb.create_sheet(artwork_rev) 
-                makesheet=CreateSheets(artwork_rev,sheet,len(artwork_list))
+                makesheet=CreateSheets(artwork_rev,sheet)
                 makesheet.tabular_data()
-                #format summary sheet
-                
-                sheet = wb['Summary']
-                print('sheet before=',sheet)
-                print('artwork_rev=',artwork_rev)
-                makesheet=CreateSheets(artwork_rev,sheet,len(artwork_list))
-                makesheet.summary()
-                print ('sheetnames=',wb.sheetnames)
-                print('artwork_rev=',artwork_rev)
                 sheet = wb[artwork_rev]
-                
+                        
                 print('sheet=',sheet)
                 sheet['B4'] = self.operator 
                 sheet['B5'] = self.workstation 
@@ -736,98 +629,76 @@ class ExcelReports:
                 #Mearge split cells for normal data
                 if spec_data.ab_exp_tf or spec_data.dir_exp_tf:  # Dual Band AB/DIR only Don't mearge AB cels
                     for x in range(int(data_count) + 1):
-                        sheet.merge_cells(start_row=x+20, start_column=2, end_row=x+20, end_column=3) #IL
-                        sheet.merge_cells(start_row=x+20, start_column=4, end_row=x+20, end_column=5) #RL
-                        sheet.merge_cells(start_row=x+20, start_column=6, end_row=x+20, end_column=7)  #ISO/Coup
-                        sheet.merge_cells(start_row=x+20, start_column=10, end_row=x+20, end_column=11) #PB/COUP Flat
+                        sheet.merge_cells(start_row=x+7, start_column=2, end_row=x+7, end_column=3) #IL
+                        sheet.merge_cells(start_row=x+7, start_column=4, end_row=x+7, end_column=5) #RL
+                        sheet.merge_cells(start_row=x+7, start_column=6, end_row=x+7, end_column=7)  #ISO/Coup
+                        sheet.merge_cells(start_row=x+7, start_column=10, end_row=x+7, end_column=11) #PB/COUP Flat
                 elif spec_data.il_exp_tf:  # Dual Band IL only Don't mearge if spec_data.il_exp_tf:  # Dual Band AB only Don't mearge AB cels
                     for x in range(int(data_count) + 1):
-                        sheet.merge_cells(start_row=x+20, start_column=4, end_row=x+20, end_column=5) #RL
-                        sheet.merge_cells(start_row=x+20, start_column=6, end_row=x+20, end_column=7)  #ISO/Coup
-                        sheet.merge_cells(start_row=x+20, start_column=8, end_row=x+20, end_column=9) #AB/DIR
-                        sheet.merge_cells(start_row=x+20, start_column=10, end_row=x+20, end_column=11) #PB/COUP Flat cels
+                        sheet.merge_cells(start_row=x+7, start_column=4, end_row=x+7, end_column=5) #RL
+                        sheet.merge_cells(start_row=x+7, start_column=6, end_row=x+7, end_column=7)  #ISO/Coup
+                        sheet.merge_cells(start_row=x+7, start_column=8, end_row=x+7, end_column=9) #AB/DIR
+                        sheet.merge_cells(start_row=x+7, start_column=10, end_row=x+7, end_column=11) #PB/COUP Flat cels
                 elif spec_data.coup_exp_tf or spec_data.iso_exp_tf:  # Dual Band Coupling/Isolation only Don't mearge if spec_data.coup_exp_tf:  
                     for x in range(int(data_count) + 1):
-                        sheet.merge_cells(start_row=x+20, start_column=2, end_row=x+20, end_column=3) #IL
-                        sheet.merge_cells(start_row=x+20, start_column=4, end_row=x+20, end_column=5) #RL
-                        sheet.merge_cells(start_row=x+20, start_column=8, end_row=x+20, end_column=9) #AB/DIR
-                        sheet.merge_cells(start_row=x+20, start_column=10, end_row=x+20, end_column=11) #PB/COUP Flat    
+                        sheet.merge_cells(start_row=x+7, start_column=2, end_row=x+7, end_column=3) #IL
+                        sheet.merge_cells(start_row=x+7, start_column=4, end_row=x+7, end_column=5) #RL
+                        sheet.merge_cells(start_row=x+7, start_column=8, end_row=x+7, end_column=9) #AB/DIR
+                        sheet.merge_cells(start_row=x+7, start_column=10, end_row=x+7, end_column=11) #PB/COUP Flat    
                 elif spec_data.pb_exp_tf or spec_data.cf_exp_tf:  # Dual Band PB/Coup Flatness only Don't mearge if spec_data.pb_exp_tf:  
                     for x in range(int(data_count) + 1):
-                        sheet.merge_cells(start_row=x+20, start_column=2, end_row=x+20, end_column=3) #IL
-                        sheet.merge_cells(start_row=x+20, start_column=4, end_row=x+20, end_column=5) #RL
-                        sheet.merge_cells(start_row=x+20, start_column=6, end_row=x+20, end_column=7)  #ISO/Coup
-                        sheet.merge_cells(start_row=x+20, start_column=8, end_row=x+20, end_column=9) #AB/DIR
+                        sheet.merge_cells(start_row=x+7, start_column=2, end_row=x+7, end_column=3) #IL
+                        sheet.merge_cells(start_row=x+7, start_column=4, end_row=x+7, end_column=5) #RL
+                        sheet.merge_cells(start_row=x+7, start_column=6, end_row=x+7, end_column=7)  #ISO/Coup
+                        sheet.merge_cells(start_row=x+7, start_column=8, end_row=x+7, end_column=9) #AB/DIR
                 else:
                     for x in range(int(data_count) + 1):
-                        sheet.merge_cells(start_row=x+20, start_column=2, end_row=x+20, end_column=3) #IL
-                        sheet.merge_cells(start_row=x+20, start_column=4, end_row=x+20, end_column=5) #RL
-                        sheet.merge_cells(start_row=x+20, start_column=6, end_row=x+20, end_column=7)  #ISO/Coup
-                        sheet.merge_cells(start_row=x+20, start_column=8, end_row=x+20, end_column=9) #AB/DIR
-                        sheet.merge_cells(start_row=x+20, start_column=10, end_row=x+20, end_column=11) #PB/COUP Flat    
+                        sheet.merge_cells(start_row=x+7, start_column=2, end_row=x+7, end_column=3) #IL
+                        sheet.merge_cells(start_row=x+7, start_column=4, end_row=x+7, end_column=5) #RL
+                        sheet.merge_cells(start_row=x+7, start_column=6, end_row=x+7, end_column=7)  #ISO/Coup
+                        sheet.merge_cells(start_row=x+7, start_column=8, end_row=x+7, end_column=9) #AB/DIR
+                        sheet.merge_cells(start_row=x+7, start_column=10, end_row=x+7, end_column=11) #PB/COUP Flat    
                 #~~~~~~~~~~~~~~~~~~~~~~~~~~format the sheet for data~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                thisRow = len(artwork_list) + 3 
-                # ~~~~~~~~~~~~~~~~~~~~~~~~~~Load the specs ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                if spec_data.il_exp_tf:
-                    sheet['B20'] = str(spec_data.insertionloss) 
-                    sheet['C20'] = str(spec_data.il_ex)
-                    sheet['B9'] = str(spec_data.insertionloss) + '/' + str(spec_data.il_ex) + ' Max'
-                else:
-                    sheet['B20'] = str(spec_data.insertionloss) + ' Max' 
-                    sheet['B9'] = str(spec_data.insertionloss) + ' Max'
-                sheet['D20'] = str(spec_rl) + ' Max'
-                sheet['D9'] = str(spec_rl) + ' Max'
-                if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
-                    if spec_data.iso_exp_tf:
-                        sheet['F20'] = str(spec_data.isolation) + ' Max' 
-                        sheet['G20'] = str(spec_data.iso_exp) + ' Max'
-                        sheet['F9'] = "+/- " + str(spec_data.isolation) + '/' + str(spec_data.iso_exp) + ' Max'
-                    else:
-                        sheet['F20'] = str(spec_data.isolation) + ' Max'
-                        sheet['F9'] = "+/- " + str(spec_data.isolation) + ' Max'
-                    
-                    if spec_data.ab_exp_tf:
-                        sheet['H20'] = "+/- " + str(spec_data.amplitudebalance) 
-                        sheet['I20'] = str(spec_data.ab_exp) + ' dB'
-                        sheet['H9'] = "+/- " + str(spec_data.amplitudebalance) + '/' + str(spec_data.ab_exp) + ' deg'
-                    else:
-                        sheet['H20'] = "+/- " + str(spec_data.amplitudebalance) + ' dB'
-                        sheet['H9'] = "+/- " + str(spec_data.amplitudebalance) + ' deg'
-                    
-                    if spec_data.pb_exp_tf:
-                        sheet['J20'] = "+/- " + str(spec_data.phasebalance) 
-                        sheet['K20'] = str(spec_data.pb_exp) + ' dB'
-                        sheet['J9'] = "+/- " + str(spec_data.phasebalance) + '/' + str(spec_data.pb_exp) + ' deg'
-                    else:
-                        sheet['J20'] = "+/- " + str(spec_data.phasebalance) + ' deg'
-                        sheet['J9'] = "+/- " + str(spec_data.phasebalance) + ' deg'
-                    
-                elif 'DIRECTIONAL COUPLER' in spectype:
-                    if spec_data.coup_exp_tf:
-                        sheet['F20'] = str(spec_data.coupling) + ' Max' 
-                        sheet['G20'] = str(spec_data.coup_exp) + ' Max'
-                        sheet['F9'] = "+/- " + str(spec_data.coupling) + '/' + str(spec_data.coup_exp) + ' Max'
-                    else:
-                        sheet['F20'] = str(spec_data.coupling) + ' Max'
-                        sheet['J9'] = "+/- " + str(spec_data.coupling) + ' Max'
-                    
-                    if spec_data.dir_exp_tf:
-                        sheet['H20'] = "+/- " + str(spec_data.directivity) 
-                        sheet['I20'] = str(spec_data.dir_exp) + ' dB'
-                        sheet['H9'] = "+/- " + str(spec_data.directivity) + '/' + str(spec_data.dir_exp) + ' deg'
-                    else:
-                        sheet['H20'] = "+/- " + str(spec_data.directivity) + ' dB'
-                        sheet['J9'] = "+/- " + str(spec_data.directivity) + ' deg'
-                    
-                    if spec_data.cf_exp_tf:
-                        sheet['J20'] = "+/- " + str(spec_data.coupledflatness) 
-                        sheet['K20'] = str(spec_data.cf_exp) + ' dB'
-                        sheet['J9'] = "+/- " + str(spec_data.coupledflatness) + '/' + str(spec_data.pb_exp) + ' deg'
-                    else:
-                        sheet['J20'] = "+/- " + str(spec_data.coupledflatness) + ' deg'
-                        sheet['J9'] = "+/- " + str(spec_data.coupledflatness) + ' deg'
                 
-                elif 'TRANSFORMER' in spectype:
+                # ~~~~~~~~~~~~~~~~~~~~~~~~~~Load the specs ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                if ('90 DEGREE COUPLER' in spectype or 'BALUN' in spectype) and spec_data.ab_exp_tf:  # Dual Band AB only
+                    sheet['B20'] = str(spec_data.insertionloss) + ' Max'
+                    sheet['D20'] = str(spec_rl) + ' Max'
+                    sheet['F20'] = str(spec_data.isolation) + ' Max'
+                    sheet['H20'] = "+/- " + str(spec_data.amplitudebalance) + ' dB'
+                    sheet['I20'] = "+/- " + str(spec_data.SpecAB_exp) + ' dB'
+                    sheet['J20'] = "+/- " + str(spec_data.phasebalance) + ' deg'
+                    sheet['B9'] = str(spec_data.insertionloss) + ' Max'
+                    sheet['D9'] = str(spec_rl) + ' Max'
+                    sheet['F9'] = str(spec_data.isolation) + ' Max'
+                    sheet['H9'] = "+/- " + str(spec_data.amplitudebalance) + ' dB'
+                    sheet['J9'] = "+/- " + str(spec_data.phasebalance) + ' deg'
+                elif '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
+                    sheet['B20'] = str(spec_data.insertionloss) + ' Max'
+                    sheet['D20'] = str(spec_rl) + ' Max'
+                    sheet['F20'] = str(spec_data.isolation) + ' Max'
+                    sheet['H20'] = "+/- " + str(spec_data.amplitudebalance) + ' dB'
+                    sheet['J20'] = "+/- " + str(spec_data.phasebalance) + ' deg'
+                    sheet['B9'] = str(spec_data.insertionloss) + ' Max'
+                    sheet['D9'] = str(spec_rl) + ' Max'
+                    sheet['F9'] = str(spec_data.isolation) + ' Max'
+                    sheet['H9'] = "+/- " + str(spec_data.amplitudebalance) + ' dB'
+                    sheet['J9'] = "+/- " + str(spec_data.phasebalance) + ' deg'
+                elif 'DIRECTIONAL COUPLER' in spectype:
+                    sheet['B20'] = str(spec_data.insertionloss) + ' Max'
+                    sheet['D20'] = str(spec_rl) + ' Max'
+                    sheet['F20'] = str(spec_data.coupling) + ' Max'
+                    sheet['H20'] = "+/- " + str(spec_data.directivity) + ' dB'
+                    sheet['J20'] = "+/- " + str(spec_data.coupledflatness) + ' deg'
+                    sheet['B9'] = str(spec_data.insertionloss) + ' Max'
+                    sheet['D9'] = str(spec_rl) + ' Max'
+                    sheet['F9'] = str(spec_data.coupling) + ' Max'
+                    sheet['H9'] = "+/- " + str(spec_data.directivity) + ' dB'
+                    sheet['J9'] = "+/- " + str(spec_data.coupledflatness) + ' deg'
+                elif 'TRANSFORMER' in spectype and spec_data.il_exp_tf:  # Dual Band IL only
+                    sheet['B20'] = str(spec_data.insertionloss) + ' Max'
+                    sheet['B21'] = str(spec_data.il2) + ' Max'
+                    sheet['D20'] = str(spec_rl) + ' Max'
                     sheet['F20'] = 'N/A'
                     sheet['H20'] = 'N/A'
                     sheet['J20'] = 'N/A'
@@ -836,8 +707,18 @@ class ExcelReports:
                     sheet['F9'] = 'N/A'
                     sheet['H9'] = 'N/A'
                     sheet['J9'] = 'N/A'
-               
-               #Tabular data
+                elif 'TRANSFORMER' in spectype:
+                    sheet['B20'] = str(spec_data.insertionloss) + ' Max'
+                    sheet['D20'] = str(spec_rl) + ' Max'
+                    sheet['F20'] = 'N/A'
+                    sheet['H20'] = 'N/A'
+                    sheet['J20'] = 'N/A'
+                    sheet['B9'] = 'N/A'
+                    sheet['D9'] = 'N/A'
+                    sheet['F9'] = 'N/A'
+                    sheet['H9'] = 'N/A'
+                    sheet['J9'] = 'N/A'
+                #Tabular data
                 rownum = 21
                 insertion_loss1 = []
                 return_loss1 = []
@@ -874,36 +755,36 @@ class ExcelReports:
                 dir_fail = 0
                 cf_fail = 0
                 uut = 1
-                
+                sum_row = 5
                 print('report_data=',report_data)
                 good_data=True
                 for data in report_data:
                     #~~~~~~~~~~~~~~~Check for good data~~~~~~~~~~~~~~~~~
-                    #print('IL&RL ',data.insertionloss,data.insertionloss)
+                    print('IL&RL ',data.insertionloss,data.insertionloss)
                     if not data.insertionloss and not data.returnloss:
                         good_data=False
-                        #print('no good')
+                        print('no good')
                     if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
-                        #print('ISo&AM&PB ',data.isolation,data.phasebalance)
+                        print('ISo&AM&PB ',data.isolation,data.phasebalance)
                         if not data.isolation and not data.phasebalance: 
                             good_data=False
-                            #print('no good')
+                            print('no good')
                         if spec_data.ab_exp_tf :
                             if not data.amplitudebalance1:
                                 good_data=False
-                                #print('no good')
+                                print('no good')
                         else:
                             if not data.amplitudebalance:
                                 good_data=False
-                                #print('no good')
+                                print('no good')
                     else:
-                        #print('coup&dir&cf ',data.coupling,data.directivity,data.coupledflatness)
+                        print('coup&dir&cf ',data.coupling,data.directivity,data.coupledflatness)
                         if not data.coupling and not data.directivity and not data.coupledflatness: 
                             good_data=False
-                            #print('no good')
+                            print('no good')
                     #~~~~~~~~~~~~~~~Check for good data~~~~~~~~~~~~~~~~~
                     
-                    #time.sleep(20)
+                    time.sleep(20)
                     if good_data:
                         sheet.cell(row=rownum, column=1).value= 'UUT ' + str(uut)
                         #print('data.serialnumber=',data.serialnumber)
@@ -1063,13 +944,13 @@ class ExcelReports:
                                         cf_fail+=1
                                         testdata5.font = Font(color='FF3342', bold=True, italic=True) #W
                         rownum+=1
-                        #print('rownum=',rownum)
+                        print('rownum=',rownum)
                     uut+=1
                     
                 #~~~~~~~~~~~~~~~~Statics and Summary ~~~~~~~~~~~~~~~~~~~~
                 if len(insertion_loss1) > 1:# must have at least two tests
                     list_names = ['Min','Max','Avg','Stdev']
-                    #print('insertion_loss1=',insertion_loss1)
+                    print('insertion_loss1=',insertion_loss1)
                     il_stdev = round(statistics.stdev(insertion_loss1),2) #Standard deviation
                     il_var = round(statistics.variance(insertion_loss1),2) #Variance
                     il_avg = round(statistics.mean(insertion_loss1),2) #Mean Average
@@ -1083,9 +964,9 @@ class ExcelReports:
                     sheet['B15'] = il_fail
                     sheet['B16'] = round(il_fail/rownum,2)
                     il_list = [il_min,il_max,il_avg,il_stdev]
-                    #print('il_list=',il_list)
+                    print('il_list=',il_list)
 
-                    #print('return_loss1=',return_loss1)
+                    print('return_loss1=',return_loss1)
                     rl_stdev = round(statistics.stdev(return_loss1),2) #Standard deviation
                     if len(return_loss1)>1:
                         rl_var = round(statistics.variance(return_loss1),2) #Variance
@@ -1106,9 +987,9 @@ class ExcelReports:
                     #print('rl_list=',rl_list)
 
                     if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
-                        #print('isolation1=',isolation1)
-                        #print('amplitude_balance1=',amplitude_balance1)
-                        #print('phase_balance1=',phase_balance1)
+                        print('isolation1=',isolation1)
+                        print('amplitude_balance1=',amplitude_balance1)
+                        print('phase_balance1=',phase_balance1)
                         
                         iso_stdev = round(statistics.stdev(isolation1),2) #Standard deviation
                         if len(isolation1)>1:
@@ -1161,13 +1042,13 @@ class ExcelReports:
                         sheet['J13'] = pb_stdev
                         sheet['J14'] = pb_pass
                         sheet['J15'] = pb_fail
-                        sheet['J16'] = round(pb_fail/rownum,2)
+                        sheet['J15'] = round(pb_fail/rownum,2)
                         #print('pb_list=',pb_list)
                         stat_list = [il_list,rl_list,iso_list,ab_list,pb_list]
                     else:
-                        #print('coupling1=',coupling1)
-                        #print('directivity1=',directivity1)
-                        #print('coupledflatness1=',coupledflatness1)
+                        print('coupling1=',coupling1)
+                        print('directivity1=',directivity1)
+                        print('coupledflatness1=',coupledflatness1)
                         coup_stdev = round(statistics.stdev(coupling1),2) #Standard deviation
                         if len(coupling1)>1:
                             coup_var = round(statistics.variance(coupling1),2) #Variance
@@ -1230,126 +1111,102 @@ class ExcelReports:
                     #~~~~~~~~~~~~~~~~~~~~~~Summary sheet~~~~~~~~~~~~~~~~~~~~~~~~
                     sheet = wb["Summary"]
                     #print('sheet=',sheet)
-                    print('sum_row=',sum_row)
-                    if sum_row==5:
-                        thisRow = len(artwork_list) + 3
-                        print('thisRow=',thisRow)
-                    
                     
                     if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
                         #AVG
                         sheet['A' + str(sum_row)] = artwork_rev
-                        if sum_row==5:
-                            sheet['B' + str(sum_row-1)] = str(spec_list[0]) + ' Max'
-                            sheet['C' + str(sum_row-1)] = str(spec_list[1]) + ' Max'
-                            sheet['D' + str(sum_row-1)] = str(spec_list[2]) + ' Max'
-                            sheet['E' + str(sum_row-1)] = "'+/- " + str(spec_list[3]) + ' dB'
-                            sheet['F' + str(sum_row-1)] = "'+/- " + str(spec_list[4]) + ' deg'
+                        sheet['B' + str(sum_row-1)] = str(spec_list[0]) + ' Max'
+                        sheet['C' + str(sum_row-1)] = str(spec_list[1]) + ' Max'
+                        sheet['D' + str(sum_row-1)] = str(spec_list[2]) + ' Max'
+                        sheet['E' + str(sum_row-1)] = "'+/- " + str(spec_list[3]) + ' dB'
+                        sheet['F' + str(sum_row-1)] = "'+/- " + str(spec_list[4]) + ' deg'
                         sheet['B' + str(sum_row)] = il_avg
                         sheet['C' + str(sum_row)] = rl_avg
                         sheet['D' + str(sum_row)] = iso_avg
                         sheet['E' + str(sum_row)] = ab_avg
                         sheet['F' + str(sum_row)] = pb_avg
-                        sheet['G' + str(sum_row)] = il_pass + rl_pass + iso_pass + ab_pass + pb_pass + il_fail + rl_fail + iso_fail + ab_fail + pb_fail
-                        sheet['H' + str(sum_row)] = il_pass + rl_pass + iso_pass + ab_pass + pb_pass  
-                        sheet['I' + str(sum_row)] = il_fail + rl_fail + iso_fail + ab_fail + pb_fail
+                        sheet['G' + str(sum_row)] = rownum
                         
                      
                         #MIN
-                        sheet['A' + str(sum_row + thisRow)] = artwork_rev
-                        if sum_row==5:
-                            sheet['B' + str(sum_row + thisRow-1)] = spec_list[0]  = str(spec_list[0]) + ' Max'
-                            sheet['C' + str(sum_row + thisRow-1)] = str(spec_list[1]) + ' Max'
-                            sheet['D' + str(sum_row + thisRow-1)] = str(spec_list[2]) + ' Max'
-                            sheet['E' + str(sum_row + thisRow-1)] = "+/- " + str(spec_list[3]) + ' dB'
-                            sheet['F' + str(sum_row + thisRow-1)] = "+/- " + str(spec_list[4]) + ' deg'
-                        sheet['B' + str(sum_row + thisRow)] = il_min
-                        sheet['C' + str(sum_row + thisRow)] = rl_min
-                        sheet['D' + str(sum_row + thisRow)] = iso_min
-                        sheet['E' + str(sum_row + thisRow)] = ab_min
-                        sheet['F' + str(sum_row + thisRow)] = pb_min
-                        sheet['G' + str(sum_row + thisRow)] = il_pass + rl_pass + iso_pass + ab_pass + pb_pass + il_fail + rl_fail + iso_fail + ab_fail + pb_fail
-                        sheet['H' + str(sum_row + thisRow)] = il_pass + rl_pass + iso_pass + ab_pass + pb_pass  
-                        sheet['I' + str(sum_row + thisRow)] = il_fail + rl_fail + iso_fail + ab_fail + pb_fail
-                        
+                        sheet['A' + str(sum_row + 14)] = artwork_rev
+                        sheet['B' + str(sum_row + 13)] = spec_list[0]  = str(spec_list[0]) + ' Max'
+                        sheet['C' + str(sum_row + 13)] = str(spec_list[1]) + ' Max'
+                        sheet['D' + str(sum_row + 13)] = str(spec_list[2]) + ' Max'
+                        sheet['E' + str(sum_row + 13)] = "+/- " + str(spec_list[3]) + ' dB'
+                        sheet['F' + str(sum_row + 13)] = "+/- " + str(spec_list[4]) + ' deg'
+                        sheet['B' + str(sum_row + 14)] = il_min
+                        sheet['C' + str(sum_row + 14)] = rl_min
+                        sheet['D' + str(sum_row + 14)] = iso_min
+                        sheet['E' + str(sum_row + 14)] = ab_min
+                        sheet['F' + str(sum_row + 14)] = pb_min
+                        sheet['G' + str(sum_row + 14)] = rownum
                         #Max
-                        sheet['A' + str(sum_row + 2*thisRow)] = artwork_rev
-                        if sum_row==5:
-                            sheet['B' + str(sum_row + 2*thisRow-1)] = str(spec_list[0]) + ' Max'
-                            sheet['C' + str(sum_row + 2*thisRow-1)] = str(spec_list[1]) + ' Max'
-                            sheet['D' + str(sum_row + 2*thisRow-1)] = str(spec_list[2]) + ' Max'
-                            sheet['E' + str(sum_row + 2*thisRow-1)] = "+/- " + str(spec_list[3]) + ' dB'
-                            sheet['F' + str(sum_row + 2*thisRow-1)] = "+/- " + str(spec_list[4]) + ' deg'
-                        sheet['B' + str(sum_row + 2*thisRow)] = il_max
-                        sheet['C' + str(sum_row + 2*thisRow)] = rl_max
-                        sheet['D' + str(sum_row + 2*thisRow)] = iso_max
-                        sheet['E' + str(sum_row + 2*thisRow)] = ab_max
-                        sheet['F' + str(sum_row + 2*thisRow)] = pb_max
-                        sheet['G' + str(sum_row + 2*thisRow)] = il_pass + rl_pass + iso_pass + ab_pass + pb_pass + il_fail + rl_fail + iso_fail + ab_fail + pb_fail
-                        sheet['H' + str(sum_row + 2*thisRow)] = il_pass + rl_pass + iso_pass + ab_pass + pb_pass  
-                        sheet['I' + str(sum_row + 2*thisRow)] = il_fail + rl_fail + iso_fail + ab_fail + pb_fail
+                        sheet['A' + str(sum_row + 28)] = artwork_rev
+                        sheet['B' + str(sum_row + 27)] = str(spec_list[0]) + ' Max'
+                        sheet['C' + str(sum_row + 27)] = str(spec_list[1]) + ' Max'
+                        sheet['D' + str(sum_row + 27)] = str(spec_list[2]) + ' Max'
+                        sheet['E' + str(sum_row + 27)] = "+/- " + str(spec_list[3]) + ' dB'
+                        sheet['F' + str(sum_row + 27)] = "+/- " + str(spec_list[4]) + ' deg'
+                        sheet['B' + str(sum_row + 28)] = il_max
+                        sheet['C' + str(sum_row + 28)] = rl_max
+                        sheet['D' + str(sum_row + 28)] = iso_max
+                        sheet['E' + str(sum_row + 28)] = ab_max
+                        sheet['F' + str(sum_row + 28)] = pb_max
+                        sheet['G' + str(sum_row + 28)] = rownum
                     else:
                                                 #AVG
                         sheet['A' + str(sum_row)] = artwork_rev
-                        if sum_row==5:
-                            sheet['B' + str(sum_row-1)] = str(spec_list[0]) + ' Max'
-                            sheet['C' + str(sum_row-1)] = str(spec_list[1]) + ' Max'
-                            sheet['D' + str(sum_row-1)] = str(spec_list[2]) + ' Max'
-                            sheet['E' + str(sum_row-1)] = "'+/- " + str(spec_list[3]) + ' dB'
-                            sheet['F' + str(sum_row-1)] = "'+/- " + str(spec_list[4]) + ' deg'
+                        sheet['B' + str(sum_row-1)] = str(spec_list[0]) + ' Max'
+                        sheet['C' + str(sum_row-1)] = str(spec_list[1]) + ' Max'
+                        sheet['D' + str(sum_row-1)] = str(spec_list[2]) + ' Max'
+                        sheet['E' + str(sum_row-1)] = "'+/- " + str(spec_list[3]) + ' dB'
+                        sheet['F' + str(sum_row-1)] = "'+/- " + str(spec_list[4]) + ' deg'
                         sheet['B' + str(sum_row)] = il_avg
                         sheet['C' + str(sum_row)] = rl_avg
                         sheet['D' + str(sum_row)] = coup_avg
                         sheet['E' + str(sum_row)] = dir_avg
                         sheet['F' + str(sum_row)] = cf_avg
-                        sheet['G' + str(sum_row)] = il_pass + rl_pass + coup_pass + dir_pass + cf_pass + il_fail + rl_fail + coup_fail + dir_fail + cf_fail
-                        sheet['H' + str(sum_row)] = il_pass + rl_pass + coup_pass + dir_pass + cf_pass 
-                        sheet['I' + str(sum_row)] = il_fail + rl_fail + coup_fail + dir_fail + cf_fail
+                        sheet['G' + str(sum_row)] = rownum
                         
+                     
                         #MIN
-                        sheet['A' + str(sum_row + thisRow)] = artwork_rev
-                        if sum_row==5:
-                            sheet['B' + str(sum_row + thisRow-1)] = spec_list[0]  = str(spec_list[0]) + ' Max'
-                            sheet['C' + str(sum_row + thisRow-1)] = str(spec_list[1]) + ' Max'
-                            sheet['D' + str(sum_row + thisRow-1)] = str(spec_list[2]) + ' Max'
-                            sheet['E' + str(sum_row + thisRow-1)] = "+/- " + str(spec_list[3]) + ' dB'
-                            sheet['F' + str(sum_row + thisRow-1)] = "+/- " + str(spec_list[4]) + ' deg'
-                        sheet['B' + str(sum_row + thisRow)] = il_min
-                        sheet['C' + str(sum_row + thisRow)] = rl_min
-                        sheet['D' + str(sum_row + thisRow)] = coup_min
-                        sheet['E' + str(sum_row + thisRow)] = dir_min
-                        sheet['F' + str(sum_row + thisRow)] = cf_min
-                        sheet['G' + str(sum_row + thisRow)] = il_pass + rl_pass + coup_pass + dir_pass + cf_pass + il_fail + rl_fail + coup_fail + dir_fail + cf_fail
-                        sheet['H' + str(sum_row + thisRow)] = il_pass + rl_pass + coup_pass + dir_pass + cf_pass 
-                        sheet['I' + str(sum_row + thisRow)] = il_fail + rl_fail + coup_fail + dir_fail + cf_fail
-                        
+                        sheet['A' + str(sum_row + 14)] = artwork_rev
+                        sheet['B' + str(sum_row + 13)] = spec_list[0]  = str(spec_list[0]) + ' Max'
+                        sheet['C' + str(sum_row + 13)] = str(spec_list[1]) + ' Max'
+                        sheet['D' + str(sum_row + 13)] = str(spec_list[2]) + ' Max'
+                        sheet['E' + str(sum_row + 13)] = "+/- " + str(spec_list[3]) + ' dB'
+                        sheet['F' + str(sum_row + 13)] = "+/- " + str(spec_list[4]) + ' deg'
+                        sheet['B' + str(sum_row + 14)] = il_min
+                        sheet['C' + str(sum_row + 14)] = rl_min
+                        sheet['D' + str(sum_row + 14)] = coup_min
+                        sheet['E' + str(sum_row + 14)] = dir_min
+                        sheet['F' + str(sum_row + 14)] = cf_min
+                        sheet['G' + str(sum_row + 14)] = rownum
                         #Max
-                        sheet['A' + str(sum_row + 2*thisRow)] = artwork_rev
-                        if sum_row==5:
-                            sheet['B' + str(sum_row + 2*thisRow-1)] = str(spec_list[0]) + ' Max'
-                            sheet['C' + str(sum_row + 2*thisRow-1)] = str(spec_list[1]) + ' Max'
-                            sheet['D' + str(sum_row + 2*thisRow-1)] = str(spec_list[2]) + ' Max'
-                            sheet['E' + str(sum_row + 2*thisRow-1)] = "+/- " + str(spec_list[3]) + ' dB'
-                            sheet['F' + str(sum_row + 2*thisRow-1)] = "+/- " + str(spec_list[4]) + ' deg'
-                        sheet['B' + str(sum_row + 2*thisRow)] = il_max
-                        sheet['C' + str(sum_row + 2*thisRow)] = rl_max
-                        sheet['D' + str(sum_row + 2*thisRow)] = coup_max
-                        sheet['E' + str(sum_row + 2*thisRow)] = dir_max
-                        sheet['F' + str(sum_row + 2*thisRow)] = cf_max
-                        sheet['G' + str(sum_row + thisRow)] = il_pass + rl_pass + coup_pass + dir_pass + cf_pass + il_fail + rl_fail + coup_fail + dir_fail + cf_fail
-                        sheet['H' + str(sum_row + thisRow)] = il_pass + rl_pass + coup_pass + dir_pass + cf_pass 
-                        sheet['I' + str(sum_row + thisRow)] = il_fail + rl_fail + coup_fail + dir_fail + cf_fail
+                        sheet['A' + str(sum_row + 28)] = artwork_rev
+                        sheet['B' + str(sum_row + 27)] = str(spec_list[0]) + ' Max'
+                        sheet['C' + str(sum_row + 27)] = str(spec_list[1]) + ' Max'
+                        sheet['D' + str(sum_row + 27)] = str(spec_list[2]) + ' Max'
+                        sheet['E' + str(sum_row + 27)] = "+/- " + str(spec_list[3]) + ' dB'
+                        sheet['F' + str(sum_row + 27)] = "+/- " + str(spec_list[4]) + ' deg'
+                        sheet['B' + str(sum_row + 28)] = il_max
+                        sheet['C' + str(sum_row + 28)] = rl_max
+                        sheet['D' + str(sum_row + 28)] = coup_max
+                        sheet['E' + str(sum_row + 28)] = dir_max
+                        sheet['F' + str(sum_row + 28)] = cf_max
+                        sheet['G' + str(sum_row + 28)] = rownum
 
                     #~~~~~~~~~~~~~~~~~~~~~~Summary sheet~~~~~~~~~~~~~~~~~~~~~~~~
                     #rename the sheet to the artworkrev
                     x+=1
-            sum_row=sum_row+1
-            print('###########################!!!!!!!!!sum_row=',sum_row,'$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$%%%%%%%%%%%%')
+                    
             z+=1  
+            sum_row+=1            
             #~~~~~~~~~~~~~~~~~~~~~~~~~charts~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='loading charts')
             trace_num = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Insertion Loss J3').count()
-            loadcharts=LoadCharts(self.job_num,part_num,spectype,wb,artwork_rev,len(artwork_list))
+            loadcharts=LoadCharts(self.job_num,part_num,spectype,wb,artwork_rev)
             loadcharts.charts()
             print('Charts Loaded')
         
@@ -1366,6 +1223,7 @@ class ExcelReports:
             ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='report save failure')
             print("Report for ",self.job_num, " has failed at save",e)
         
+        
 
 
 class ReportFiles:
@@ -1375,7 +1233,7 @@ class ReportFiles:
         self.spec_type = spec_type
     
     def data_path(self):
-        top_folder = "\\\ippdc\\Test Automation\\Test Data\\"
+        top_folder = "\\\ippdc\\Test Automation\\Report Server Data\\"
         report_path = "90_Degree\\"
         if '90 DEGREE COUPLER SMD' in self.spec_type:
             report_path = '90_Degree_SMD\\'
@@ -1394,7 +1252,7 @@ class ReportFiles:
         
         #Create the path if it doesn't exist
         new_path = top_folder + report_path 
-        #print('new_path=',new_path)
+        print('new_path=',new_path)
         if not os.path.exists(new_path):
             os.makedirs(new_path)
         return new_path
@@ -1431,20 +1289,10 @@ class SaveReports:
         
     def save(self):
         paths = ReportFiles(self.job_num,self.part_num,self.spec_type)
+        print('paths',paths)
         data_path = paths.data_path()
-        x=1
-        new_name = self.job_num
-        file_exists=os.path.isfile(data_path + "TestData " + self.job_num + ".xlsx")
-        print('file_exists=',file_exists)
-        if not file_exists :
-             self.workbook.save(data_path + "TestData " + self.job_num + ".xlsx")
-        else:
-            while file_exists:
-                new_name = self.job_num + '_' + str(x)
-                file_exists=os.path.isfile(data_path + "TestData " + new_name + ".xlsx")
-                if not file_exists :
-                    self.workbook.save(data_path + "TestData " + new_name + ".xlsx")
-        print('saving ',data_path + "TestData " + new_name + ".xlsx")
+        print('data_path',data_path)
+        self.workbook.save(data_path + "TestData " + self.job_num + ".xlsx")
         ReportQueue.objects.using('TEST').filter(reportstatus='in process').filter(jobnumber = self.job_num).filter(partnumber=self.part_num).filter(operator=self.operator).filter(workstation=self.workstation).update(reportstatus='complete')
 
 
@@ -1471,11 +1319,10 @@ class MakeCharts:
     
     def chart1(self):
         #print('self.spec_type=',self.spec_type)
-        chart1 = ScatterChart()
-        chart1.style = 13
+        chart1 = LineChart()
+        chart1.style = 12
         chart1.y_axis.title = 'dB'
         chart1.x_axis.title = 'Frequency MHz'
-        chart1.x_axis.tickLblPos = "low"
         if not self.chartdata:
             return 0
         try:
@@ -1487,10 +1334,6 @@ class MakeCharts:
         chart1.legend = None
         chart1.width = 14
         chart1.height = 5
-        
-        print('xdata=',self.chartdata[0][1])
-        print('TIdata=',self.chartdata[0][2])
-        
         if '90 DEGREE COUPLER' in self.spec_type or 'BALUN' in self.spec_type: # type with 2 IL traces
             chart1.title='Insertion Loss'
             #~~~~~~~~~~~~~~~~~~~~~~~~~Calculate y-Axis~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1515,15 +1358,9 @@ class MakeCharts:
             y_delta=y_max-y_min
             chart1.y_axis.scaling.min = y_min-(2*y_delta)
             chart1.y_axis.scaling.max = y_max+(2*y_delta)
-            xvalues = Reference(self.sheet, min_col=1, min_row=50, max_row=249)
-            yvalues = Reference(self.sheet, min_col=2, min_row=50, max_row=249)
-            print('yvalues=',yvalues,' column=',2)
-            series = Series(values=yvalues, xvalues=xvalues, title_from_data=True)
-            chart1.series.append(series)
-            yvalues = Reference(self.sheet, min_col=3, min_row=50, max_row=249)
-            print('yvalues=',yvalues,' column=',3)
-            series = Series(values=yvalues, xvalues=xvalues, title_from_data=True)
-            chart1.series.append(series)
+            data = Reference(self.sheet, min_col=1, min_row=56, max_col=3, max_row=257)
+            chart1.add_data(data, titles_from_data=False)
+             #~~~~~~~~~~~~~~~~~~~~~~~~~Calculate y-Axis~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         else:
             chart1.title = "Insertion Loss"
             if not self.chartdata:
@@ -1537,20 +1374,16 @@ class MakeCharts:
             y_delta=y_max-y_min
             chart1.y_axis.scaling.min = y_min-(2*y_delta)
             chart1.y_axis.scaling.max = y_max+(2*y_delta)
-            xvalues = Reference(self.sheet, min_col=1, min_row=50, max_row=249)
-            yvalues = Reference(self.sheet, min_col=2, min_row=50, max_row=249)
-            series = Series(values=yvalues, xvalues=xvalues, title_from_data=True)
-            print('yvalues=',yvalues)
-            chart1.series.append(series)
-        
+            data = Reference(self.sheet, min_col=1, min_row=56, max_col=2, max_row=257)
+            chart1.add_data(data, titles_from_data=False)
         self.sheet.add_chart(chart1, "A6")
     
     def chart2(self):
-        chart2 = ScatterChart()
+        print('self.spec_type=',self.spec_type)
+        chart2 = LineChart()
         chart2.style = 12
         chart2.y_axis.title = 'dB'
         chart2.x_axis.title = 'Frequency MHz'
-        chart2.x_axis.tickLblPos = "low"
         if not self.chartdata:
             return 0
         try:
@@ -1568,27 +1401,24 @@ class MakeCharts:
         try:
             y_min=min([sublist[2] for sublist in self.chartdata])
             y_max=max([sublist[2] for sublist in self.chartdata])
-            print('chart2 y_min=', y_min,'y_max=', y_max)
         except IndexError as e:
             return 0
        
         y_delta=y_max-y_min
         chart2.y_axis.scaling.min = y_min-(2*y_delta)
         chart2.y_axis.scaling.max = y_max+(2*y_delta)
-        xvalues2 = Reference(self.sheet, min_col=4, min_row=50, max_row=249)
-        yvalues2 = Reference(self.sheet, min_col=5, min_row=50, max_row=249)
-        series = Series(values=yvalues2, xvalues=xvalues2, title_from_data=True)
-        print('yvalues2=',yvalues2)
-        chart2.series.append(series)
+        chart_titles = ['Frequency', 'Return Loss']
+        chart_titles.append(self.chartdata)
+        data = Reference(self.sheet, min_col=4, min_row=56, max_col=5, max_row=257)
+        chart2.add_data(data, titles_from_data=False)
         self.sheet.add_chart(chart2, "A16")  
-    
+
     def chart3(self):
         #print('self.spec_type=',self.spec_type)
-        chart3 = ScatterChart()
-        chart3.style = 11
+        chart3 = LineChart()
+        chart3.style = 12
         chart3.y_axis.title = 'dB'
         chart3.x_axis.title = 'Frequency MHz'
-        chart3.x_axis.tickLblPos = "low"
         if not self.chartdata:
             return 0
         try:
@@ -1611,20 +1441,18 @@ class MakeCharts:
         y_delta=y_max-y_min
         chart3.y_axis.scaling.min = y_min-(2*y_delta)
         chart3.y_axis.scaling.max = y_max+(2*y_delta)
-        xvalues3 = Reference(self.sheet, min_col=6, min_row=50, max_row=249)
-        yvalues3 = Reference(self.sheet, min_col=7, min_row=50, max_row=249)
-        series = Series(values=yvalues3, xvalues=xvalues3, title_from_data=True)
-        chart3.series.append(series)
-        print('yvalues3=',yvalues3)
+        chart_titles = ['Frequency', 'Isolation Loss']
+        chart_titles.append(self.chartdata)
+        data = Reference(self.sheet, min_col=6, min_row=56, max_col=7, max_row=257)
+        chart3.add_data(data, titles_from_data=False)
         self.sheet.add_chart(chart3, "A25")     
 
     def chart4(self):
         #print('self.spec_type=',self.spec_type)
-        chart4 = ScatterChart()
-        chart4.style = 10
+        chart4 = LineChart()
+        chart4.style = 12
         chart4.y_axis.title = 'dB'
         chart4.x_axis.title = 'Frequency MHz'
-        chart4.x_axis.tickLblPos = "low"
         if not self.chartdata:
             return 0
         if not self.chartdata:
@@ -1673,30 +1501,29 @@ class MakeCharts:
         y_delta=y_max-y_min
         chart4.y_axis.scaling.min = y_min-(2*y_delta)
         chart4.y_axis.scaling.max = y_max+(2*y_delta)
-        #~~~~~~~~~~~~~~~~~~~~~~~~~Calculate y-Axis~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        xvalues4 = Reference(self.sheet, min_col=8, min_row=50, max_row=249)
-        yvalues4 = Reference(self.sheet, min_col=9, min_row=50, max_row=249)
-        series = Series(values=yvalues4, xvalues=xvalues4, title_from_data=True)
-        chart4.series.append(series)
-        yvalues4 = Reference(self.sheet, min_col=10, min_row=50, max_row=249)
-        series = Series(values=yvalues4, xvalues=xvalues4, title_from_data=True)
-        print('yvalues4=',yvalues4)
-        chart4.series.append(series)
-        self.sheet.add_chart(chart4, "A34")
+         #~~~~~~~~~~~~~~~~~~~~~~~~~Calculate y-Axis~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+        chart_titles = ['Frequency', title1, title2]
+        chart_titles.append(self.chartdata)
+        data = Reference(self.sheet, min_col=8, min_row=56, max_col=10, max_row=257)
+        chart4.add_data(data, titles_from_data=False)
+        self.sheet.add_chart(chart4, "A34)")
+
+         
         
- 
+
 class LoadCharts:    
-    def __init__ (self, job_num,part_num,spec_type,workbook,artwork_rev,artwork_len):
+    def __init__ (self, job_num,part_num,spec_type,workbook,artwork_rev):
         self.job_num = job_num
         self.part_num = part_num
         self.spec_type = spec_type
         self.workbook = workbook
         self.artwork_rev=artwork_rev
-        self.artwork_len = artwork_len
         print('loading charts')
     
     def charts(self):
         chart1_data = []
+        chart_data = []
         chart_title = []
         chart3_chart_data = []
         chart4_chart_data = []
@@ -1706,9 +1533,6 @@ class LoadCharts:
         d1 = []
         d2 = []
         rows = []
-        chart_data = []
-        x=0
-        print('self.spec_type=',self.spec_type)
         for idx in range(5): 
             serialnumber = 'UUT' + str(idx+1)
             print('serialnumber=',serialnumber)
@@ -1716,56 +1540,57 @@ class LoadCharts:
             new_sheetname = str(self.artwork_rev) + '_UUT' + str(idx+1)    
             print('new_sheetname=',new_sheetname)
             sheet = self.workbook.create_sheet(new_sheetname) 
-            makesheet=CreateSheets(new_sheetname,sheet,self.artwork_len)
+            makesheet=CreateSheets(new_sheetname,sheet)
             makesheet.chart_data()
            
            #~~~~~~~~~~~Load Header~~~~~~
             sheet = self.workbook[new_sheetname]
+            print('Chartnsheet=',sheet)
+            print ('sheet names',self.workbook.sheetnames)
+            print ('active sheet',self.workbook.active)
             sheet['F2'] = self.job_num
             sheet['F3'] = self.part_num
             sheet['F4'] = self.spec_type
             #~~~~~~~~~~~Load Header~~~~~~
             all_charts = 0
-            chart_data = []
+            #~~~~~~~~~~~~~~~~~~~~Chart1~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            print('self.spec_type=',self.spec_type)
             if '90 DEGREE COUPLER' in self.spec_type or 'BALUN' in self.spec_type:
-                #~~~~~~~~~~~~~~~~~~~~Chart1~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                chart_data = []
                 title1='Insertion Loss J3'
                 title2='Insertion Loss J4'
-                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
-                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
+                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
+                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
                 #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss J3~~~~~~~~~~~~~~~~~~~~~~~~
-                print('trace_id 1=',trace_id1)
+                print('trace_id=',trace_id1)
                 trace_points = []
                 f_list = []
                 d1_list=[]
                 x=0
                 if not trace_id1:
                     serialnumber = 'UUT ' + str(idx+1)
-                    #print('serialnumber=',serialnumber)
-                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
-                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
                 if not trace_id1:
                     serialnumber = 'UUT  ' + str(idx+1)
-                    #print('serialnumber=',serialnumber)
-                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').last()
-                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').last()    
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').first()    
                 if not trace_id1:
                     serialnumber = 'UUT' + str(idx+1)
-                    #print('serialnumber=',serialnumber)
-                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').last()
-                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').last()
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').first()
                 if not trace_id1:
                     serialnumber = 'UUT ' + str(idx+1)
-                    #print('serialnumber=',serialnumber)
-                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').last()
-                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').last()
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').first()
                 if not trace_id1:
                     serialnumber = 'UUT  ' + str(idx+1)
-                    #print('serialnumber=',serialnumber)
-                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').last()
-                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').last()   
-                
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').first()   
                 
                 if trace_id1:
                     if trace_id1[0] > 171666:
@@ -1773,74 +1598,57 @@ class LoadCharts:
                     else:
                         trace_points = Tracepoints.objects.using('TEST').filter(traceid=trace_id1[0]).all()
                     #print('trace_points=',trace_points)
-                    rownum=50
-                    #print(len(trace_points))
-                    x=0
+                    rownum=56
                     for point in trace_points:
-                        if point.xdata==0 or x>200:
-                            break    # break here
-                        #print('rownum=',rownum)
                         sheet.cell(row=rownum, column=1).value= round(point.xdata,2)
                         sheet.cell(row=rownum, column=2).value= round(point.ydata,2)
-                        #print('rownum=',rownum,' point.xdata=',point.xdata,' point.ydata=',point.ydata)
+                        print('insertion loss J3 rownum=',rownum,' point.xdata=',point.xdata,' point.ydata=',point.ydata)
                         f_list.append(round(point.xdata,2))
                         d1_list.append(round(point.ydata,2))
                         rownum+=1
-                        x+=1 
-                    #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss J4~~~~~~~~~~~~~~~~~~~~~~~~
-                    trace_points = []
-                    title='Insertion Loss'
-                    #print('trace_id2=',trace_id2)
-                    #print('f_list=',len(f_list))
-                    #print('d1_list=',len(d1_list))
-                if trace_id2 and f_list:
+                #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss J4~~~~~~~~~~~~~~~~~~~~~~~~
+                trace_points = []
+                title='Insertion Loss'
+                if trace_id2:
                     if trace_id2[0] > 171666:
                         trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id2[0]).all()
                     else:
                         trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id2[0]).all()
-                    rownum=50
-                    print(len(trace_points))
-                    x=0
+                    rownum=56
                     for point in trace_points:
-                        if point.xdata==0 or x>200:
-                            break    # break here
-                        sheet.cell(row=rownum, column=3).value= round(point.ydata,2)
+                        sheet.cell(row=rownum, column=3).value= round(point.ydata,0)
                         d2=round(point.ydata,2)
-                        #print('x=',x)
-                        try:
+                        if f_list[x]!=0:
                             chart_data.append([title,f_list[x],d1_list[x],d2])
-                            #print('f=',f_list[x],'d1=',d1_list[x],'d2=',d2)
-                        except IndexError as e:
-                            print('indexError=',e)
                         
+                        print('insertion loss J4 rownum=',rownum,'f=',f_list[x],'d1=',d1_list[x],'d2=',d2)
                         rownum+=1 
                         x+=1 
             else:
                 #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss ~~~~~~~~~~~~~~~~~~~~~~~~
                 title='Insertion Loss'
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
-                
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
                 trace_points = []
                 if not trace_id:
                     serialnumber = 'UUT ' + str(idx+1)
                     #print('serialnumber=',serialnumber)
-                    trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
+                    trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
                 if not trace_id:
                     serialnumber = 'UUT  ' + str(idx+1)
                     #print('serialnumber=',serialnumber)
-                    trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last() 
+                    trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first() 
                 if not trace_id:
                     serialnumber = 'UUT' + str(idx+1)
                     #print('serialnumber=',serialnumber)
-                    trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).values_list('id').last()
+                    trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).values_list('id').first()
                 if not trace_id:
                     serialnumber = 'UUT ' + str(idx+1)
                     #print('serialnumber=',serialnumber)
-                    trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).values_list('id').last()
+                    trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).values_list('id').first()
                 if not trace_id:
                     serialnumber = 'UUT  ' + str(idx+1)
                     #print('serialnumber=',serialnumber)
-                    trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).values_list('id').last()
+                    trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).values_list('id').first()
                 
                 if trace_id:
                     print('trace_id=',trace_id[0])
@@ -1849,27 +1657,21 @@ class LoadCharts:
                     else:
                         trace_points = Tracepoints.objects.using('TEST').filter(traceid=trace_id[0]).all()
                     #print('trace_points=',trace_points)
-                    rownum=50
-                    x=0
+                    rownum=56
                     for point in trace_points:
-                        if point.xdata==0 or x>200:
-                            break    # break here
                         sheet.cell(row=rownum, column=1).value= round(point.xdata,2)
                         sheet.cell(row=rownum, column=2).value= round(point.ydata,2)
-                        #print('rownum=',rownum,' point.xdata=',point.xdata,' point.ydata=',point.ydata)
-                        f=round(point.xdata,2)
-                        d=round(point.ydata,2)
+                        print('insertion loss rownum=',rownum,' point.xdata=',point.xdata,' point.ydata=',point.ydata)
+                        f=round(point.xdata,3)
+                        d=round(point.ydata,3)
                         rownum+=1
-                        x+=1 
-                        chart_data.append([title,f,d])
-            #print('chart1_data=',chart_data)
+                        if f!=0:
+                            chart_data.append([title,f,d])
+                        #print('chart_data=',chart_data)
             if chart_data:            
                 load_chart= MakeCharts(sheet,self.spec_type,chart_data)
                 load_chart.chart1()
                 all_charts =+ 1
-                print('good chart1 data')
-            else:
-                print('no chart1 data')
             
                 
             #~~~~~~~~~~~~~~~~~~~~Chart1~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1878,113 +1680,95 @@ class LoadCharts:
         
             title='Return Loss'
             #~~~~~~~~~~~~~~~~~~~~~~Return Loss~~~~~~~~~~~~~~~~~~~~~~~~
-            chart_data = []
-            trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()       
+            trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()       
             trace_points = []
             if not trace_id:
                 serialnumber = 'UUT ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()  
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()  
             if not trace_id:
                 serialnumber = 'UUT  ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()  
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()  
             if not trace_id:
                 serialnumber = 'UUT' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).values_list('id').last()
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).values_list('id').first()
             if not trace_id:
                 serialnumber = 'UUT ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).values_list('id').last()
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).values_list('id').first()
             if not trace_id:
                 serialnumber = 'UUT  ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).values_list('id').last()
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).values_list('id').first()
             
             if trace_id:
                 if trace_id[0] > 171666:
                     trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id[0]).all()
                 else:
                     trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id[0]).all()
-                rownum=50
-                x=0
+                rownum=56
                 for point in trace_points:
-                    if point.xdata==0 or x>200:
-                        break    # break here
                     sheet.cell(row=rownum, column=4).value= round(point.xdata,2)
                     sheet.cell(row=rownum, column=5).value= round(point.ydata,2)
+                    print('RL rownum=',rownum,' point.xdata=',point.xdata,' point.ydata=',point.ydata)
                     f=round(point.xdata,2)
                     d=round(point.ydata,2)
                     rownum+=1
-                    x+=1 
                     chart_data.append([title,f,d])
-            
-            #print('chart2_data=',chart_data)
             if chart_data:
                 load_chart= MakeCharts(sheet,self.spec_type,chart_data)
                 load_chart.chart2()
                 all_charts =+ 1
-                print('good chart2 data')
-            else:
-                print('no chart2 data')
-            
             #~~~~~~~~~~~~~~~~~~~~Chart2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
             #~~~~~~~~~~~~~~~~~~~~Chart3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             #~~~~~~~~~~~~~~~~~~~~~~isolation~~~~~~~~~~~~~~~~~~~~~~~~
-            chart_data = []
-            trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()    
+            trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()    
             trace_points = []
             title='Isolation'
             if not trace_id:
                 serialnumber = 'UUT ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()  
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()  
             if not trace_id:
                 serialnumber = 'UUT  ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()  
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()  
             if not trace_id:
                 serialnumber = 'UUT' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).values_list('id').last()
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).values_list('id').first()
             if not trace_id:
                 serialnumber = 'UUT ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).values_list('id').last()
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).values_list('id').first()
             if not trace_id:
                 serialnumber = 'UUT  ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).values_list('id').last()
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).values_list('id').first()
             
             if trace_id:
                 if trace_id[0] > 171666:
                     trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id[0]).all()
                 else:
                     trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id[0]).all()
-                rownum=50
-                x=0
+                rownum=56
                 for point in trace_points:
-                    if point.xdata==0 or x>200:
-                        break    # break here
                     sheet.cell(row=rownum, column=6).value= round(point.xdata,2)
                     sheet.cell(row=rownum, column=7).value= round(point.ydata,2)
+                    print('iso rownum=',rownum,' point.xdata=',point.xdata,' point.ydata=',point.ydata)
                     f=round(point.xdata,2)
                     d=round(point.ydata,2)
                     rownum+=1
-                    x+=1
-                    chart_data.append([title,f,d])
+                    if f!=0:
+                        chart_data.append([title,f,d])
             
-            #print('chart3_data=',chart_data)
             if chart_data:
                 load_chart= MakeCharts(sheet,self.spec_type,chart_data)
                 load_chart.chart3()
                 all_charts =+ 1
-                print('good chart3 data')
-            else:
-                print('no chart3 data')
-             
             #~~~~~~~~~~~~~~~~~~~~Chart3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
             #~~~~~~~~~~~~~~~~~~~~Chart4~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1995,10 +1779,10 @@ class LoadCharts:
             else:
                 title1='Coupled Flatness J3'
                 title2='Coupled Flatness J4'
-            chart_data = [] 
-            trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
-            trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
-        
+             
+                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
+                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
+            
             #~~~~~~~~~~~~~~~~~~~~~~Phase Balance J3~~~~~~~~~~~~~~~~~~~~~~~~
             trace_points = []
             chart_data = []
@@ -2007,84 +1791,75 @@ class LoadCharts:
             if not trace_id1:
                 serialnumber = 'UUT ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
-                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()  
+                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
+                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()  
             if not trace_id1:
                 serialnumber = 'UUT  ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
-                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last() 
+                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()
+                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first() 
             if not trace_id1:
                 serialnumber = 'UUT' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').last()
-                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()  
+                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
+                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').first()  
             if not trace_id1:
                 serialnumber = 'UUT ' + str(idx+1)
-               # print('serialnumber=',serialnumber)
-                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').last()
-                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').last()  
+                #print('serialnumber=',serialnumber)
+                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
+                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').first()  
             if not trace_id1:
                 serialnumber = 'UUT  ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').last()
-                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').last()  
+                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').first()
+                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').first()  
             
             if trace_id1:
                 if trace_id1[0] > 171666:
                     trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id1[0]).all()
                 else:
                     trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id1[0]).all()
-                rownum=50
-                x=0
+                rownum=56
                 for point in trace_points:
-                    if point.xdata==0 or x>200:
-                        break    # break here
                     sheet.cell(row=rownum, column=8).value= round(point.xdata,2)
                     sheet.cell(row=rownum, column=9).value= round(point.ydata,2)
+                    print('pb j3 rownum=',rownum,' point.xdata=',point.xdata,' point.ydata=',point.ydata)
                     f_list.append(round(point.xdata,2))
                     d1_list.append(round(point.ydata,2))
                     rownum+=1
-                    x+=1
+            
             #~~~~~~~~~~~~~~~~~~~~~~Phase Balance J4~~~~~~~~~~~~~~~~~~~~~~~~
             trace_points = []
             x=0
-            if trace_id2 and f_list:
+            if trace_id2:
                 if trace_id2[0] > 171666:
                     trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id2[0]).all()
                 else:
                     trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id2[0]).all()
-                rownum=50
-                x=0
+                rownum=56
                 for point in trace_points:
-                    if point.xdata==0 or x>200:
-                        break    # break here
-                    sheet.cell(row=rownum, column=10).value= round(point.ydata,0)
+                    sheet.cell(row=rownum, column=10).value= round(point.ydata,2)
                     d2=round(point.ydata,2)
                     #print('d2=',d2)
                     #print('f_list[x]=',f_list[x])
                     #print('d1_list[x]=',d1_list[x])
+                    print('PB J4 rownum=',rownum,'f=',f_list[x],'d1=',d1_list[x],'d2=',d2)
                     chart_data.append([title,f_list[x],d1_list[x],d2])
                     rownum+=1 
                     x+=1    
             
-            #print('chart4_data=',chart_data)
-            if chart_data:
-                load_chart= MakeCharts(sheet,self.spec_type,chart_data)
-                load_chart.chart4()
-                all_charts =+ 1
-                print('good chart4 data')
-            else:
-                print('no chart4 data')
-               
+                if chart_data:
+                    load_chart= MakeCharts(sheet,self.spec_type,chart_data)
+                    load_chart.chart4()
+                    all_charts =+ 1
+            
             if all_charts ==0:
-                    print ('sheet names',self.workbook.sheetnames)
-                    print ('No Chart data remove active sheet',sheet.title)
-                    self.workbook.remove(sheet)
+                print ('sheet names',self.workbook.sheetnames)
+                print ('No Chart data remove active sheet',sheet.title)
+                #self.workbook.remove(sheet)
             else:
                 print (sheet.title,' Has good data')
-  
- 
+                
   
 class Statistics:  
     def __init__(self,test1,test2,test3,test4,test5):
@@ -2835,3 +2610,5 @@ class Histogram_data:
        
         return hist
         
+    
+    
