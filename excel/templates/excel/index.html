@@ -42,7 +42,6 @@
 <main>
 	<form action = "{% url 'excel:reports' %}" method="post">
 		{% csrf_token %}	
-		
 			<section class="py-7 text-center container">
 				<div class="row py-lg-5">
 					<div class="col-lg-6 col-md-8 mx-auto">
@@ -84,11 +83,7 @@
 					<div class="form-group">		
 						<label for="_part">Part Number</label>
 						<select id='_part' name ='_part' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
-							{% if part_num == -1%}
-								<option data-desc = '_part' value = "All Part Numbers">All Part Numbers</option>
-							{% else %}
-								<option selected value = "{{part_num}}">{{part_num}}</option>
-							{% endif %}	
+							<option data-desc = '_part' value = "All Part Numbers">All Part Numbers</option>
 							{% for part in part_list%}
 								<option data-desc = '_part',  value = "{{part}}">{{part}}</option>
 							{% endfor %}
@@ -100,11 +95,7 @@
 						<label for="_workstation">Workstation</label>
 						<!-- Customer-->
 						<select id='_workstation' name ='_workstation' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
-							{% if workstation == -1%}
-								<option data-desc = '_workstation' value = "All Workstations">All Workstations</option>
-							{% else %}
-								<option selected value = "{{workstation}}">{{workstation}}</option>
-							{% endif %}	
+							<option data-desc = '_workstation' value = "All Workstations">All Workstations</option>
 							{% for station in workstation_list%}
 								<option data-desc = '_workstation', value = "{{workstation}}">{{station}}</option>
 							{% endfor %}
@@ -115,11 +106,7 @@
 					<div class="form-group">		
 						<label for="_operator">Operator</label>
 						<select id='_operator' name ='_operator' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
-							{% if job_num == -1%}
-								<option data-desc = '_operator' value = "All Operators">All Operators</option>
-							{% else %}
-								<option selected value = "{{operator}}">{{operator}}</option>
-							{% endif %}	
+							<option data-desc = '_operator' value = "All Operators">All Operators</option>
 							{% for op in operator_list%}
 								<option data-desc = '_operator', value = "{{op}}">{{op}}</option>
 							{% endfor %}
@@ -130,11 +117,7 @@
 					<div class="form-group">		
 						<label for="_art">Art Work</label>
 						<select id='_art' name ='_art' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
-							{% if artwork == -1%}
-								<option data-desc = '_art', value = "All Artworks">All Artworks</option>
-							{% else %}
-								<option selected, value = "{{artwork}}">{{artwork}}</option>
-							{% endif %}	
+							<option data-desc = '_art', value = "All Artworks">All Artworks</option>
 							{% for art in artwork_list%}
 								<option data-desc = '_art', value = "{{art}}">{{art}}</option>
 							{% endfor %}

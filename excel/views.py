@@ -582,7 +582,7 @@ class ReportView(View):
                 operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('workstation').values_list('workstation', flat=True).distinct()
                 part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
-                print('artwork_list',artwork_list)
+                #print('artwork_list',artwork_list)
                 if part:
                     part_num = part.partnumber
                 spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()               
@@ -620,7 +620,7 @@ class ReportView(View):
                 workstation_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(operator=operator).order_by('workstation').values_list('workstation', flat=True).distinct()
                 spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()               
                 report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(operator=operator).all()
-                print('we are here8')
+                #print('we are here8')
             elif job_num ==-1 and part_num !=-1 and artwork!=-1:
                 job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
                 part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
@@ -629,14 +629,14 @@ class ReportView(View):
                 workstation_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).order_by('workstation').values_list('workstation', flat=True).distinct()
                 spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
                 report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).all()
-                print('we are here9')
+                #print('we are here9')
             else:
                 got_enough=False
                 job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
                 part_list = Testdata.objects.using('TEST').order_by('-partnumber').values_list('partnumber', flat=True).distinct() 
                 operator_list = Effeciency.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
                 workstation_list = Workstation.objects.using('TEST').order_by('computername').values_list('computername', flat=True).distinct()
-                print('we are here10')
+                #print('we are here10')
             
             #print('report_data',report_data)
             if got_enough and spec_data and report_data:
@@ -648,14 +648,14 @@ class ReportView(View):
                 artwork_list = temp_list
                 
                 
-                print('artwork_list=',artwork_list)
-                print('job_num=',job_num)
-                print('spec_data=',spec_data)
+                #print('artwork_list=',artwork_list)
+                #print('job_num=',job_num)
+                #print('spec_data=',spec_data)
                 #print('spec_data.vswr=',spec_data.vswr)
                 conversions = Conversions(spec_data.vswr,'')
                 spec_rl = round(conversions.vswr_to_rl(),3)
                 #print('spec_rl=',spec_rl)
-                print('spectype=',spec_data.spectype)
+                #print('spectype=',spec_data.spectype)
                 try:
                     if spec1!=-1:
                         if '90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype:
@@ -718,26 +718,26 @@ class ReportView(View):
                         if data.insertionloss:  #does data.insertionloss: have any data? 
                             if data.insertionloss > spec1 * 3:
                                 bad1_list.append(data.insertionloss)
-                                print('bad1=',data.insertionloss,'spec=',spec1 * 3)
+                                #print('bad1=',data.insertionloss,'spec=',spec1 * 3)
                         if data.returnloss:  #does data.returnloss: have any data? 
                             if data.returnloss < spec2 * 3:
                                 bad2_list.append(data.returnloss)
-                                print('bad2=',data.returnloss,'spec=',spec2 * 3)
+                                #print('bad2=',data.returnloss,'spec=',spec2 * 3)
                         
                         if ('90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype) and data.isolation:  #does data.isolation: have any data?      
                             if abs(data.isolation) > spec3 * 3:  
                                 bad3_list.append(data.isolation)
-                                print('bad3=',abs(data.isolation),'spec=',spec3 * 3)
+                                #print('bad3=',abs(data.isolation),'spec=',spec3 * 3)
                         
                         if ('90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype) and data.amplitudebalance:  #does data.amplitudebalance have any data?      
                             if abs(data.amplitudebalance) > spec4 * 3:  
                                 bad4_list.append(data.amplitudebalance)
-                                print('bad4=',abs(data.amplitudebalance),'spec=',spec4 * 3)
+                                #print('bad4=',abs(data.amplitudebalance),'spec=',spec4 * 3)
                        
                         if ('90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype) and data.phasebalance:  #does data.coupling have any data?  
                             if abs(data.phasebalance) > spec5 * 3:  
                                 bad5_list.append(data.phasebalance)
-                                print('bad5=',abs(data.phasebalance),'spec=',spec5 * 3)
+                                #print('bad5=',abs(data.phasebalance),'spec=',spec5 * 3)
                             
                         if 'DIRECTIONAL COUPLER' in spec_data.spectype and data.coupling: #does data.coupling have any data?
                             if abs(data.coupling) > spec3 * 3:  
@@ -807,95 +807,98 @@ class ReportView(View):
                     histo_data = Histogram_data(test_list,spec_list,'test1') 
                     il_histo_data = histo_data.Hist_data()
                     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~statistics~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                    stat_data = Statistics(test1_list,test2_list,test3_list,test4_list,test5_list) 
-                    stat_list = stat_data.get_stats()
-                    #print('stat_list=',stat_list)
-                    stat1_min = stat_list[0][0]
-                    #print('stat1_min=',stat1_min)
-                    stat1_max = stat_list[0][1]
-                    #print('stat1_max=',stat1_max)
-                    stat1_avg = stat_list[0][2]
-                    #print('stat1_avg=',stat1_avg)
-                    stat1_std = stat_list[0][3]
-                    #print('stat1_std=',stat1_std)
-                    stat2_min = stat_list[1][0]
-                    stat2_max = stat_list[1][1]
-                    stat2_avg = stat_list[1][2]
-                    stat2_std = stat_list[1][3]
-                    stat3_min = stat_list[2][0]
-                    stat3_max = stat_list[2][1]
-                    stat3_avg = stat_list[2][2]
-                    stat3_std = stat_list[2][3]
-                    stat4_min = stat_list[3][0]
-                    stat4_max = stat_list[3][1]
-                    stat4_avg = stat_list[3][2]
-                    stat4_std = stat_list[3][3]
-                    stat5_min = stat_list[4][0]
-                    stat5_max = stat_list[4][1]
-                    stat5_avg = stat_list[4][2]
-                    stat5_std = stat_list[4][3]
-                    for x in range(len(test1_list)):
-                        if test1_list[x] <= spec1:
-                            passed1 +=1
-                        else:
-                            failed1 +=1
-                            
-                        if test2_list[x] <= spec2:
-                            passed2 +=1
-                        else:
-                            failed2 +=1
-                        if test3_list[x] <= spec3:
-                            passed3 +=1
-                        else:
-                            failed3 +=1
-                        if test4_list[x] <= spec4:
-                            passed4 +=1
-                        else:
-                            failed4 +=1
-                        if test5_list[x] <= spec5:
-                            passed5 +=1
-                        else:
-                            failed5 +=1
-                            
-                    if passed1==0:
-                        failed_percent1 = '100%'
-                    elif failed1==0:
-                        failed_percent1 = '0%'
-                    else:    
-                        failed_percent1 = str(round((failed1/passed1)* 100,3)) + '%'
-                    
-                    if passed2==0:
-                        failed_percent2 = '100%'
-                    elif failed2==0:
-                        failed_percent2 = '0%'
-                    else:    
-                        failed_percent2 = str(round((failed2/passed2)* 100,3)) + '%'
-                    
-                    if passed3==0:
-                        failed_percent3 = '100%'
-                    elif failed3==0:
-                        failed_percent3 = '0%'
-                    else:    
-                        failed_percent3 = str(round((failed3/passed3)* 100,3)) + '%'
-                    
-                    if passed4==0:
-                        failed_percent4 = '100%'
-                    elif failed4==0:
-                        failed_percent4 = '0%'
-                    else:    
-                        failed_percent4 = str(round((failed4/passed4)* 100,3)) + '%'
-                    
-                    if passed5==0:
-                        failed_percent5 = '100%'
-                    elif failed5==0:
-                        failed_percent5 = '0%'
-                    else:    
-                        failed_percent5 = str(round((failed5/passed5)* 100,2)) + '%'
-                    
-                    mean = statistics.mean(test3_list)
-                    sd = statistics.stdev(test3_list)
-                    #print('mean=',mean)
-                    #print('sd=',sd)   
+                    try:
+                        stat_data = Statistics(test1_list,test2_list,test3_list,test4_list,test5_list) 
+                        stat_list = stat_data.get_stats()
+                        #print('stat_list=',stat_list)
+                        stat1_min = stat_list[0][0]
+                        #print('stat1_min=',stat1_min)
+                        stat1_max = stat_list[0][1]
+                        #print('stat1_max=',stat1_max)
+                        stat1_avg = stat_list[0][2]
+                        #print('stat1_avg=',stat1_avg)
+                        stat1_std = stat_list[0][3]
+                        #print('stat1_std=',stat1_std)
+                        stat2_min = stat_list[1][0]
+                        stat2_max = stat_list[1][1]
+                        stat2_avg = stat_list[1][2]
+                        stat2_std = stat_list[1][3]
+                        stat3_min = stat_list[2][0]
+                        stat3_max = stat_list[2][1]
+                        stat3_avg = stat_list[2][2]
+                        stat3_std = stat_list[2][3]
+                        stat4_min = stat_list[3][0]
+                        stat4_max = stat_list[3][1]
+                        stat4_avg = stat_list[3][2]
+                        stat4_std = stat_list[3][3]
+                        stat5_min = stat_list[4][0]
+                        stat5_max = stat_list[4][1]
+                        stat5_avg = stat_list[4][2]
+                        stat5_std = stat_list[4][3]
+                        for x in range(len(test1_list)):
+                            if test1_list[x] <= spec1:
+                                passed1 +=1
+                            else:
+                                failed1 +=1
+                                
+                            if test2_list[x] <= spec2:
+                                passed2 +=1
+                            else:
+                                failed2 +=1
+                            if test3_list[x] <= spec3:
+                                passed3 +=1
+                            else:
+                                failed3 +=1
+                            if test4_list[x] <= spec4:
+                                passed4 +=1
+                            else:
+                                failed4 +=1
+                            if test5_list[x] <= spec5:
+                                passed5 +=1
+                            else:
+                                failed5 +=1
+                                
+                        if passed1==0:
+                            failed_percent1 = '100%'
+                        elif failed1==0:
+                            failed_percent1 = '0%'
+                        else:    
+                            failed_percent1 = str(round((failed1/passed1)* 100,3)) + '%'
+                        
+                        if passed2==0:
+                            failed_percent2 = '100%'
+                        elif failed2==0:
+                            failed_percent2 = '0%'
+                        else:    
+                            failed_percent2 = str(round((failed2/passed2)* 100,3)) + '%'
+                        
+                        if passed3==0:
+                            failed_percent3 = '100%'
+                        elif failed3==0:
+                            failed_percent3 = '0%'
+                        else:    
+                            failed_percent3 = str(round((failed3/passed3)* 100,3)) + '%'
+                        
+                        if passed4==0:
+                            failed_percent4 = '100%'
+                        elif failed4==0:
+                            failed_percent4 = '0%'
+                        else:    
+                            failed_percent4 = str(round((failed4/passed4)* 100,3)) + '%'
+                        
+                        if passed5==0:
+                            failed_percent5 = '100%'
+                        elif failed5==0:
+                            failed_percent5 = '0%'
+                        else:    
+                            failed_percent5 = str(round((failed5/passed5)* 100,2)) + '%'
+                        
+                        mean = statistics.mean(test3_list)
+                        sd = statistics.stdev(test3_list)
+                        #print('mean=',mean)
+                        #print('sd=',sd)   
+                    except BaseException as err:
+                        print(f"Unexpected {err=}, {type(err)=}")
                     
                     histo_data = Histogram_data(test_list,spec_list,'test1')
                     il_histo = histo_data.Hist_data()
@@ -1492,8 +1495,6 @@ def export_users_xls(request):
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet('Users Data') # this will make a sheet named Users Data
     
-    
-
     # Sheet header, first row
     row_num = 0
 
@@ -1515,7 +1516,6 @@ def export_users_xls(request):
             ws.write(row_num, col_num, row[col_num], font_style)
 
     wb.save(response)
-
     return response
     
 #This code will explain how to Style your Excel File. The bellow code will explain Wrap text in the cell, background color, border, and text color.    
