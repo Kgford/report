@@ -316,6 +316,8 @@ class CreateSheets:
         self.worksheet['I49']='Trace 1:'
         self.worksheet['J49']='Trace 2'
         
+        
+        
     def tabular_data(self):
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set row heights~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         print('in styling')
@@ -745,43 +747,37 @@ class ExcelReports:
                         sheet['H19'] = "Amplitude Balance"
                         sheet['J19'] = "Phase Balance"
                     #~~~~~~~~~~~~choose the tests~~~~~~~~~~~~~
-                    '''
-                    #Note: removing merged cells at Bills request 12/14/21
-                    #~~~~~~~~~~~~~~~~~~~~~~~~~~format the sheet for data~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    
+                    #~~~~~~~~~~~~~~~~~~~~~format the spec cells for data or multiband data~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                     #Mearge split cells for normal data
                     if spec_data.ab_exp_tf or spec_data.dir_exp_tf:  # Dual Band AB/DIR only Don't mearge AB cels
-                        for x in range(int(data_count) + 1):
-                            sheet.merge_cells(start_row=x+20, start_column=2, end_row=x+20, end_column=3) #IL
-                            sheet.merge_cells(start_row=x+20, start_column=4, end_row=x+20, end_column=5) #RL
-                            sheet.merge_cells(start_row=x+20, start_column=6, end_row=x+20, end_column=7)  #ISO/Coup
-                            sheet.merge_cells(start_row=x+20, start_column=10, end_row=x+20, end_column=11) #PB/COUP Flat
+                        sheet.merge_cells(start_row=20, start_column=2, end_row=20, end_column=3) #IL
+                        sheet.merge_cells(start_row=20, start_column=4, end_row=20, end_column=5) #RL
+                        sheet.merge_cells(start_row=20, start_column=6, end_row=20, end_column=7)  #ISO/Coup
+                        sheet.merge_cells(start_row=20, start_column=10, end_row=20, end_column=11) #PB/COUP Flat
                     elif spec_data.il_exp_tf:  # Dual Band IL only Don't mearge if spec_data.il_exp_tf:  # Dual Band AB only Don't mearge AB cels
-                        for x in range(int(data_count) + 1):
-                            sheet.merge_cells(start_row=x+20, start_column=4, end_row=x+20, end_column=5) #RL
-                            sheet.merge_cells(start_row=x+20, start_column=6, end_row=x+20, end_column=7)  #ISO/Coup
-                            sheet.merge_cells(start_row=x+20, start_column=8, end_row=x+20, end_column=9) #AB/DIR
-                            sheet.merge_cells(start_row=x+20, start_column=10, end_row=x+20, end_column=11) #PB/COUP Flat cels
+                        sheet.merge_cells(start_row=20, start_column=4, end_row=20, end_column=5) #RL
+                        sheet.merge_cells(start_row=20, start_column=6, end_row=20, end_column=7)  #ISO/Coup
+                        sheet.merge_cells(start_row=20, start_column=8, end_row=20, end_column=9) #AB/DIR
+                        sheet.merge_cells(start_row=20, start_column=10, end_row=20, end_column=11) #PB/COUP Flat cels
                     elif spec_data.coup_exp_tf or spec_data.iso_exp_tf:  # Dual Band Coupling/Isolation only Don't mearge if spec_data.coup_exp_tf:  
-                        for x in range(int(data_count) + 1):
-                            sheet.merge_cells(start_row=x+20, start_column=2, end_row=x+20, end_column=3) #IL
-                            sheet.merge_cells(start_row=x+20, start_column=4, end_row=x+20, end_column=5) #RL
-                            sheet.merge_cells(start_row=x+20, start_column=8, end_row=x+20, end_column=9) #AB/DIR
-                            sheet.merge_cells(start_row=x+20, start_column=10, end_row=x+20, end_column=11) #PB/COUP Flat    
+                        sheet.merge_cells(start_row=20, start_column=2, end_row=20, end_column=3) #IL
+                        sheet.merge_cells(start_row=20, start_column=4, end_row=20, end_column=5) #RL
+                        sheet.merge_cells(start_row=20, start_column=8, end_row=20, end_column=9) #AB/DIR
+                        sheet.merge_cells(start_row=20, start_column=10, end_row=20, end_column=11) #PB/COUP Flat    
                     elif spec_data.pb_exp_tf or spec_data.cf_exp_tf:  # Dual Band PB/Coup Flatness only Don't mearge if spec_data.pb_exp_tf:  
-                        for x in range(int(data_count) + 1):
-                            sheet.merge_cells(start_row=x+20, start_column=2, end_row=x+20, end_column=3) #IL
-                            sheet.merge_cells(start_row=x+20, start_column=4, end_row=x+20, end_column=5) #RL
-                            sheet.merge_cells(start_row=x+20, start_column=6, end_row=x+20, end_column=7)  #ISO/Coup
-                            sheet.merge_cells(start_row=x+20, start_column=8, end_row=x+20, end_column=9) #AB/DIR
+                        sheet.merge_cells(start_row=20, start_column=2, end_row=20, end_column=3) #IL
+                        sheet.merge_cells(start_row=20, start_column=4, end_row=20, end_column=5) #RL
+                        sheet.merge_cells(start_row=20, start_column=6, end_row=20, end_column=7)  #ISO/Coup
+                        sheet.merge_cells(start_row=20, start_column=8, end_row=20, end_column=9) #AB/DIR
                     else:
-                        for x in range(int(data_count) + 1):
-                            sheet.merge_cells(start_row=x+20, start_column=2, end_row=x+20, end_column=3) #IL
-                            sheet.merge_cells(start_row=x+20, start_column=4, end_row=x+20, end_column=5) #RL
-                            sheet.merge_cells(start_row=x+20, start_column=6, end_row=x+20, end_column=7)  #ISO/Coup
-                            sheet.merge_cells(start_row=x+20, start_column=8, end_row=x+20, end_column=9) #AB/DIR
-                            sheet.merge_cells(start_row=x+20, start_column=10, end_row=x+20, end_column=11) #PB/COUP Flat    
-                    #~~~~~~~~~~~~~~~~~~~~~~~~~~format the sheet for data~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                    '''
+                        sheet.merge_cells(start_row=20, start_column=2, end_row=20, end_column=3) #IL
+                        sheet.merge_cells(start_row=20, start_column=4, end_row=20, end_column=5) #RL
+                        sheet.merge_cells(start_row=20, start_column=6, end_row=20, end_column=7)  #ISO/Coup
+                        sheet.merge_cells(start_row=20, start_column=8, end_row=20, end_column=9) #AB/DIR
+                        sheet.merge_cells(start_row=20, start_column=10, end_row=20, end_column=11) #PB/COUP Flat    
+                    #~~~~~~~~~~~~~~~~~~~~~format the spec cells for data or multiband data~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    
                     thisRow = len(artwork_list) + 3 
                     # ~~~~~~~~~~~~~~~~~~~~~~~~~~Load the specs ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                     if spec_data.il_exp_tf:
@@ -820,11 +816,11 @@ class ExcelReports:
                         
                     elif 'DIRECTIONAL COUPLER' in spectype:
                         if spec_data.coup_exp_tf:
-                            sheet['F20'] = str(spec_data.coupling) + ' Max' 
-                            sheet['G20'] = str(spec_data.coup_ex) + ' Max'
+                            sheet['F20'] = str(spec_data.coupling) + "+/- " + str(spec_data.coupplusminus) 
+                            sheet['G20'] = str(spec_data.coup_ex) + "+/- " + str(spec_data.coupplusminus) 
                             sheet['F9'] =  str(spec_data.coupling) + "+/- " + str(spec_data.coupplusminus)  + '/' +  str(spec_data.coup_ex) + " +/- " + str(spec_data.coupplusminus) 
                         else:
-                            sheet['F20'] = str(spec_data.coupling) + ' Max'
+                            sheet['F20'] = str(spec_data.coupling) + "+/- " + str(spec_data.coupplusminus) 
                             sheet['F9'] = str(spec_data.coupling) + "+/- " + str(spec_data.coupplusminus) 
                                                         
                         
@@ -890,6 +886,7 @@ class ExcelReports:
                     coup_fail = 0
                     dir_fail = 0
                     cf_fail = 0
+                    total_pass = 0
                     uut = 1
                     
                     print('report_data=',report_data)
@@ -1153,7 +1150,7 @@ class ExcelReports:
                         sheet['B12'] = il_max
                         sheet['B13'] = il_stdev
                         sheet['B14'] = il_pass
-                        sheet['B15'] = il_fail*100
+                        sheet['B15'] = il_fail
                         sheet['B16'] = str(round((il_fail/rownum)*100,2)) + '%'
                         il_list = [il_min,il_max,il_avg,il_stdev]
                         #print('il_list=',il_list)
@@ -1236,7 +1233,7 @@ class ExcelReports:
                             sheet['H13'] = ab_stdev
                             sheet['H14'] = ab_pass
                             sheet['H15'] = ab_fail
-                            sheet['F16'] = str(round((ab_fail/rownum)*100,2)) + '%'
+                            sheet['H16'] = str(round((ab_fail/rownum)*100,2)) + '%'
                             #print('ab_list=',ab_list)
 
                             if len(phase_balance1)>1:
@@ -1374,8 +1371,9 @@ class ExcelReports:
                             sheet['D' + str(sum_row)] = iso_avg
                             sheet['E' + str(sum_row)] = ab_avg
                             sheet['F' + str(sum_row)] = pb_avg
-                            sheet['G' + str(sum_row)] = il_pass + rl_pass + iso_pass + ab_pass + pb_pass + il_fail + rl_fail + iso_fail + ab_fail + pb_fail
-                            sheet['H' + str(sum_row)] = il_pass + rl_pass + iso_pass + ab_pass + pb_pass  
+                            
+                            sheet['G' + str(sum_row)] = int((il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/5) + int((il_fail + rl_fail + iso_fail + ab_fail + pb_fail)/5)
+                            sheet['H' + str(sum_row)] = int((il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/5) 
                             sheet['I' + str(sum_row)] = il_fail + rl_fail + iso_fail + ab_fail + pb_fail
                             
                          
@@ -1392,8 +1390,8 @@ class ExcelReports:
                             sheet['D' + str(sum_row + thisRow)] = iso_min
                             sheet['E' + str(sum_row + thisRow)] = ab_min
                             sheet['F' + str(sum_row + thisRow)] = pb_min
-                            sheet['G' + str(sum_row + thisRow)] = il_pass + rl_pass + iso_pass + ab_pass + pb_pass + il_fail + rl_fail + iso_fail + ab_fail + pb_fail
-                            sheet['H' + str(sum_row + thisRow)] = il_pass + rl_pass + iso_pass + ab_pass + pb_pass  
+                            sheet['G' + str(sum_row + thisRow)] = int((il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/5) + int((il_fail + rl_fail + iso_fail + ab_fail + pb_fail)/5)
+                            sheet['H' + str(sum_row + thisRow)] = int((il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/5)  
                             sheet['I' + str(sum_row + thisRow)] = il_fail + rl_fail + iso_fail + ab_fail + pb_fail
                             
                             #Max
@@ -1409,8 +1407,8 @@ class ExcelReports:
                             sheet['D' + str(sum_row + 2*thisRow)] = iso_max
                             sheet['E' + str(sum_row + 2*thisRow)] = ab_max
                             sheet['F' + str(sum_row + 2*thisRow)] = pb_max
-                            sheet['G' + str(sum_row + 2*thisRow)] = il_pass + rl_pass + iso_pass + ab_pass + pb_pass + il_fail + rl_fail + iso_fail + ab_fail + pb_fail
-                            sheet['H' + str(sum_row + 2*thisRow)] = il_pass + rl_pass + iso_pass + ab_pass + pb_pass  
+                            sheet['G' + str(sum_row + 2*thisRow)] = int((il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/5) + int((il_fail + rl_fail + iso_fail + ab_fail + pb_fail)/5)
+                            sheet['H' + str(sum_row + 2*thisRow)] = int((il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/5) 
                             sheet['I' + str(sum_row + 2*thisRow)] = il_fail + rl_fail + iso_fail + ab_fail + pb_fail
                         else:
                                                     #AVG
@@ -1429,8 +1427,8 @@ class ExcelReports:
                             sheet['D' + str(sum_row)] = coup_avg
                             sheet['E' + str(sum_row)] = dir_avg
                             sheet['F' + str(sum_row)] = cf_avg
-                            sheet['G' + str(sum_row)] = il_pass + rl_pass + coup_pass + dir_pass + cf_pass + il_fail + rl_fail + coup_fail + dir_fail + cf_fail
-                            sheet['H' + str(sum_row)] = il_pass + rl_pass + coup_pass + dir_pass + cf_pass 
+                            sheet['G' + str(sum_row)] = int((il_pass + rl_pass + coup_pass + dir_pass + cf_pass)/5) + int((il_fail + rl_fail + coup_fail + dir_fail + cf_fail)/5)
+                            sheet['H' + str(sum_row)] = int((il_pass + rl_pass + coup_pass + dir_pass + cf_pass)/5) 
                             sheet['I' + str(sum_row)] = il_fail + rl_fail + coup_fail + dir_fail + cf_fail
                             
                             #MIN
@@ -1449,8 +1447,8 @@ class ExcelReports:
                             sheet['D' + str(sum_row + thisRow)] = coup_min
                             sheet['E' + str(sum_row + thisRow)] = dir_min
                             sheet['F' + str(sum_row + thisRow)] = cf_min
-                            sheet['G' + str(sum_row + thisRow)] = il_pass + rl_pass + coup_pass + dir_pass + cf_pass + il_fail + rl_fail + coup_fail + dir_fail + cf_fail
-                            sheet['H' + str(sum_row + thisRow)] = il_pass + rl_pass + coup_pass + dir_pass + cf_pass 
+                            sheet['G' + str(sum_row + thisRow)] = int((il_pass + rl_pass + coup_pass + dir_pass + cf_pass)/5) + int((il_fail + rl_fail + coup_fail + dir_fail + cf_fail)/5)
+                            sheet['H' + str(sum_row + thisRow)] = int((il_pass + rl_pass + coup_pass + dir_pass + cf_pass)/5) 
                             sheet['I' + str(sum_row + thisRow)] = il_fail + rl_fail + coup_fail + dir_fail + cf_fail
                             
                             #Max
@@ -1469,9 +1467,9 @@ class ExcelReports:
                             sheet['D' + str(sum_row + 2*thisRow)] = coup_max
                             sheet['E' + str(sum_row + 2*thisRow)] = dir_max
                             sheet['F' + str(sum_row + 2*thisRow)] = cf_max
-                            sheet['G' + str(sum_row + thisRow)] = il_pass + rl_pass + coup_pass + dir_pass + cf_pass + il_fail + rl_fail + coup_fail + dir_fail + cf_fail
-                            sheet['H' + str(sum_row + thisRow)] = il_pass + rl_pass + coup_pass + dir_pass + cf_pass 
-                            sheet['I' + str(sum_row + thisRow)] = il_fail + rl_fail + coup_fail + dir_fail + cf_fail
+                            sheet['G' + str(sum_row + 2*thisRow)] = int((il_pass + rl_pass + coup_pass + dir_pass + cf_pass)/5) + int((il_fail + rl_fail + coup_fail + dir_fail + cf_fail)/5)
+                            sheet['H' + str(sum_row + 2*thisRow)] = int((il_pass + rl_pass + coup_pass + dir_pass + cf_pass)/5)
+                            sheet['I' + str(sum_row + 2*thisRow)] = il_fail + rl_fail + coup_fail + dir_fail + cf_fail
 
                         #~~~~~~~~~~~~~~~~~~~~~~Summary sheet~~~~~~~~~~~~~~~~~~~~~~~~
                         #rename the sheet to the artworkrev
