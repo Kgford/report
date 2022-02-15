@@ -22,9 +22,6 @@ class TestThread(Thread):
 
 class ExcelConfig(AppConfig):
     name = 'excel'
-    
-    def ready(self):
-        TestThread().start()
-        
    
-        
+    def ready(self):
+        TestThread().start()       

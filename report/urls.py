@@ -19,4 +19,5 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('staff/', include("users.urls")),
     path('test/', include("excel.urls")),
+    path('trouble/', include("trouble.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

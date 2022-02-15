@@ -62,23 +62,28 @@
 			</section>
 			<section class="py-7 text-center container">
 				<h2 class="fw-light">Data Filter</h2>
-				<div class="col-sm-1 col-lg-2 grid-col">
+				<div class="col-sm-1 col-lg-3 grid-col">
 					<div class="form-group">
 						<label for="_job">Job Number</label>
 						<!-- Customer-->
-						<select id='_job' name ='_job' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
-							{% if job_num == -1%}
-								<option data-desc = '_job'value = "All Part Numbers" >All Job Numbers</option>
-							{% else %}
-								<option selected>{{job_num}}</option>
-							{% endif %}	
-							{% for job in job_list%}
-								<option data-desc = '_job', value = "{{job}}">{{job}}</option>
-							{% endfor %}
-							</select>
-						</div>
+						{% if job_num == -1%}
+							<input type="text"  name ='_job' list= "_job" onchange="this.form.submit()" required>
+							<datalist id='_job'>
+								{% for job in job_list%}
+									<option data-desc = '_job', value = "{{job}}">{{job}}</option>
+								{% endfor %}
+							</datalist>
+						{% else %}
+							<input type="text" value = "{{job_num}}" name ='_job' list= "_job" onchange="this.form.submit()" required>
+							<datalist id='_job'>
+								{% for job in job_list%}
+									<option data-desc = '_job', value = "{{job}}">{{job}}</option>
+								{% endfor %}
+							</datalist>
+						{% endif %}	
+						
 					</div>
-				</div>	
+				</div>
 				<div class="col-sm-1 col-lg-2 grid-col">
 					<div class="form-group">		
 						<label for="_part">Part Number</label>

@@ -205,14 +205,15 @@ class ReportView(View):
             operator_list = Effeciency.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
             job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).order_by('-jobnumber').distinct()
             part_list = Testdata.objects.using('TEST').order_by('partnumber').values_list('partnumber', flat=True).distinct()
-            workstation_status = ReportQueue.objects.using('TEST').filter(reportstatus='test running').values_list('workstation','jobnumber','partnumber','operator','value','maxvalue').all()
+            workstation_status = ReportQueue.objects.using('TEST').filter(reportstatus='test running').values_list('workstation','jobnumber','partnumber','operator','value','maxvalue','ping').all()
             x=1
-            for station, jobs, parts, opera, value, maxvalue in workstation_status:
+            for station, jobs, parts, opera, value, maxvalue,ping in workstation_status:
                 gauge = pygal.SolidGauge(
                 show_legend=False, half_pie=True, inner_radius=0.70,
                 style=pygal.style.styles['default'](value_font_size=80,plot_background="gray"))
                 efficiency = Effeciency.objects.using('TEST').filter(workstation=station).filter(jobnumber=jobs).filter(operator=opera).last()
                 print('efficiency=',efficiency)
+                print('************************ping=',ping)
                 if efficiency:
                     comment = 'Workstation: ' + str(station) + '\nOperator: ' + str(opera) + '\nJob: ' + str(jobs) + '\nPart: ' + str(parts) + '\nTotal Parts: ' + str(efficiency.totaluuts) + '\nParts Complete: ' + str(efficiency.completeuuts) + '\nOperator Effeciency: ' + str(efficiency.effeciencystatus)
                 else:
@@ -221,10 +222,10 @@ class ReportView(View):
                 dollar_formatter = lambda x: '{:.10g}$'.format(x)
                 gauge.value_formatter = percent_formatter
                 if value:
-                    print('value=',value,' maxvalue=',maxvalue)
+                    print('value234234=',value,' maxvalue=',maxvalue)
                     new_val = ((value/maxvalue) * 100)
                     gauge.add('', [{'value': int(new_val), 'max_value': 100}])
-                    print('value=',value,' maxvalue=',maxvalue)
+                    print('value234234=',value,' maxvalue=',maxvalue)
                 if x == 1:
                     test_status1=gauge.render_data_uri()
                     test_comment1 = comment
@@ -408,6 +409,7 @@ class ReportView(View):
             test_comment8 = -1
             test_comment9 = -1
             test_comment10 = -1
+            spectype=-1
                 
             
             #  Equations to get today - days
@@ -469,7 +471,7 @@ class ReportView(View):
             spec3 = request.POST.get('_spec3', -1)
             spec4 = request.POST.get('_spec4', -1)
             spec5 = request.POST.get('_spec5', -1)
-            #print('spec1=',spec1,'spec2=',spec2,'spec3=',spec3,'spec4=',spec4,'spec5=',spec5)
+            print('spec1=',spec1,'spec2=',spec2,'spec3=',spec3,'spec4=',spec4,'spec5=',spec5)
             if spec1!=-1:
                 spec1 = float(spec1)
                 spec2 = float(spec2)
@@ -506,7 +508,8 @@ class ReportView(View):
                 reporting = ExcelReports(job_num,operator,workstation)
                 reporting.test_data()
                 #print('excel report end')
-                spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()               
+                spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()  
+                print('spec_data',spec_data)
                 report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).all()
                 #print('we are here',report_data)
             elif job_num !=-1 and workstation !=-1 and operator !=-1 and artwork !=-1:
@@ -650,41 +653,41 @@ class ReportView(View):
                 
                 #print('artwork_list=',artwork_list)
                 #print('job_num=',job_num)
-                #print('spec_data=',spec_data)
-                #print('spec_data.vswr=',spec_data.vswr)
+                print('spec_data=',spec_data)
+                print('spec_data.vswr=',spec_data.vswr)
                 conversions = Conversions(spec_data.vswr,'')
                 spec_rl = round(conversions.vswr_to_rl(),3)
-                #print('spec_rl=',spec_rl)
-                #print('spectype=',spec_data.spectype)
+                print('spec_rl=',spec_rl)
+                #rint('spectype=',spec_data.spectype)
                 try:
-                    if spec1!=-1:
-                        if '90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype:
-                            if spec_data.insertionloss:
-                                spec1 = round(spec_data.insertionloss,3)
-                            if spec_rl:
-                                spec2 = spec_rl
-                            if spec_data.isolation:
-                                spec3 = round(spec_data.isolation,3)
-                            if spec_data.amplitudebalance:
-                                spec4 = round(spec_data.amplitudebalance,3)
-                            if spec_data.phasebalance:
-                                spec5 = round(spec_data.phasebalance,3)
-                        elif 'DIRECTIONAL COUPLER' in spec_data.spectype: 
-                            if spec_data.insertionloss:
-                                spec1 = round(spec_data.insertionloss,3)
-                            if spec_rl:
-                                spec2 = spec_rl
-                            if spec_data.coupling:
-                                spec3 = round(spec_data.coupling,3)
-                            if spec_data.directivity:
-                                spec4 = round(spec_data.directivity,3)
-                            if spec_data.coupledflatness:
-                                spec5 = round(spec_data.coupledflatness,3)
+                    if '90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype:
+                        if spec_data.insertionloss:
+                            spec1 = round(spec_data.insertionloss,3)
+                        if spec_rl:
+                            spec2 = spec_rl
+                        if spec_data.isolation:
+                            spec3 = round(spec_data.isolation,3)
+                        if spec_data.amplitudebalance:
+                            spec4 = round(spec_data.amplitudebalance,3)
+                        if spec_data.phasebalance:
+                            spec5 = round(spec_data.phasebalance,3)
+                    elif 'DIRECTIONAL COUPLER' in spec_data.spectype: 
+                        if spec_data.insertionloss:
+                            spec1 = round(spec_data.insertionloss,3)
+                        if spec_rl:
+                            spec2 = spec_rl
+                        if spec_data.coupling:
+                            spec3 = round(spec_data.coupling,3)
+                        if spec_data.directivity:
+                            spec4 = round(spec_data.directivity,3)
+                        if spec_data.coupledflatness:
+                            spec5 = round(spec_data.coupledflatness,3)
                 except ValueError as e:
                     print('error = ',e) 
                    
                 total=0
                 temp_list = []
+                spectype=spec_data.spectype
                 print('spectype=',spec_data.spectype)
                 print('report_data=',report_data)
                 good_data=True
@@ -1406,14 +1409,15 @@ class ReportView(View):
                         #~~~~~~~~~~~~~~~~~ CB Data XY Chart~~~~~~~~~~~~~~~~~~~~~
                         
                         
-            workstation_status = ReportQueue.objects.using('TEST').filter(reportstatus='test running').values_list('workstation','jobnumber','partnumber','operator','value','maxvalue').all()
+            workstation_status = ReportQueue.objects.using('TEST').filter(reportstatus='test running').values_list('workstation','jobnumber','partnumber','operator','value','maxvalue','ping').all()
             x=1
-            for station, jobs, parts, opera, value, maxvalue in workstation_status:
+            for station, jobs, parts, opera, value, maxvalue, ping in workstation_status:
                 gauge = pygal.SolidGauge(
                 show_legend=False, half_pie=True, inner_radius=0.70,
                 style=pygal.style.styles['default'](value_font_size=80,plot_background="gray"))
                 efficiency = Effeciency.objects.using('TEST').filter(workstation=station).filter(jobnumber=jobs).filter(operator=opera).last()
                 print('efficiency=',efficiency)
+                print('************************ping=',ping)
                 if efficiency:
                     comment = 'Workstation: ' + str(station) + '\nOperator: ' + str(opera) + '\nJob: ' + str(jobs) + '\nPart: ' + str(parts) + '\nTotal Parts: ' + str(efficiency.totaluuts) + '\nParts Complete: ' + str(efficiency.completeuuts) + '\nOperator Effeciency: ' + str(efficiency.effeciencystatus)
                 else:
@@ -1585,9 +1589,8 @@ def export_write_xls(request):
     
     
 
-def test_report(request):
-    response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="users.xls"'
+def test_report():
+    
 
     # EG: path = report/excel_templates/TestData.xls
     path = os.path.dirname(__file__)

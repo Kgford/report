@@ -23,7 +23,7 @@ class ReportQueue(models.Model):
     value = models.IntegerField(db_column='value')  # Field name made lowercase. 
     maxvalue = models.IntegerField(db_column='maxvalue')  # Field name made lowercase. 
     failurestatus = models.CharField(db_column='FailureStatus', max_length=2500, blank=True, null=True)  # Field name made lowercase.
-    
+    ping = models.TimeField(db_column='Ping', blank=True, null=True)  # Field name made lowercase.
     class Meta:
         managed = False
         db_table = 'ReportQueue'
