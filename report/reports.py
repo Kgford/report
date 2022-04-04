@@ -791,12 +791,12 @@ class ExcelReports:
                     sheet['D9'] = str(spec_rl) + ' Max'
                     if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
                         if spec_data.iso_exp_tf:
-                            sheet['F20'] = str(spec_data.isolation) + ' Max' 
+                            sheet['F20'] = "- " + str(spec_data.isolation) + ' Max' 
                             sheet['G20'] = str(spec_data.iso_ex) + ' Max'
                             sheet['F9'] = "- " + str(spec_data.isolation) + '/' + str(spec_data.iso_ex) + ' Max'
                         else:
                             sheet['F20'] = str(spec_data.isolation) + ' Max'
-                            sheet['F9'] = "+/- " + str(spec_data.isolation) + ' Max'
+                            sheet['F9'] = "- " + str(spec_data.isolation) + ' Max'
                         
                         if spec_data.ab_exp_tf:
                             sheet['H20'] = "+/- " + str(spec_data.amplitudebalance) 
@@ -890,8 +890,8 @@ class ExcelReports:
                     uut = 1
                     
                     print('report_data=',report_data)
-                    good_data=True
                     for data in report_data:
+                        good_data=True
                         #~~~~~~~~~~~~~~~Check for good data~~~~~~~~~~~~~~~~~
                         #print('IL&RL ',data.insertionloss,data.insertionloss)
                         if not data.insertionloss and not data.returnloss:
@@ -930,7 +930,7 @@ class ExcelReports:
                         #time.sleep(20)
                         if good_data:
                             sheet.cell(row=rownum, column=1).value= 'UUT ' + str(uut)
-                            #print('data.serialnumber=',data.serialnumber)
+                            print('data.serialnumber=',data.serialnumber)
                             
                             ##~~~~~~~~~~~~~~~~~~~~~~~~IL Dual Band ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
                             if spec_data.il_exp_tf:
@@ -976,7 +976,7 @@ class ExcelReports:
                                     sheet.cell(row=rownum, column=7).value= round(data.isolation,2)
                                     testdata3 = sheet.cell(row=rownum, column=7)#Created a variable that contains cell
                                     isolation1.append(data.isolation)
-                                    if data.isolation <= spec_data.isolation:
+                                    if data.isolation <= 0-spec_data.isolation:
                                         iso_pass+=1
                                     else:
                                         iso_fail+=1
@@ -1127,7 +1127,8 @@ class ExcelReports:
                             rownum+=1
                             #print('rownum=',rownum)
                         uut+=1
-                        
+                   
+                    uut=uut-1    
                     #~~~~~~~~~~~~~~~~Statics and Summary ~~~~~~~~~~~~~~~~~~~~
                     il_list=[]
                     rl_list=[]
@@ -1151,7 +1152,9 @@ class ExcelReports:
                         sheet['B13'] = il_stdev
                         sheet['B14'] = il_pass
                         sheet['B15'] = il_fail
-                        sheet['B16'] = str(round((il_fail/rownum)*100,2)) + '%'
+                        print('uut=',uut)
+                        print('rownum=',rownum)
+                        sheet['B16'] = str(round((il_fail/uut)*100,2)) + '%'
                         il_list = [il_min,il_max,il_avg,il_stdev]
                         #print('il_list=',il_list)
 
@@ -1179,7 +1182,9 @@ class ExcelReports:
                         sheet['D13'] = rl_stdev
                         sheet['D14'] = rl_pass
                         sheet['D15'] = rl_fail
-                        sheet['D16'] = str(round((rl_fail/rownum)*100,2)) + '%'
+                        print('uut=',uut)
+                        print('rownum=',rownum)
+                        sheet['D16'] = str(round((rl_fail/uut)*100,2)) + '%'
                             
                         if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
                             #print('isolation1=',isolation1)
@@ -1209,7 +1214,9 @@ class ExcelReports:
                             sheet['F13'] = iso_stdev
                             sheet['F14'] = iso_pass
                             sheet['F15'] = iso_fail
-                            sheet['F16'] = str(round((iso_fail/rownum)*100,2)) + '%'
+                            print('uut=',uut)
+                            print('rownum=',rownum)
+                            sheet['F16'] = str(round((iso_fail/uut)*100,2)) + '%'
                                 
                             if len(amplitude_balance1)>1:
                                 ab_var = round(statistics.variance(amplitude_balance1),2) #Variance
@@ -1233,7 +1240,9 @@ class ExcelReports:
                             sheet['H13'] = ab_stdev
                             sheet['H14'] = ab_pass
                             sheet['H15'] = ab_fail
-                            sheet['H16'] = str(round((ab_fail/rownum)*100,2)) + '%'
+                            print('uut=',uut)
+                            print('rownum=',rownum)
+                            sheet['H16'] = str(round((ab_fail/uut)*100,2)) + '%'
                             #print('ab_list=',ab_list)
 
                             if len(phase_balance1)>1:
@@ -1259,7 +1268,9 @@ class ExcelReports:
                             sheet['J13'] = pb_stdev
                             sheet['J14'] = pb_pass
                             sheet['J15'] = pb_fail
-                            sheet['J16'] = str(round((pb_fail/rownum)*100,2)) + '%'
+                            print('uut=',uut)
+                            print('rownum=',rownum)
+                            sheet['J16'] = str(round((pb_fail/uut)*100,2)) + '%'
                             stat_list = [il_list,rl_list,iso_list,ab_list,pb_list]
                         else:
                             #print('coupling1=',coupling1)
@@ -1289,7 +1300,9 @@ class ExcelReports:
                             sheet['F13'] = coup_stdev
                             sheet['F14'] = coup_pass
                             sheet['F15'] = coup_fail
-                            sheet['F16'] = str(round((coup_fail/rownum)*100,2)) + '%'
+                            print('uut=',uut)
+                            print('rownum=',rownum)
+                            sheet['F16'] = str(round((coup_fail/uut)*100,2)) + '%'
                             
                             if len(directivity1)>1:
                                 dir_stdev = round(statistics.stdev(directivity1),2) #Standard deviation
@@ -1316,7 +1329,10 @@ class ExcelReports:
                             sheet['H13'] = dir_stdev
                             sheet['H14'] = dir_pass
                             sheet['H15'] = dir_fail
-                            sheet['H16'] = str(round((dir_fail/rownum)*100,2)) + '%'
+                            sheet['H17'] = uut
+                            print('uut=',uut)
+                            print('rownum=',rownum)
+                            sheet['H16'] = str(round((dir_fail/uut)*100,2)) + '%'
                             if len(coupledflatness1)>1:
                                 cf_var = round(statistics.variance(coupledflatness1),2) #Variance
                                 cf_stdev = round(statistics.stdev(coupledflatness1),2) #Standard deviation
@@ -1340,7 +1356,7 @@ class ExcelReports:
                             sheet['J13'] = cf_stdev
                             sheet['J14'] = cf_pass
                             sheet['J15'] = cf_fail
-                            sheet['J16'] = str(round((cf_fail/rownum)*100,2)) + '%'
+                            sheet['J16'] = str(round((cf_fail/rownum+1)*100,2)) + '%'
                                 
                             stat_list = [il_list,rl_list,coup_list,dir_list,cf_list]
 
@@ -1372,8 +1388,8 @@ class ExcelReports:
                             sheet['E' + str(sum_row)] = ab_avg
                             sheet['F' + str(sum_row)] = pb_avg
                             
-                            sheet['G' + str(sum_row)] = int((il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/5) + int((il_fail + rl_fail + iso_fail + ab_fail + pb_fail)/5)
-                            sheet['H' + str(sum_row)] = int((il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/5) 
+                            sheet['G' + str(sum_row)] = (il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/5 + (il_fail + rl_fail + iso_fail + ab_fail + pb_fail)/5
+                            sheet['H' + str(sum_row)] = (il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/5
                             sheet['I' + str(sum_row)] = il_fail + rl_fail + iso_fail + ab_fail + pb_fail
                             
                          

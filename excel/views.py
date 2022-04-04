@@ -11,7 +11,7 @@ from django import forms
 from django.views import View
 from report.overhead import TimeCode, Security, StringThings,Conversions
 from report.reports import ExcelReports,Statistics,Histogram_data,XY_Chart,X_Range,SDEV_Dist,CreateSheets
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.core import serializers
@@ -183,6 +183,7 @@ class ReportView(View):
             print('friday=',friday)
             today = datetime.datetime.today()
             today = make_aware(today)
+            this_time = today.time()
             print('today =', today)
             #start_date  = time_code.today_minus() # end_date is today - days 
             #start_date = make_aware(start_date)
@@ -205,15 +206,40 @@ class ReportView(View):
             operator_list = Effeciency.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
             job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).order_by('-jobnumber').distinct()
             part_list = Testdata.objects.using('TEST').order_by('partnumber').values_list('partnumber', flat=True).distinct()
-            workstation_status = ReportQueue.objects.using('TEST').filter(reportstatus='test running').values_list('workstation','jobnumber','partnumber','operator','value','maxvalue','ping').all()
+            workstation_status = ReportQueue.objects.using('TEST').filter(reportstatus='test running').values_list('workstation','jobnumber','partnumber','activedate','operator','value','maxvalue','ping','pk').all()
+            print('part_list=',part_list)
             x=1
-            for station, jobs, parts, opera, value, maxvalue,ping in workstation_status:
+            for station, jobs, parts, activedate, opera, value, maxvalue,ping,test_id in workstation_status:
+                daywatch=today-activedate
+                if not ping:
+                    #print('no ping=')
+                    ReportQueue.objects.using('TEST').filter(pk=test_id).update(reportstatus='for review')
+                elif 'days' in str(daywatch):
+                    #print('today-activedate',today-activedate)
+                    ReportQueue.objects.using('TEST').filter(pk=test_id).update(reportstatus='for review')
+                else:
+                    #print('this_time=',this_time)
+                    #print('ping=',ping)
+                    t1=datetime.timedelta(hours=this_time.hour, minutes=this_time.minute, seconds=this_time.second)
+                    t2=datetime.timedelta(hours=ping.hour, minutes=ping.minute, seconds=ping.second)
+                    dt=t1-t2
+                    #print('dt=',dt)
+                    dt=dt.seconds/3600
+                    #print('dt=',dt)
+                    if int(dt)>2:
+                        percent=100 * float(value)/float(maxvalue)
+                        #print('percent=',percent)
+                        if percent>=30:
+                            ReportQueue.objects.using('TEST').filter(pk=test_id).update(reportstatus='report queue')
+                        else:
+                            ReportQueue.objects.using('TEST').filter(pk=test_id).update(reportstatus='job closed')
+                
                 gauge = pygal.SolidGauge(
                 show_legend=False, half_pie=True, inner_radius=0.70,
                 style=pygal.style.styles['default'](value_font_size=80,plot_background="gray"))
                 efficiency = Effeciency.objects.using('TEST').filter(workstation=station).filter(jobnumber=jobs).filter(operator=opera).last()
-                print('efficiency=',efficiency)
-                print('************************ping=',ping)
+                #print('efficiency=',efficiency)
+                #print('************************ping=',ping)
                 if efficiency:
                     comment = 'Workstation: ' + str(station) + '\nOperator: ' + str(opera) + '\nJob: ' + str(jobs) + '\nPart: ' + str(parts) + '\nTotal Parts: ' + str(efficiency.totaluuts) + '\nParts Complete: ' + str(efficiency.completeuuts) + '\nOperator Effeciency: ' + str(efficiency.effeciencystatus)
                 else:
@@ -259,6 +285,7 @@ class ReportView(View):
                 x+=1
                 #print('test_status1',test_status1)
                 print('comment=',comment)
+              
             
         except IOError as e:
             print ("Lists load Failure ", e)
@@ -439,19 +466,19 @@ class ReportView(View):
             
             #~~~~~~~~~~Get Post Values~~~~~~~~~~~~~~~
             job_num = request.POST.get('_job', -1)
-            if job_num=='None' or job_num==None or job_num=='All Job Numbers':
+            if job_num=='None' or job_num=='' or job_num==None or job_num=='All Job Numbers':
                 job_num=-1
             #print('job_num=',job_num)
             part_num = request.POST.get('_part', -1)
-            if part_num=='None' or part_num==None or part_num=='All Part Numbers':
+            if part_num=='None' or part_num=='' or part_num==None or part_num=='All Part Numbers':
                 part_num=-1
             #print('part_num=',part_num)
             workstation = request.POST.get('_workstation', -1)
             print('workstation=',workstation)
-            if workstation=='None' or workstation==None or workstation=='All Workstations':
+            if workstation=='None' or workstation=='' or workstation==None or workstation=='All Workstations':
                 workstation=-1
             operator = request.POST.get('_operator', -1)
-            if operator=='None' or operator==None or operator=='All Operators':
+            if operator=='None' or operator=='' or operator==None or operator=='All Operators':
                 operator=-1
             start_date = request.POST.get('_start_date', -1)
             end_date = request.POST.get('_end_date', -1)
@@ -460,7 +487,7 @@ class ReportView(View):
             analyze = request.POST.get('_analyze', -1)
             trace = request.POST.get('_trace', -1)
             artwork = request.POST.get('_art', -1)
-            if artwork=='None' or artwork==None or artwork=='All Artworks':
+            if artwork=='None' or artwork=='' or artwork==None or artwork=='All Artworks':
                 artwork=-1
             
             if analyze != -1 :
@@ -490,158 +517,113 @@ class ReportView(View):
             print('artwork=',artwork)
             print('report=',report)
             print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+            if report!=-1:
+                print('excel report start')
+                reporting = ExcelReports(job_num,operator,workstation)
+                reporting.test_data()
+                print('excel report end')   
+                return redirect('excel:reports')
             
-            got_enough=True
-            if job_num !=-1 and report !=-1:
+            job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
+            part_list = Testdata.objects.using('TEST').order_by('-partnumber').values_list('partnumber', flat=True).distinct() 
+            operator_list = Effeciency.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
+            workstation_list = Workstation.objects.using('TEST').order_by('computername').values_list('computername', flat=True).distinct()
+            
+            got_enough=False
+            if job_num !=-1:#Job
                 part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
                 job_num = part.jobnumber 
                 operator = part.operator
-                part_num = part.partnumber
+                if part:
+                    part_num = part.partnumber
                 workstation= part.workstation
+                report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).all()
                 spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()
-                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
-                operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('operator').values_list('operator', flat=True).distinct()
-                workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('workstation').values_list('workstation', flat=True).distinct()
-                #print('excel report start')
-                reporting = ExcelReports(job_num,operator,workstation)
-                reporting.test_data()
-                #print('excel report end')
-                spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()  
+                if spec_data:
+                    got_enough=True
+                
                 print('spec_data',spec_data)
-                report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).all()
                 #print('we are here',report_data)
-            elif job_num !=-1 and workstation !=-1 and operator !=-1 and artwork !=-1:
-                part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
-                if part:
-                    part_num = part.partnumber
-                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
-                operator_list = Testdata.objects.using('TEST').filter(operator=operator).filter(artwork_rev=artwork).order_by('operator').values_list('operator', flat=True).distinct()
-                workstation_list = Testdata.objects.using('TEST').filter(operator=operator).filter(artwork_rev=artwork).order_by('workstation').values_list('workstation', flat=True).distinct()
-                spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()                
-                report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).all()
-            elif job_num !=-1 and workstation !=-1 and artwork !=-1:
-                part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
-                if part:
-                    part_num = part.partnumber
-                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(artwork_rev=artwork).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(artwork_rev=artwork).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
-                operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(artwork_rev=artwork).order_by('operator').values_list('operator', flat=True).distinct()
-                workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(artwork_rev=artwork).order_by('workstation').values_list('workstation', flat=True).distinct()
-                spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()               
-                report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(artwork_rev=artwork).all()
-            elif job_num !=-1 and workstation !=-1 and operator !=-1:
-                part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
-                if part:
-                    part_num = part.partnumber
-                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
-                operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).order_by('operator').values_list('operator', flat=True).distinct()
-                workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).order_by('workstation').values_list('workstation', flat=True).distinct()
-                spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()              
-                report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).filter(operator=operator).all()
-            elif job_num !=-1 and workstation !=-1:
-                part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
-                if part:
-                    part_num = part.partnumber
-                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
-                operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).order_by('operator').values_list('operator', flat=True).distinct()
-                workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).order_by('workstation').values_list('workstation', flat=True).distinct()
-                spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()               
-                report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(workstation=workstation).all()
-            elif job_num !=-1 and operator !=-1:
-                part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
-                if part:
-                    part_num = part.partnumber
-                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(operator=operator).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(operator=operator).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
-                operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(operator=operator).order_by('operator').values_list('operator', flat=True).distinct()
-                workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(operator=operator).order_by('workstation').values_list('workstation', flat=True).distinct()
-                spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()                
-                report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(operator=operator).all()
-            elif job_num !=-1 and artwork !=-1:
-                part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
-                if part:
-                    part_num = part.partnumber
-                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(artwork_rev=artwork).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(artwork_rev=artwork).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
-                operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(artwork_rev=artwork).order_by('operator').values_list('operator', flat=True).distinct()
-                workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(artwork_rev=artwork).order_by('workstation').values_list('workstation', flat=True).distinct()
-                spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()               
-                report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).filter(artwork_rev=artwork).all()
-            elif job_num!=-1:
-                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
-                operator_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('operator').values_list('operator', flat=True).distinct()
-                workstation_list = Testdata.objects.using('TEST').filter(jobnumber=job_num).order_by('workstation').values_list('workstation', flat=True).distinct()
-                part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
-                #print('artwork_list',artwork_list)
-                if part:
-                    part_num = part.partnumber
-                spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()               
-                report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).all()
-                print('we are here',report_data)
-            elif job_num ==-1 and part_num !=-1 and workstation !=-1 and operator !=-1 and artwork !=-1:
-                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
-                operator_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('operator').values_list('operator', flat=True).distinct()
-                workstation_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).order_by('workstation').values_list('workstation', flat=True).distinct()
-                spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()              
-                report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).filter(artwork_rev=artwork).all()
-            elif job_num ==-1 and part_num !=-1 and workstation !=-1 and operator !=-1:
-                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
-                operator_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).order_by('operator').values_list('operator', flat=True).distinct()
-                workstation_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).order_by('workstation').values_list('workstation', flat=True).distinct()
-                spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()               
-                report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).filter(operator=operator).all()
-            elif job_num ==-1 and part_num !=-1 and workstation !=-1:
-                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
-                operator_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).order_by('operator').values_list('operator', flat=True).distinct()
-                workstation_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).order_by('workstation').values_list('workstation', flat=True).distinct()
-                spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()               
-                report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(workstation=workstation).all()
-            elif job_num ==-1 and part_num !=-1 and operator!=-1:
-                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(operator=operator).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(operator=operator).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
-                operator_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(operator=operator).order_by('operator').values_list('operator', flat=True).distinct()
-                workstation_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(operator=operator).order_by('workstation').values_list('workstation', flat=True).distinct()
-                spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()               
-                report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(operator=operator).all()
-                #print('we are here8')
-            elif job_num ==-1 and part_num !=-1 and artwork!=-1:
-                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).order_by('-partnumber').values_list('partnumber', flat=True).distinct()
-                artwork_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).order_by('-partnumber').values_list('artwork_rev', flat=True).distinct()
-                operator_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).order_by('operator').values_list('operator', flat=True).distinct()
-                workstation_list = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).order_by('workstation').values_list('workstation', flat=True).distinct()
+            elif part_num!=-1 and artwork!=-1 and workstation!=-1  and operator!=-1 : #part_number, Artwork, Workstation, Operator
+                report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).filter(workstation=workstation).filter(operator=operator).all()
                 spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
+                if spec_data:
+                    got_enough=True
+                print('in part1')
+            elif part_num!=-1 and artwork!=-1 and workstation!=-1  and operator==-1 : #part_number, Artwork, Workstation
+                report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).filter(workstation=workstation).all()
+                spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
+                if spec_data:
+                    got_enough=True
+                print('in part2')
+            elif part_num!=-1 and artwork!=-1 and workstation==-1  and operator==-1 : #part_number, Artwork
                 report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).all()
-                #print('we are here9')
-            else:
-                got_enough=False
-                job_list = Testdata.objects.using('TEST').order_by('-jobnumber').values_list('jobnumber', flat=True).distinct()
-                part_list = Testdata.objects.using('TEST').order_by('-partnumber').values_list('partnumber', flat=True).distinct() 
-                operator_list = Effeciency.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
-                workstation_list = Workstation.objects.using('TEST').order_by('computername').values_list('computername', flat=True).distinct()
-                #print('we are here10')
-            
-            #print('report_data',report_data)
+                spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
+                if spec_data:
+                    got_enough=True
+                print('in part3')
+            elif part_num!=-1 and artwork==-1 and workstation==-1  and operator==-1 : #part_number
+                report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).all()
+                spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
+                if spec_data:
+                    got_enough=True
+                print('spec_data=',spec_data)
+                print('in part4')
+            elif part_num==-1 and artwork!=-1 and workstation!=-1  and operator!=-1 : #Artwork, Workstation, Operator
+                report_data = Testdata.objects.using('TEST').filter(artwork_rev=artwork).filter(workstation=workstation).filter(operator=operator).all()
+                if report_data:
+                    part_num=report_data[0].partnumber
+                    if part_num:
+                        spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
+                        if spec_data:
+                            got_enough=True
+                print('in part5')
+            elif part_num==-1 and artwork!=-1 and workstation!=-1  and operator==-1 : #Artwork, Workstation
+                report_data = Testdata.objects.using('TEST').filter(artwork_rev=artwork).filter(workstation=workstation).all() 
+                if report_data:
+                    part_num=report_data[0].partnumber
+                    if part_num:
+                        spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
+                        if spec_data:
+                            got_enough=True                
+                print('in part6')                
+            elif part_num==-1 and artwork!=-1 and workstation==-1  and operator==-1 : #Artwork
+                report_data = Testdata.objects.using('TEST').filter(artwork_rev=artwork).all()   
+                if report_data:
+                    part_num=report_data[0].partnumber
+                    if part_num:
+                        spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
+                        if spec_data:
+                            got_enough=True    
+                print('in part7')
+            elif part_num==-1 and artwork==-1 and workstation!=-1  and operator!=-1 : #Workstation, Operator
+                report_data = Testdata.objects.using('TEST').filter(workstation=workstation).filter(operator=operator).all()   
+                if report_data:
+                    part_num=report_data[0].partnumber
+                    if part_num:
+                        spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
+                        if spec_data:
+                            got_enough=True    
+                print('in part8')
+            elif part_num==-1 and artwork==-1 and workstation!=-1  and operator==-1 : #Workstation
+                report_data = Testdata.objects.using('TEST').filter(workstation=workstation).all() 
+                if report_data:
+                    part_num=report_data[0].partnumber
+                    if part_num:
+                        spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
+                        if spec_data:
+                            got_enough=True    
+                print('in part9')
+            elif part_num==-1 and artwork==-1 and workstation==-1  and operator!=-1 : #Operator
+                report_data = Testdata.objects.using('TEST').filter(operator=operator).all() 
+                if report_data:
+                    part_num=report_data[0].partnumber
+                    if part_num:
+                        spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
+                        if spec_data:
+                            got_enough=True    
+                print('in part10')
+            print('report_data',report_data)
             if got_enough and spec_data and report_data:
                 #filter blanks
                 temp_list = []
@@ -649,16 +631,17 @@ class ReportView(View):
                     if not artwork_rev == '':
                         temp_list.append(artwork_rev)
                 artwork_list = temp_list
-                
-                
                 #print('artwork_list=',artwork_list)
                 #print('job_num=',job_num)
                 print('spec_data=',spec_data)
                 print('spec_data.vswr=',spec_data.vswr)
-                conversions = Conversions(spec_data.vswr,'')
-                spec_rl = round(conversions.vswr_to_rl(),3)
+                if spec_data.vswr:
+                    conversions = Conversions(spec_data.vswr,'')
+                    spec_rl = round(conversions.vswr_to_rl(),3)
+                else:
+                    spec_rl = 0
                 print('spec_rl=',spec_rl)
-                #rint('spectype=',spec_data.spectype)
+                spectype=spec_data.spectype
                 try:
                     if '90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype:
                         if spec_data.insertionloss:
@@ -685,38 +668,41 @@ class ReportView(View):
                 except ValueError as e:
                     print('error = ',e) 
                    
-                total=0
-                temp_list = []
                 spectype=spec_data.spectype
                 print('spectype=',spec_data.spectype)
+                total=0
+                temp_list = []
+                
                 print('report_data=',report_data)
-                good_data=True
                 for data in report_data:
-                    #~~~~~~~~~~~~~~~Check for good data~~~~~~~~~~~~~~~~~
-                    #print('IL&RL ',data.insertionloss,data.insertionloss)
-                    if not data.insertionloss and not data.returnloss:
+                   good_data=True
+                   print('good_data1=',good_data)
+                   #~~~~~~~~~~~~~~~Check for good data~~~~~~~~~~~~~~~~~
+                   print('IL&RL ',data.insertionloss,data.insertionloss)
+                   if not data.insertionloss and not data.returnloss:
                         good_data=False
-                        #print('no good')
-                    if '90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype:
+                        print('IL no good')
+                   if '90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype:
                         #print('ISo&AM&PB ',data.isolation,data.phasebalance)
                         if not data.isolation and not data.phasebalance: 
                             good_data=False
-                            #print('no good')
+                            print('no good ISO or PB')
                         if spec_data.ab_exp_tf :
                             if not data.amplitudebalance1:
                                 good_data=False
-                                #print('no good')
+                                print('no good AB')
                         else:
                             if not data.amplitudebalance:
                                 good_data=False
-                                #print('no good')
-                    else:
+                                print('no good AB2')
+                   else:
                         #print('coup&dir&cf ',data.coupling,data.directivity,data.coupledflatness)
                         if not data.coupling and not data.directivity and not data.coupledflatness: 
                             good_data=False
-                            #print('no good')
-                    #~~~~~~~~~~~~~~~Check for good data~~~~~~~~~~~~~~~~~
-                    if good_data:
+                            print('no good CPL DIR CF')
+                   print('good_data2=',good_data)
+                   #~~~~~~~~~~~~~~~Check for good data~~~~~~~~~~~~~~~~~
+                   if good_data:
                         go = True
                         if data.insertionloss:  #does data.insertionloss: have any data? 
                             if data.insertionloss > spec1 * 3:
@@ -766,9 +752,9 @@ class ReportView(View):
                             test3_list.append(data.coupling)
                             test4_list.append(data.directivity)
                             test5_list.append(data.coupledflatness)
-                    else:
+                   else:
                         blank+=1
-                    total+=1
+                   total+=1
                         
                 if len(bad1_list)>=1:
                     bad1+=1
@@ -1408,7 +1394,8 @@ class ReportView(View):
                         chart5 = xy_chart.render_data_uri()
                         #~~~~~~~~~~~~~~~~~ CB Data XY Chart~~~~~~~~~~~~~~~~~~~~~
                         
-                        
+                       
+           
             workstation_status = ReportQueue.objects.using('TEST').filter(reportstatus='test running').values_list('workstation','jobnumber','partnumber','operator','value','maxvalue','ping').all()
             x=1
             for station, jobs, parts, opera, value, maxvalue, ping in workstation_status:
@@ -1417,7 +1404,7 @@ class ReportView(View):
                 style=pygal.style.styles['default'](value_font_size=80,plot_background="gray"))
                 efficiency = Effeciency.objects.using('TEST').filter(workstation=station).filter(jobnumber=jobs).filter(operator=opera).last()
                 print('efficiency=',efficiency)
-                print('************************ping=',ping)
+                #print('************************ping=',ping)
                 if efficiency:
                     comment = 'Workstation: ' + str(station) + '\nOperator: ' + str(opera) + '\nJob: ' + str(jobs) + '\nPart: ' + str(parts) + '\nTotal Parts: ' + str(efficiency.totaluuts) + '\nParts Complete: ' + str(efficiency.completeuuts) + '\nOperator Effeciency: ' + str(efficiency.effeciencystatus)
                 else:
@@ -1428,7 +1415,7 @@ class ReportView(View):
                 if value:                
                     new_val = ((value/maxvalue) * 100)
                     gauge.add('', [{'value': int(new_val), 'max_value': 100}])
-                    print('value=',value,' maxvalue=',maxvalue)
+                    #print('value=',value,' maxvalue=',maxvalue)
                 if x == 1:
                     test_status1=gauge.render_data_uri()
                     test_comment1 = comment
@@ -1461,20 +1448,13 @@ class ReportView(View):
                     test_comment10 = comment
                 x+=1
                 #print('test_status1',test_status1)
-                print('comment=',comment)
+                #print('comment=',comment)
             
-            if workstation==-1:
-                workstation='All Workstations'
-            if operator==-1:
-                operator='All Operators'
-            if artwork==-1:
-                artwork='All Artworks'
-        
         except ValueError as e:
             print ("Lists load Failure ", e)
             print('error = ',e)     
         return render (self.request,"excel/index.html",{'job_num':job_num,'part_num':part_num,'workstation':workstation,'operator':operator,'start_date':start_date,'end_date':end_date,'artwork_list':artwork_list,'artwork':artwork,
-                                                        'job_list':job_list,'part_list':part_list,'workstation_list':workstation_list,'operator_list':operator_list,'spec1':spec1,'spec2':spec1,'spec3':spec3,'spectype':spec_data.spectype,
+                                                        'job_list':job_list,'part_list':part_list,'workstation_list':workstation_list,'operator_list':operator_list,'spec1':spec1,'spec2':spec1,'spec3':spec3,'spectype':spectype,
                                                         'spec4':spec4,'spec5':spec5,'report_data':report_data,'test1_list':test1_list,'test2_list':test2_list,'test3_list':test3_list,'test4_list':test4_list,'test5_list':test5_list,
                                                         'stat1_min':stat1_min,'stat1_max':stat1_max,'stat1_avg':stat1_avg,'stat1_std':stat1_std,'stat2_min':stat2_min,'stat2_max':stat2_max,'stat2_avg':stat2_avg,'stat2_std':stat2_std,
                                                         'stat3_min':stat3_min,'stat3_max':stat3_max,'stat3_avg':stat3_avg,'stat3_std':stat3_std,'stat4_min':stat4_min,'stat4_max':stat4_max,'stat4_avg':stat4_avg,'stat4_std':stat4_std,

@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     'test_db',
     'rest_api',
     'rest_framework',
-    'trouble',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

@@ -7,37 +7,6 @@
 
 {% block body %}
     
-<header>
-  <div class="collapse bg-dark" id="navbarHeader">
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-8 col-md-7 py-4">
-          <h4 class="text-white">About</h4>
-          <p class="text-muted">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
-        </div>
-        <div class="col-sm-4 offset-md-1 py-4">
-          <h4 class="text-white">Contact</h4>
-          <ul class="list-unstyled">
-            <li><a href="#" class="text-white">Follow on Twitter</a></li>
-            <li><a href="#" class="text-white">Like on Facebook</a></li>
-            <li><a href="#" class="text-white">Email me</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="navbar navbar-dark bg-dark shadow-sm">
-    <div class="container">
-      <a href="{% url 'excel:reports' %}" class="navbar-brand d-flex align-items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        <strong>&nbsp;&nbsp;&nbsp;&nbsp;Innovative Power Products</strong>
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-    </div>
-  </div>
-</header>
 
 <main>
 	<form action = "{% url 'excel:reports' %}" method="post">
@@ -47,13 +16,15 @@
 					<div class="col-lg-6 col-md-8 mx-auto">
 						<h1 class="fw-light">IPP Test Report Server</h1>
 						<p>
-							{% if job_num != -1 %}
+							{% if job_num != -1 or part_num != -1 %}
 								<button type="button" href="{% url 'excel:reports' %}"  style="color:#FFFFFF" class="btn btn-success my-2" >
 								 <a href="{% url 'excel:reports' %}">Reset</a>
 								</button>
 								<button type="submit" id = "_analyze" name = "_analyze" class="btn btn-secondary my-2" onclick="changeAnalyzingValue()">Analyze Data</button>
-								<button type="submit" id = "_report" name = "_report" class="btn btn-primary my-2" onclick="changeReportingValue()">Create Test Report</button>
-								<button type="submit" id = "_trace" name = "_trace" class="btn btn-warning my-2" onclick="changeTraceValue()">Create Trace Report</button>
+								{% if job_num != -1 %}
+									<button type="submit" id = "_report" name = "_report" class="btn btn-primary my-2" onclick="changeReportingValue()">Create Test Report</button>
+									<button type="submit" id = "_trace" name = "_trace" class="btn btn-warning my-2" onclick="changeTraceValue()">Create Trace Report</button>
+								{% endif %}	
 							{% endif %}
 						</p>
 						
@@ -62,71 +33,112 @@
 			</section>
 			<section class="py-7 text-center container">
 				<h2 class="fw-light">Data Filter</h2>
-				<div class="col-sm-1 col-lg-3 grid-col">
+				<div class="col-sm-2 col-lg-2 grid-col">
 					<div class="form-group">
 						<label for="_job">Job Number</label>
 						<!-- Customer-->
 						{% if job_num == -1%}
-							<input type="text"  name ='_job' list= "_job" onchange="this.form.submit()" required>
+							<input type="text" class="browser-default custom-select custom-select-lg mb-3" name ='_job' list= "_job" placeholder = "All Jobs" onchange="this.form.submit()" >
 							<datalist id='_job'>
-								{% for job in job_list%}
+								{% for job in job_list %}
 									<option data-desc = '_job', value = "{{job}}">{{job}}</option>
 								{% endfor %}
 							</datalist>
 						{% else %}
-							<input type="text" value = "{{job_num}}" name ='_job' list= "_job" onchange="this.form.submit()" required>
+							<input type="text" class="browser-default custom-select custom-select-lg mb-3" value = "{{job_num}}" name ='_job' list= "_job" onchange="this.form.submit()" >
 							<datalist id='_job'>
-								{% for job in job_list%}
+								<option data-desc = '_job', value = 'All Job Numbers'>All Job Numbers</option>
+								{% for job in job_list %}
 									<option data-desc = '_job', value = "{{job}}">{{job}}</option>
 								{% endfor %}
 							</datalist>
 						{% endif %}	
-						
 					</div>
 				</div>
-				<div class="col-sm-1 col-lg-2 grid-col">
-					<div class="form-group">		
+				<div class="col-sm-2 col-lg-2 grid-col">
+					<div class="form-group">
 						<label for="_part">Part Number</label>
-						<select id='_part' name ='_part' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
-							<option data-desc = '_part' value = "All Part Numbers">All Part Numbers</option>
-							{% for part in part_list%}
-								<option data-desc = '_part',  value = "{{part}}">{{part}}</option>
-							{% endfor %}
-						</select>
+						{% if part_num == -1%}
+							<input type="text"  class="browser-default custom-select custom-select-lg mb-3"  name ='_part' list= "_part" placeholder = "All Part Numbers" onchange="this.form.submit()">
+							<datalist id='_part'>
+								<option data-desc = '_part', value = 'All Part Numbers'>All Part Numbers</option>
+								{% for part in part_list %}
+									<option data-desc = '_part', value = "{{part}}">{{part}}</option>
+								{% endfor %}
+							</datalist>
+						{% else %}
+							<input type="text"  class="browser-default custom-select custom-select-lg mb-3"  name ='_part' list= "_part" value = '{{part_num}}' onchange="this.form.submit()">
+							<datalist id='_part'>
+								<option data-desc = '_part', value = 'All Part Numbers'>All Part Numbers</option>
+								{% for part in part_list %}
+									<option data-desc = '_part', value = "{{part}}">{{part}}</option>
+								{% endfor %}
+							</datalist>
+						{% endif %}
 					</div>
 				</div>
-				<div class="col-sm-1 col-lg-2 grid-col">
+				<div class="col-sm-2 col-lg-2 grid-col">
 					<div class="form-group">
 						<label for="_workstation">Workstation</label>
-						<!-- Customer-->
-						<select id='_workstation' name ='_workstation' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
-							<option data-desc = '_workstation' value = "All Workstations">All Workstations</option>
-							{% for station in workstation_list%}
-								<option data-desc = '_workstation', value = "{{workstation}}">{{station}}</option>
-							{% endfor %}
-						</select>
+						{% if workstation == -1%}
+							<input type="text"  class="browser-default custom-select custom-select-lg mb-3"  name ='_workstation' list= "_workstation" placeholder = "All Workstations" onchange="this.form.submit()" >
+							<datalist id='_workstation'>
+								<option data-desc = '_workstation', value = 'All Workstations'>All Workstations</option>
+								{% for station in workstation_list%}
+									<option data-desc = '_workstation', value = "{{workstation}}">{{station}}</option>
+								{% endfor %}
+							</datalist>
+						{% else %}
+							<input type="text"  class="browser-default custom-select custom-select-lg mb-3"  name ='_workstation' list= "_workstation" value = '{{workstation}}' onchange="this.form.submit()">
+							<datalist id='_workstation'>
+								<option data-desc = '_workstation', value = 'All Workstations'>All Workstations</option>
+								{% for station in workstation_list%}
+									<option data-desc = '_workstation', value = "{{workstation}}">{{station}}</option>
+								{% endfor %}
+							</datalist>
+						{% endif %}
 					</div>
 				</div>		
 				<div class="col-sm-1 col-lg-2 grid-col">
 					<div class="form-group">		
 						<label for="_operator">Operator</label>
-						<select id='_operator' name ='_operator' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
-							<option data-desc = '_operator' value = "All Operators">All Operators</option>
-							{% for op in operator_list%}
-								<option data-desc = '_operator', value = "{{op}}">{{op}}</option>
-							{% endfor %}
-						</select>
+						{% if operator == -1%}
+							<input type="text"  class="browser-default custom-select custom-select-lg mb-3"  name ='_operator' list= "_operator" placeholder = "All Operators" onchange="this.form.submit()">
+							<datalist id='_operator'>
+								<option data-desc = '_operator', value = 'All Operators'>All Operators</option>
+								{% for op in operator_list%}
+									<option data-desc = '_operator', value = "{{op}}">{{op}}</option>
+								{% endfor %}
+							</datalist>
+						{% else %}
+							<input type="text"  class="browser-default custom-select custom-select-lg mb-3"  name ='_operator' list= "_operator" value = '{{operator}}' onchange="this.form.submit()">
+							<datalist id='_operator'>
+								<option data-desc = '_operator', value = 'All Operators'>All Operators</option>
+								{% for op in operator_list%}
+									<option data-desc = '_operator', value = "{{op}}">{{op}}</option>
+								{% endfor %}
+							</datalist>
+						{% endif %}
 					</div>
 				</div>
 				<div class="col-sm-1 col-lg-2 grid-col">
 					<div class="form-group">		
 						<label for="_art">Art Work</label>
-						<select id='_art' name ='_art' class="browser-default custom-select custom-select-lg mb-3" onchange="this.form.submit()" required>
-							<option data-desc = '_art', value = "All Artworks">All Artworks</option>
-							{% for art in artwork_list%}
-								<option data-desc = '_art', value = "{{art}}">{{art}}</option>
-							{% endfor %}
-						</select>
+						{% if artwork == -1%}
+								<input type="text"  class="browser-default custom-select custom-select-lg mb-3"  name ='_art' list= "_art" placeholder = "All Artworks" onchange="this.form.submit()">
+							<datalist id='_art'>
+								{% for art in artwork_list%}
+									<option data-desc = '_art', value = "{{art}}">{{art}}</option>
+								{% endfor %}
+							</datalist>
+						{% else %}
+							<input type="text"  class="browser-default custom-select custom-select-lg mb-3"  name ='_art' list= "_art" value = '{{artwork}}' onchange="this.form.submit()">
+							<datalist id='_part'>
+								{% for art in artwork_list%}
+									<option data-desc = '_art', value = "{{art}}">{{art}}</option>
+								{% endfor %}
+							</datalist>
+						{% endif %}
 					</div>
 				</div>
 			</section>
