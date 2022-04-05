@@ -623,6 +623,7 @@ class ExcelReports:
                
     
     def test_data(self):
+        filter_bad_data=True
         job_list = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
         part_list = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).order_by('partnumber').values_list('partnumber', flat=True).distinct()
         artwork_list = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
@@ -890,25 +891,70 @@ class ExcelReports:
                     uut = 1
                     
                     print('report_data=',report_data)
+                    if spec_data.vswr:
+                        conversions = Conversions(spec_data.vswr,'')
+                        spec_rl = round(conversions.vswr_to_rl(),3)
+                    else:
+                        spec_rl = 0
+                    print('spec_rl=',spec_rl)
+                    spectype=spec_data.spectype
+                    try:
+                        if '90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype:
+                            if spec_data.insertionloss:
+                                spec1 = round(spec_data.insertionloss,3)
+                            if spec_rl:
+                                spec2 = spec_rl
+                            if spec_data.isolation:
+                                spec3 = round(spec_data.isolation,3)
+                            if spec_data.amplitudebalance:
+                                spec4 = round(spec_data.amplitudebalance,3)
+                            if spec_data.phasebalance:
+                                spec5 = round(spec_data.phasebalance,3)
+                        elif 'DIRECTIONAL COUPLER' in spec_data.spectype: 
+                            if spec_data.insertionloss:
+                                spec1 = round(spec_data.insertionloss,3)
+                            if spec_rl:
+                                spec2 = spec_rl
+                            if spec_data.coupling:
+                                spec3 = round(spec_data.coupling,3)
+                            if spec_data.directivity:
+                                spec4 = round(spec_data.directivity,3)
+                            if spec_data.coupledflatness:
+                                spec5 = round(spec_data.coupledflatness,3)
+                    except ValueError as e:
+                        print('error = ',e) 
+                    
                     for data in report_data:
                         good_data=True
                         #~~~~~~~~~~~~~~~Check for good data~~~~~~~~~~~~~~~~~
                         #print('IL&RL ',data.insertionloss,data.insertionloss)
-                        if not data.insertionloss and not data.returnloss:
+                        if not data.insertionloss:
                             good_data=False
-                            #print('no good')
+                        elif data.insertionloss > spec1 * 3:
+                            good_data=False
+                        
+                        if not data.returnloss:
+                            good_data=False
+                        elif data.returnloss < spec2 * 3:
+                            good_data=False
+                        
                         if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
                             #print('ISo&AM&PB ',data.isolation,data.phasebalance)
                             if not data.isolation: 
                                 good_data=False
-                                #print('no good')
+                            elif abs(data.isolation) > spec3 * 3:
+                                good_data=False
+                            
                             if not data.phasebalance: 
                                 good_data=False
-                                #print('no good')
+                            elif abs(data.phasebalance) > spec3 * 3:
+                                good_data=False
+                            
                             if spec_data.ab_exp_tf :
                                 if not data.amplitudebalance1:
                                     good_data=False
-                                    #print('no good')
+                                elif abs(data.amplitudebalance) > spec4 * 3:
+                                    good_data=False
                             else:
                                 if not data.amplitudebalance:
                                     good_data=False
@@ -917,15 +963,23 @@ class ExcelReports:
                             #print('coup&dir&cf ',data.coupling,data.directivity,data.coupledflatness)
                             if not data.coupling: 
                                 good_data=False
-                                #print('no good')
+                            elif abs(data.coupling) > spec3 * 3: 
+                                good_data=False
+                            
                             if not data.directivity: 
                                 good_data=False
-                                #print('no good')
+                            elif abs(data.directivity) > spec4 * 3: 
+                                good_data=False
+                            
                             if not data.coupledflatness: 
                                 good_data=False
-                                #print('no good')
-                            
+                            elif abs(data.coupledflatness) > spec5 * 3:
+                                good_data=False
                         #~~~~~~~~~~~~~~~Check for good data~~~~~~~~~~~~~~~~~
+                        #~~~~~~~~~~~~~~~~  Never mind ): ~~~~~~~~~~~~~~~~~~~
+                        if not filter_bad_data:
+                            good_data=True
+                        #~~~~~~~~~~~~~~~~  Never mind ): ~~~~~~~~~~~~~~~~~~~
                         
                         #time.sleep(20)
                         if good_data:
