@@ -530,13 +530,15 @@ class ReportView(View):
             workstation_list = Workstation.objects.using('TEST').order_by('computername').values_list('computername', flat=True).distinct()
             
             got_enough=False
+            print('job_num=',job_num)
             if job_num !=-1:#Job
                 part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
-                job_num = part.jobnumber 
-                operator = part.operator
+                print('part=',part)
                 if part:
                     part_num = part.partnumber
-                workstation= part.workstation
+                    job_num = part.jobnumber 
+                    operator = part.operator
+                    workstation= part.workstation
                 report_data = Testdata.objects.using('TEST').filter(jobnumber=job_num).all()
                 spec_data = Specifications.objects.using('TEST').filter(jobnumber=job_num).first()
                 if spec_data:

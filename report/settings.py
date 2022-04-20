@@ -23,13 +23,19 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails') 
 EMAIL_HOST = 'smtp.office365.com'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-print('EMAIL_HOST_USER=',EMAIL_HOST_USER)
+#print('EMAIL_HOST_USER=',EMAIL_HOST_USER)
 EMAIL_HOST_USER = EMAIL_HOST_USER.replace("'", "")
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD.replace("'", "")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'default from email'
+
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework_api_key.permissions.HasAPIKey",
+    ]
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -44,6 +50,7 @@ REST_FRAMEWORK = {
 # SECURITY WARNING: keep the secret key used in production secret!
 #SECRET_KEY = '+59a%cvpj6rm!=1a3=m40x@l6j7y3a-vl$%ykr6ynb86jj=&it'
 SECRET_KEY = os.environ.get('SECRET_KEY')
+API_KEY_SECRET = os.environ.get('API_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -57,6 +64,7 @@ INSTALLED_APPS = [
     'E2',
     'test_db',
     'rest_api',
+    "rest_framework_api_key",
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',

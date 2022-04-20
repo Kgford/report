@@ -697,6 +697,10 @@ class ExcelReports:
                     part_num = report_data[0].partnumber
                     print('part_num=',part_num)
                     spectype = spec_data.spectype
+                    print('artwork_rev=',artwork_rev)
+                    if '/' in artwork_rev:
+                        artwork_rev=artwork_rev.replace("/", "_") 
+                        print('artwork_rev2=',artwork_rev)
                     if artwork_rev == None or artwork_rev =='':
                         #artwork_rev = 'UNKN REV'
                         #unknown_rev='UNKN REV_0'
@@ -706,6 +710,7 @@ class ExcelReports:
                         artwork_rev=unknown_rev + str(num+1)
                         #print('artwork_rev=',artwork_rev)
                         
+                    
                     #create new sheet and format 
                     print('making data sheet',artwork_rev)
                     sheet = wb.create_sheet(artwork_rev) 
@@ -715,7 +720,7 @@ class ExcelReports:
                     
                     sheet = wb['Summary']
                     print('sheet before=',sheet)
-                    print('artwork_rev=',artwork_rev)
+                    
                     makesheet=CreateSheets(artwork_rev,sheet,len(artwork_list))
                     makesheet.summary()
                     print ('sheetnames=',wb.sheetnames)
@@ -889,6 +894,11 @@ class ExcelReports:
                     cf_fail = 0
                     total_pass = 0
                     uut = 1
+                    spec1=0
+                    spec2=0
+                    spec3=0
+                    spec4=0
+                    spec5=0
                     
                     print('report_data=',report_data)
                     if spec_data.vswr:
@@ -897,6 +907,7 @@ class ExcelReports:
                     else:
                         spec_rl = 0
                     print('spec_rl=',spec_rl)
+                    print('spec_data.insertionloss=',spec_data.insertionloss)
                     spectype=spec_data.spectype
                     try:
                         if '90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype:

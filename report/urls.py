@@ -13,6 +13,9 @@ router = routers.DefaultRouter()
 router.register(r'report_queue', ReportQueueViews)
 router.register(r'spc_queue', SPCQueueViews)
 #router.register(r'excel_report_start', ExcelReportStartView, basename='excel_report_start')
+admin.site.site_header = "Innovative Power Products Database"
+admin.site.site_title = "Innovative Power Products Database Portal"
+admin.site.index_title = "Welcome to Innovative Power Products SPC Portal"
 
 
 urlpatterns = [

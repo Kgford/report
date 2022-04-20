@@ -6,6 +6,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_api.serializers import ReportQueueSerializer,SPCQueueSerializer
 from rest_framework.decorators import action
+from rest_framework_api_key.models import APIKey
+from rest_framework_api_key.permissions import HasAPIKey
+
 from test_db.models import ReportQueue
 from .models import SPCData
 
@@ -14,6 +17,7 @@ from .models import SPCData
 #https://www.django-rest-framework.org/tutorial/quickstart/
 #https://forums.asp.net/t/2100314.aspx?Calling+a+WEB+API+using+VB+Net
 #https://www.django-rest-framework.org/api-guide/requests/#authentication
+#https://florimondmanca.github.io/djangorestframework-api-key/guide/
 
 
 class ReportQueueViews(viewsets.ModelViewSet):
@@ -37,7 +41,6 @@ class ExcelReportStartView(APIView):
     
     
 class SPCQueueViews(viewsets.ModelViewSet):
-    
     serializer_class = SPCQueueSerializer
     queryset = SPCData.objects.all()
     def create(self, request, *args, **kwargs):
@@ -47,8 +50,10 @@ class SPCQueueViews(viewsets.ModelViewSet):
 
 
 class SPCDataView(APIView):
+    permission_classes = [HasAPIKey]
     def post(self, request):
         serializer = CartItemSerializer(data=request.data)
+        #By default, clients must pass their API key via the Authorization header. It must be formatted as follows: Authorization: Api-Key <API_KEY>
         if serializer.is_valid():
             serializer.save()
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
