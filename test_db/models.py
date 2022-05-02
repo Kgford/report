@@ -249,6 +249,14 @@ class Testdata(models.Model):
     directivity2 = models.FloatField(db_column='Directivity2', blank=True, null=True)  # Field name made lowercase.
     phasebalance2 = models.FloatField(db_column='PhaseBalance2', blank=True, null=True)  # Field name made lowercase.
     insertionloss2 = models.FloatField(db_column='insertionloss2', blank=True, null=True)  # Field name made lowercase.
+    artwork = models.CharField(db_column='artwork',max_length=50, blank=True, null=True)
+    panel = models.CharField(db_column='panel',max_length=50, blank=True, null=True)
+    quadrant = models.CharField(db_column='quadrant',max_length=50, blank=True, null=True)
+    lot = models.CharField(db_column='lot',max_length=50, blank=True, null=True)
+    sector = models.CharField(db_column='sector',max_length=50, blank=True, null=True)
+    revision = models.CharField(db_column='revision',max_length=50, blank=True, null=True)
+    activedate = models.DateTimeField(db_column='ActiveDate', blank=True, null=True)  # Field name made lowercase.
+    
 
     class Meta:
         managed = False
@@ -298,6 +306,13 @@ class Trace(models.Model):
     notes = models.CharField(db_column='Notes', max_length=255, blank=True, null=True)  # Field name made lowercase.
     artwork_rev = models.CharField(db_column='artwork_rev', max_length=100, blank=True, null=True)  # Field name made lowercase.
     Operator = models.CharField(db_column='Operator', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    artwork = models.CharField(db_column='artwork',max_length=50, blank=True, null=True)
+    panel = models.CharField(db_column='panel',max_length=50, blank=True, null=True)
+    quadrant = models.CharField(db_column='quadrant',max_length=50, blank=True, null=True)
+    lot = models.CharField(db_column='lot',max_length=50, blank=True, null=True)
+    sector = models.CharField(db_column='sector',max_length=50, blank=True, null=True)
+    revision = models.CharField(db_column='revision',max_length=50, blank=True, null=True)
+  
 
     class Meta:
         managed = False

@@ -96,22 +96,46 @@ class CreateSheets:
     def summary(self):
         
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~mearge rows~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        self.worksheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=6) #first row
+        self.worksheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=6)   #first row
+        self.worksheet.merge_cells(start_row=1, start_column=8, end_row=1, end_column=19)  #first row
+        
+        self.worksheet.merge_cells(start_row=2, start_column=2, end_row=2, end_column=3)   #second row
+        self.worksheet.merge_cells(start_row=2, start_column=8, end_row=2, end_column=11)  #second row
+        self.worksheet.merge_cells(start_row=2, start_column=16, end_row=2, end_column=17) #second row
+        self.worksheet.merge_cells(start_row=2, start_column=18, end_row=2, end_column=19) #second row
+        
+        self.worksheet.merge_cells(start_row=3, start_column=8, end_row=3, end_column=9)   #SUMMARY
+        self.worksheet.merge_cells(start_row=3, start_column=10, end_row=3, end_column=11) #SUMMARY
+        self.worksheet.merge_cells(start_row=3, start_column=12, end_row=3, end_column=13) #SUMMARY
+        self.worksheet.merge_cells(start_row=3, start_column=14, end_row=3, end_column=15) #SUMMARY
+        self.worksheet.merge_cells(start_row=3, start_column=16, end_row=3, end_column=17) #SUMMARY
+        self.worksheet.merge_cells(start_row=3, start_column=18, end_row=3, end_column=19) #SUMMARY
+       
         
         print('Summary setting widths')
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set column witdhs~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # set the width of the column
-        self.worksheet.column_dimensions['A'].width = 12.22
+        self.worksheet.column_dimensions['A'].width = 23.86
         self.worksheet.column_dimensions['B'].width = 12.89
         self.worksheet.column_dimensions['C'].width = 15.67
         self.worksheet.column_dimensions['D'].width = 17.43
-        self.worksheet.column_dimensions['E'].width = 18.00
-        self.worksheet.column_dimensions['F'].width = 18.57
-        self.worksheet.column_dimensions['G'].width = 12.00
+        self.worksheet.column_dimensions['E'].width = 18.86
+        self.worksheet.column_dimensions['F'].width = 18.86
+        self.worksheet.column_dimensions['G'].width = 23.86
+        self.worksheet.column_dimensions['H'].width = 6.14
+        self.worksheet.column_dimensions['I'].width = 6.14
+        self.worksheet.column_dimensions['J'].width = 6.14
+        self.worksheet.column_dimensions['K'].width = 6.14
+        self.worksheet.column_dimensions['L'].width = 6.14
+        self.worksheet.column_dimensions['M'].width = 6.14
+        self.worksheet.column_dimensions['N'].width = 6.14
+        self.worksheet.column_dimensions['O'].width = 6.14
+        self.worksheet.column_dimensions['P'].width = 6.14
+        self.worksheet.column_dimensions['Q'].width = 6.14
+        self.worksheet.column_dimensions['R'].width = 6.71
+        self.worksheet.column_dimensions['S'].width = 6.71
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set column witdhs~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        
-        
-        
+         
         print('Adding fonts and words')
         row=1
         font = Font(name='Arial',size=18,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='7FFF00')
@@ -119,22 +143,144 @@ class CreateSheets:
         aa.font=font
         aa.alignment = Alignment(horizontal='center')
         self.worksheet['A'+str(row)]='Summary Data'
+        hh=self.worksheet['H'+str(row)]
+        hh.font=font
+        hh.alignment = Alignment(horizontal='center')
+        self.worksheet['H'+str(row)]='Summary Totals'
+        
+        row=2
+        font = Font(name='Arial',size=16,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+        aa=self.worksheet['A'+str(row)]
+        aa.font=font
+        aa.alignment = Alignment(horizontal='right')
+        self.worksheet['A'+str(row)]='Part Number:'
+        gg=self.worksheet['G'+str(row)]
+        gg.font=font
+        gg.alignment = Alignment(horizontal='right')
+        self.worksheet['G'+str(row)]='Part Number:'
+        
+        font = Font(name='Arial',size=12,bold=False,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+        aa=self.worksheet['B'+str(row)]
+        aa.font=font
+        aa.alignment = Alignment(horizontal='left')
+        self.worksheet['B'+str(row)]='TBD'
+        aaa=self.worksheet['H'+str(row)]
+        aaa.font=font
+        aaa.alignment = Alignment(horizontal='left')
+        self.worksheet['H'+str(row)]='TBD'
+        
+        font = Font(name='Arial',size=12,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+        aa=self.worksheet['E'+str(row)]
+        aa.font=font
+        aa.alignment = Alignment(horizontal='right')
+        self.worksheet['E'+str(row)]='Test Date:'
+        gg=self.worksheet['P'+str(row)]
+        gg.font=font
+        gg.alignment = Alignment(horizontal='right')
+        self.worksheet['P'+str(row)]='Test Date:'
+        
+        font = Font(name='Arial',size=12,bold=False,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+        aa=self.worksheet['F'+str(row)]
+        aa.font=font
+        aa.alignment = Alignment(horizontal='left')
+        self.worksheet['F'+str(row)]='TBD'
+        aaa=self.worksheet['R'+str(row)]
+        aaa.font=font
+        aaa.alignment = Alignment(horizontal='left')
+        self.worksheet['R'+str(row)]='TBD'
         
         row=3
         font = Font(name='Arial',size=10,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
-        g=self.worksheet['G'+str(row)]
-        g.font=font
-        g.alignment = Alignment(horizontal='center')
-        self.worksheet['G'+str(row)]='Total Tested'
         h=self.worksheet['H'+str(row)]
         h.font=font
         h.alignment = Alignment(horizontal='center')
-        self.worksheet['H'+str(row)]=' Passed'
+        self.worksheet['H'+str(row)]='IL'
+        j=self.worksheet['J'+str(row)]
+        j.font=font
+        j.alignment = Alignment(horizontal='center')
+        self.worksheet['J'+str(row)]='RL'
+        l=self.worksheet['L'+str(row)]
+        l.font=font
+        l.alignment = Alignment(horizontal='center')
+        self.worksheet['L'+str(row)]='ISO'
+        n=self.worksheet['N'+str(row)]
+        n.font=font
+        n.alignment = Alignment(horizontal='center')
+        self.worksheet['N'+str(row)]='AB'
+        p=self.worksheet['P'+str(row)]
+        p.font=font
+        p.alignment = Alignment(horizontal='center')
+        self.worksheet['P'+str(row)]='PB'
+        r=self.worksheet['R'+str(row)]
+        r.font=font
+        r.alignment = Alignment(horizontal='center')
+        self.worksheet['R'+str(row)]='Total %'
+        
+        print('Adding fonts and words2')
+        row=4
+        font = Font(name='Arial',size=10,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+        print('Adding fonts and words22')
+        g=self.worksheet['G'+str(row-1)]
+        g.font=font
+        g.alignment = Alignment(horizontal='center')
+        self.worksheet['G'+str(row-1)]='Artwork Rev'
+        print('Adding fonts and words23')
+        g=self.worksheet['G'+str(row)]
+        font = Font(name='Arial',size=10,bold=False,italic=True,vertAlign=None,underline='single',strike=False,color='FF000000')
+        g.font=font
+        g.alignment = Alignment(horizontal='center')
+        self.worksheet['G'+str(row)]='A Rev  Panel Sector Lot'
+        print('Adding fonts and words24')
+        font = Font(name='Arial',size=10,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+        h=self.worksheet['H'+str(row)]
+        h.font=font
+        h.alignment = Alignment(horizontal='center')
+        self.worksheet['H'+str(row)]=' Pass'
         i=self.worksheet['I'+str(row)]
         i.font=font
         i.alignment = Alignment(horizontal='center')
-        self.worksheet['I'+str(row)]='Failed'
-        
+        self.worksheet['I'+str(row)]='Fail'
+        j=self.worksheet['J'+str(row)]
+        j.font=font
+        j.alignment = Alignment(horizontal='center')
+        self.worksheet['J'+str(row)]=' Pass'
+        k=self.worksheet['K'+str(row)]
+        k.font=font
+        k.alignment = Alignment(horizontal='center')
+        self.worksheet['K'+str(row)]='Fail'
+        l=self.worksheet['L'+str(row)]
+        l.font=font
+        l.alignment = Alignment(horizontal='center')
+        self.worksheet['L'+str(row)]=' Pass'
+        m=self.worksheet['M'+str(row)]
+        m.font=font
+        m.alignment = Alignment(horizontal='center')
+        self.worksheet['M'+str(row)]='Fail'
+        n=self.worksheet['N'+str(row)]
+        n.font=font
+        n.alignment = Alignment(horizontal='center')
+        self.worksheet['N'+str(row)]=' Pass'
+        o=self.worksheet['O'+str(row)]
+        o.font=font
+        o.alignment = Alignment(horizontal='center')
+        self.worksheet['O'+str(row)]='Fail'
+        p=self.worksheet['P'+str(row)]
+        p.font=font
+        p.alignment = Alignment(horizontal='center')
+        self.worksheet['P'+str(row)]=' Pass'
+        q=self.worksheet['Q'+str(row)]
+        q.font=font
+        q.alignment = Alignment(horizontal='center')
+        self.worksheet['Q'+str(row)]='Fail'
+        r=self.worksheet['R'+str(row)]
+        r.font=font
+        r.alignment = Alignment(horizontal='center')
+        self.worksheet['R'+str(row)]=' Pass'
+        s=self.worksheet['S'+str(row)]
+        s.font=font
+        s.alignment = Alignment(horizontal='center')
+        self.worksheet['S'+str(row)]='Fail'
+        print('Adding fonts and words3')
         for x in range(3):
             print('x in range=',x)
             if x==0:
@@ -143,8 +289,19 @@ class CreateSheets:
                 row = row + 3 + self.artwork_len 
                 
             for col_range in range(2, 7):
-                cell_title = self.worksheet.cell(row+1, col_range)
-                cell_title.fill = PatternFill(start_color="e2eb34", end_color="e2eb34", fill_type="solid") #Yellow
+                    cell_title = self.worksheet.cell(row+1, col_range)
+                    cell_title.fill = PatternFill(start_color="e2eb34", end_color="e2eb34", fill_type="solid") #Yellow
+            if x==0:
+                for col_range in range(8, 20):
+                    cell_title = self.worksheet.cell(row+1, col_range)
+                    cell_title.fill = PatternFill(start_color="e2eb34", end_color="e2eb34", fill_type="solid") #Yellow
+                font = Font(name='Arial',size=10,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+                g=self.worksheet['A'+str(row)]
+                g.font=font
+                g.alignment = Alignment(horizontal='center')
+                self.worksheet['A'+str(row)]='Artwork Rev'
+                print('Summary setting borders')
+                self.set_border_range('H' + str(row) + ':S' + str(row+1))
             
             print('summary row=',row,' artwork_len=',self.artwork_len)
             font = Font(name='Arial',size=10,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
@@ -183,8 +340,9 @@ class CreateSheets:
             f.alignment = Alignment(horizontal='center')
             self.worksheet['F'+str(row)]= meas + '. Phase Bal (dB)'
             
-    
-    
+        
+       
+     
     def chart_data(self):
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set row heights~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         self.worksheet.row_dimensions[1].height = 13.8
@@ -240,7 +398,7 @@ class CreateSheets:
         d3 = self.worksheet['D3']
         d4 = self.worksheet['D4']
         d5 = self.worksheet['D5']
-        font = Font(name='Arial',size=10,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+        font = Font(name='Arial',size=10,bold=True,italic=False,vertAlign=None,underline='single',strike=False,color='FF000000')
         d2.font = font
         d2.alignment = Alignment(horizontal='right')
         d3.font = font
@@ -329,23 +487,23 @@ class CreateSheets:
         
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set column witdhs~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # set the width of the column
-        self.worksheet.column_dimensions['A'].width = 15.44 
+        self.worksheet.column_dimensions['A'].width = 11.71 
         self.worksheet.column_dimensions['B'].width = 7.11 
         self.worksheet.column_dimensions['C'].width = 6.11 
         self.worksheet.column_dimensions['D'].width = 6.11 
         self.worksheet.column_dimensions['E'].width = 6.11 
         self.worksheet.column_dimensions['F'].width = 6.11 
         self.worksheet.column_dimensions['G'].width = 6.11 
-        self.worksheet.column_dimensions['H'].width = 9.00 
-        self.worksheet.column_dimensions['I'].width = 8.00 
+        self.worksheet.column_dimensions['H'].width = 8.29 
+        self.worksheet.column_dimensions['I'].width = 11.43 
         self.worksheet.column_dimensions['J'].width = 7.00
-        self.worksheet.column_dimensions['K'].width = 8.11
+        self.worksheet.column_dimensions['K'].width = 11.0
 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~set column witdhs~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         print('merging cells')
         
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~mearge rows~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        self.worksheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=11) #first row
+        self.worksheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=12) #first row
         
         self.worksheet.merge_cells(start_row=2, start_column=5, end_row=2, end_column=7)  #second row
         self.worksheet.merge_cells(start_row=2, start_column=8, end_row=2, end_column=11) #second row
@@ -357,7 +515,7 @@ class CreateSheets:
         self.worksheet.merge_cells(start_row=4, start_column=8, end_row=4, end_column=11) #fourth row
         self.worksheet.merge_cells(start_row=5, start_column=2, end_row=5, end_column=4)  #fith row
         self.worksheet.merge_cells(start_row=5, start_column=5, end_row=5, end_column=7)  #fith row
-        self.worksheet.merge_cells(start_row=5, start_column=9, end_row=5, end_column=10) #fith row
+        self.worksheet.merge_cells(start_row=5, start_column=8, end_row=5, end_column=9) #fith row
         
         
         self.worksheet.merge_cells(start_row=7, start_column=2, end_row=7, end_column=11) #seventh row
@@ -495,7 +653,7 @@ class CreateSheets:
         a4 = self.worksheet['A4']
         a5 = self.worksheet['A5']
         a9 = self.worksheet['A9']
-        i5 = self.worksheet['I5']
+        j5 = self.worksheet['J5']
         font = Font(name='Arial',size=10,bold=True,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
         e2.font = font
         e2.alignment = Alignment(horizontal='right')
@@ -511,15 +669,15 @@ class CreateSheets:
         a5.alignment = Alignment(horizontal='right')
         a9.font = font
         a9.alignment = Alignment(horizontal='right')
-        i5.font = font
-        i5.alignment = Alignment(horizontal='right')
+        j5.font = font
+        j5.alignment = Alignment(horizontal='right')
         self.worksheet['E2']='Job Number:'
         self.worksheet['E3']='Part Number:'
         self.worksheet['E4']='Part Type:'
         self.worksheet['E5']='Artwork Rev:'
         self.worksheet['A4']='Operator:'
         self.worksheet['A5']='Workstation:'
-        self.worksheet['I5']='Location:'
+        self.worksheet['J5']='Date:'
         
         font = Font(name='Arial',size=10,bold=False,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
         a9 = self.worksheet['A9']
@@ -548,7 +706,7 @@ class CreateSheets:
         self.worksheet['A10']='Average'
         self.worksheet['A11']='Minumum'
         self.worksheet['A12']='Maximum'
-        self.worksheet['A13']='standard Deviation'
+        self.worksheet['A13']='Std Dev'
         self.worksheet['A14']='Qty Passed'
         font = Font(name='Arial',size=10,bold=False,italic=False,vertAlign=None,underline='none',strike=False,color='FFFFFFFF')
         a15.font = font
@@ -626,19 +784,47 @@ class ExcelReports:
         filter_bad_data=True
         job_list = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).order_by('jobnumber').values_list('jobnumber', flat=True).distinct()
         part_list = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).order_by('partnumber').values_list('partnumber', flat=True).distinct()
-        artwork_list = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).order_by('partnumber').values_list('artwork_rev', flat=True).distinct()
-        report_data = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).all()
-        print('running report')
+        artwork_list = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).order_by('artwork_rev').values_list('artwork_rev', flat=True).distinct()
+        art_list = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).order_by('artwork').values_list('artwork', flat=True).distinct()
+        rev_list = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).order_by('panel').values_list('panel', flat=True).distinct()
+        panel_list = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).order_by('panel').values_list('panel', flat=True).distinct()
+        lot_list = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).order_by('panel').values_list('panel', flat=True).distinct()
+        report_data = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).last()
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!artwork_list',len(artwork_list))
+        print('report_data',report_data)
+        print('rev_list',rev_list)
+        print('panel_list',panel_list)
+        print('lot_list',lot_list)
         ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='running report')
         spec_data=None
-        if report_data:
-            part_num = report_data[0].partnumber
+        test_date=None
+        if report_data:# First try Test Data for date. Note: Started saving Active Date 4/27/22
+            part_num = report_data.partnumber
+            test_date = report_data.activedate
+            print('test_date1=',test_date)
+            if not test_date:# Next check Trace Data for date. Note: Always saved Active Date, but not always taking Trace Data
+                trace = Trace.objects.using('TEST').filter(jobnumber=self.job_num).last()
+                test_date = trace.activedate
+            if not test_date: # Next check Report Queue for date. Note: Started Report Queue 10/13/21
+                queue = ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).last()
+                test_date = queue.activedate
+            if not test_date:  # You are shit out of luck!!!!
+                test_date = 'UNK'
+            
+            print('test_date2=',test_date)    
             spec_data = Specifications.objects.using('TEST').filter(jobnumber=self.job_num).last()
             spectype = spec_data.spectype
             paths = ReportFiles(self.job_num,part_num,spectype)
             data_path = paths.data_path()
             template_path = paths.template()
             #print('template_path=',template_path)
+            test_date= test_date.strftime('%m/%d/%Y')
+        else:
+            test_date = 'UNK'
+        
+        
+        print('test_date3=',test_date)   
+            
         
         wb = Workbook()
         print('workbook=',wb)
@@ -668,6 +854,9 @@ class ExcelReports:
         z=1
         print('loading data')
         sum_row = 5
+        got_lot_avg=False #Only update rev description once regardless of number of lots
+        got_lot_max=False #Only update rev description once regardless of number of lots
+        got_lot_min=False #Only update rev description once regardless of number of lots
         ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='loading data')
         if spec_data:
             for artwork_rev in artwork_list:
@@ -679,7 +868,10 @@ class ExcelReports:
                     data_count = Testdata.objects.using('TEST').filter(jobnumber=self.job_num).filter(artwork_rev=artwork_rev).count()
                 
                 print('data_count=',data_count)
-                
+                artwork_sheet= artwork_rev.replace('*', 'X')
+                artwork_sheet= artwork_sheet.replace('/', '_')
+                print('artwork_sheet=',artwork_sheet)
+                print('artwork_rev=',artwork_rev)
                 conversions = Conversions(spec_data.vswr,'')
                 spec_rl = round(conversions.vswr_to_rl(),2)
                 
@@ -698,9 +890,6 @@ class ExcelReports:
                     print('part_num=',part_num)
                     spectype = spec_data.spectype
                     print('artwork_rev=',artwork_rev)
-                    if '/' in artwork_rev:
-                        artwork_rev=artwork_rev.replace("/", "_") 
-                        print('artwork_rev2=',artwork_rev)
                     if artwork_rev == None or artwork_rev =='':
                         #artwork_rev = 'UNKN REV'
                         #unknown_rev='UNKN REV_0'
@@ -712,20 +901,20 @@ class ExcelReports:
                         
                     
                     #create new sheet and format 
-                    print('making data sheet',artwork_rev)
-                    sheet = wb.create_sheet(artwork_rev) 
-                    makesheet=CreateSheets(artwork_rev,sheet,len(artwork_list))
+                    print('making data sheet',artwork_sheet)
+                    sheet = wb.create_sheet(artwork_sheet) 
+                    makesheet=CreateSheets(artwork_sheet,sheet,len(artwork_list))
                     makesheet.tabular_data()
                     #format summary sheet
                     
                     sheet = wb['Summary']
                     print('sheet before=',sheet)
                     
-                    makesheet=CreateSheets(artwork_rev,sheet,len(artwork_list))
+                    makesheet=CreateSheets(artwork_sheet,sheet,len(artwork_list))
                     makesheet.summary()
                     print ('sheetnames=',wb.sheetnames)
-                    print('artwork_rev=',artwork_rev)
-                    sheet = wb[artwork_rev]
+                    print('artwork_sheet=',artwork_sheet)
+                    sheet = wb[artwork_sheet]
                     
                     print('sheet=',sheet)
                     sheet['B4'] = self.operator 
@@ -734,6 +923,8 @@ class ExcelReports:
                     sheet['H3'] = part_num 
                     sheet['H4'] = spectype 
                     sheet['H5'] = artwork_rev 
+                    sheet['K5'] = test_date
+                    
                     
                     #~~~~~~~~~~~~configure  the tests~~~~~~~~~~~~~
                     if 'DIRECTIONAL COUPLER' in spectype:
@@ -899,7 +1090,7 @@ class ExcelReports:
                     spec3=0
                     spec4=0
                     spec5=0
-                    
+                                        
                     print('report_data=',report_data)
                     if spec_data.vswr:
                         conversions = Conversions(spec_data.vswr,'')
@@ -995,7 +1186,7 @@ class ExcelReports:
                         #time.sleep(20)
                         if good_data:
                             sheet.cell(row=rownum, column=1).value= 'UUT ' + str(uut)
-                            print('data.serialnumber=',data.serialnumber)
+                            #print('data.serialnumber=',data.serialnumber)
                             
                             ##~~~~~~~~~~~~~~~~~~~~~~~~IL Dual Band ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
                             if spec_data.il_exp_tf:
@@ -1421,13 +1612,12 @@ class ExcelReports:
                             sheet['J13'] = cf_stdev
                             sheet['J14'] = cf_pass
                             sheet['J15'] = cf_fail
-                            sheet['J16'] = str(round((cf_fail/rownum+1)*100,2)) + '%'
-                                
+                            sheet['J16'] = str(round((cf_fail/uut)*100,2)) + '%'
                             stat_list = [il_list,rl_list,coup_list,dir_list,cf_list]
 
                         
                         #print('stat_list=',stat_list)
-                        sheet.title = artwork_rev
+                        sheet.title = artwork_sheet
                         
                         #~~~~~~~~~~~~~~~~~~~~~~Summary sheet~~~~~~~~~~~~~~~~~~~~~~~~
                         sheet = wb["Summary"]
@@ -1437,11 +1627,59 @@ class ExcelReports:
                             thisRow = len(artwork_list) + 3
                             print('thisRow=',thisRow)
                         
+                        sheet['B2'] = part_num 
+                        sheet['H2'] = part_num
+                        sheet['F2'] = test_date 
+                        sheet['R2'] = test_date 
+                        artworks=Testdata.objects.using('TEST').filter(jobnumber=self.job_num).filter(artwork_rev=artwork_rev).first()
+                        print('artwork_rev=',artwork_rev)
+                        print('artworks=',artworks)
+                        print('artworks.lot=',artworks.lot)
+                        print('self.job_num=',self.job_num)
                         
                         if '90 DEGREE COUPLER' in spectype or 'BALUN' in spectype:
-                            #AVG
-                            sheet['A' + str(sum_row)] = artwork_rev
-                            if sum_row==5:
+                            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~AVG~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                            font = Font(name='Arial',size=10,bold=False,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+                            a=sheet['A' + str(sum_row)]
+                            a.font=font
+                            a.alignment = Alignment(horizontal='center')
+                            g=sheet['G' + str(sum_row)]
+                            g.font=font
+                            g.alignment = Alignment(horizontal='center')
+                            if not artworks.lot:# LOT was introduced with the new format.
+                                sheet['A' + str(sum_row)] = artwork_rev
+                                sheet['G' + str(sum_row)] = artwork_rev
+                            else:
+                                sheet['A' + str(sum_row)] = artworks.artwork + ' ' + artworks.revision + ' ' + artworks.panel + ' ' + artworks.sector + ' ' + artworks.lot
+                                sheet['G' + str(sum_row)] = artworks.artwork + ' ' + artworks.revision + ' ' + artworks.panel + ' ' + artworks.sector + ' ' + artworks.lot
+                              
+                            print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!artworks.lot=',artworks.lot)
+                            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~AVG~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                            if sum_row==5 and not got_lot_avg:# only update rev description once even if many lots
+                                if artworks.lot:# LOT was introduced with the new format.
+                                    print('in artworks', sum_row)
+                                    font = Font(name='Arial',size=10,bold=False,italic=True,vertAlign=None,underline='single',strike=False,color='FF000000')
+                                    a=sheet['A'+str(sum_row-1)]
+                                    a.font=font
+                                    a.alignment = Alignment(horizontal='center')
+                                    sheet['A' + str(sum_row-1)] = 'A Rev  Panel Sector Lot'
+                                    g=sheet['G'+str(sum_row-1)]
+                                    g.font=font
+                                    g.alignment = Alignment(horizontal='center')
+                                    sheet['G' + str(sum_row-1)] = 'A Rev  Panel Sector Lot'
+                                    got_lot_avg=True
+                                else:
+                                    print('not in artworks', sum_row)
+                                    font = Font(name='Arial',size=10,bold=False,italic=True,vertAlign=None,underline='none',strike=False,color='FF000000')                                   
+                                    a=sheet['A'+str(sum_row-1)]
+                                    a.font=font
+                                    a.alignment = Alignment(horizontal='center')
+                                    sheet['A' + str(sum_row-1)] = 'Old Formats'
+                                    g=sheet['G'+str(sum_row-1)]
+                                    g.font=font
+                                    g.alignment = Alignment(horizontal='center')
+                                    sheet['G' + str(sum_row-1)] = 'Old Formats'
+                                    
                                 sheet['B' + str(sum_row-1)] = str(spec_list[0]) + ' Max'
                                 sheet['C' + str(sum_row-1)] = str(spec_list[1]) + ' Max'
                                 sheet['D' + str(sum_row-1)] = str(spec_list[2]) + ' Max'
@@ -1452,32 +1690,104 @@ class ExcelReports:
                             sheet['D' + str(sum_row)] = iso_avg
                             sheet['E' + str(sum_row)] = ab_avg
                             sheet['F' + str(sum_row)] = pb_avg
+                            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~AVG~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                             
-                            sheet['G' + str(sum_row)] = (il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/5 + (il_fail + rl_fail + iso_fail + ab_fail + pb_fail)/5
-                            sheet['H' + str(sum_row)] = (il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/5
-                            sheet['I' + str(sum_row)] = il_fail + rl_fail + iso_fail + ab_fail + pb_fail
                             
-                         
+                            font = Font(name='Arial',size=10,bold=False,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+                            a=sheet['A' + str(sum_row)]
+                            a.font=font
+                            a.alignment = Alignment(horizontal='center')
+                            g=sheet['G' + str(sum_row)]
+                            g.font=font
+                            g.alignment = Alignment(horizontal='center')
+                            if not artworks.lot:# LOT was introduced with the new format.
+                                sheet['A' + str(sum_row)] = artwork_rev
+                            else:
+                                sheet['A' + str(sum_row)] = artworks.artwork + ' ' + artworks.revision + ' ' + artworks.panel + ' ' + artworks.sector + ' ' + artworks.lot
+                            
+                            sheet['H' + str(sum_row)] = il_pass
+                            sheet['I' + str(sum_row)] = il_fail
+                            sheet['J' + str(sum_row)] = rl_pass
+                            sheet['K' + str(sum_row)] = rl_fail
+                            sheet['L' + str(sum_row)] = iso_pass
+                            sheet['M' + str(sum_row)] = iso_fail
+                            sheet['N' + str(sum_row)] = ab_pass
+                            sheet['O' + str(sum_row)] = ab_fail
+                            sheet['P' + str(sum_row)] = pb_pass
+                            sheet['Q' + str(sum_row)] = pb_fail
+                            total = il_pass + rl_pass + iso_pass + ab_pass + pb_pass + il_fail + rl_fail + iso_fail + ab_fail + pb_fail
+                           
+
+                            sheet['R' + str(sum_row)] = str(round((((il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/total) * 100),1)) + '%'
+                            sheet['S' + str(sum_row)] = str(round((((il_fail + rl_fail + iso_fail + ab_fail + pb_fail)/total) * 100),1))+ '%'
+                                       
                             #MIN
-                            sheet['A' + str(sum_row + thisRow)] = artwork_rev
-                            if sum_row==5:
+                            font = Font(name='Arial',size=10,bold=False,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+                            a=sheet['A' + str(sum_row + thisRow)]
+                            a.font=font
+                            a.alignment = Alignment(horizontal='center')
+                            print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!artworks.lot MIN=',artworks.lot)
+                            if not artworks.lot:# LOT was introduced with the new format.
+                                sheet['A' + str(sum_row + thisRow)] = artwork_rev
+                            else:
+                                sheet['A' + str(sum_row + thisRow)] = artworks.artwork + ' ' + artworks.revision + ' ' + artworks.panel + ' ' + artworks.sector + ' ' + artworks.lot
+                            if sum_row==5 and not got_lot_min:
+                                if artworks.lot:# LOT was introduced with the new format.
+                                    print('in artworks', sum_row)
+                                    font = Font(name='Arial',size=10,bold=False,italic=True,vertAlign=None,underline='single',strike=False,color='FF000000')
+                                    a=sheet['A'+str(sum_row + thisRow-1)]
+                                    a.font=font
+                                    a.alignment = Alignment(horizontal='center')
+                                    sheet['A' + str(sum_row + thisRow-1)] = 'A Rev  Panel Sector Lot'
+                                    got_lot_min = True
+                                else:
+                                    print('not in artworks', sum_row)
+                                    font = Font(name='Arial',size=10,bold=False,italic=True,vertAlign=None,underline='none',strike=False,color='FF000000')
+                                    a=sheet['A'+str(sum_row + thisRow-1)]
+                                    a.font=font
+                                    a.alignment = Alignment(horizontal='center')
+                                    sheet['A' + str(sum_row + thisRow-1)] = 'Old Formats'
                                 sheet['B' + str(sum_row + thisRow-1)] = spec_list[0]  = str(spec_list[0]) + ' Max'
                                 sheet['C' + str(sum_row + thisRow-1)] = str(spec_list[1]) + ' Max'
                                 sheet['D' + str(sum_row + thisRow-1)] = str(spec_list[2]) + ' Max'
                                 sheet['E' + str(sum_row + thisRow-1)] = "+/- " + str(spec_list[3]) + ' dB'
                                 sheet['F' + str(sum_row + thisRow-1)] = "+/- " + str(spec_list[4]) + ' deg'
+                               
                             sheet['B' + str(sum_row + thisRow)] = il_min
                             sheet['C' + str(sum_row + thisRow)] = rl_min
                             sheet['D' + str(sum_row + thisRow)] = iso_min
                             sheet['E' + str(sum_row + thisRow)] = ab_min
                             sheet['F' + str(sum_row + thisRow)] = pb_min
-                            sheet['G' + str(sum_row + thisRow)] = int((il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/5) + int((il_fail + rl_fail + iso_fail + ab_fail + pb_fail)/5)
-                            sheet['H' + str(sum_row + thisRow)] = int((il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/5)  
-                            sheet['I' + str(sum_row + thisRow)] = il_fail + rl_fail + iso_fail + ab_fail + pb_fail
                             
-                            #Max
-                            sheet['A' + str(sum_row + 2*thisRow)] = artwork_rev
-                            if sum_row==5:
+                            
+                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Max!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            font = Font(name='Arial',size=10,bold=False,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+                            a=sheet['A'+str(sum_row + 2*thisRow)]
+                            a.font=font
+                            a.alignment = Alignment(horizontal='center')
+                            print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!artworks.lot Max=',artworks.lot)
+                            if not artworks.lot:# LOT was introduced with the new format.
+                                sheet['A' + str(sum_row + 2*thisRow)] = artwork_rev
+                                sheet['G' + str(sum_row)] = artwork_rev
+                            else:
+                                this_sheet=artworks.artwork + ' ' + artworks.revision + ' ' + artworks.panel + ' ' + artworks.sector + ' ' + artworks.lot
+                                sheet['A' + str(sum_row + 2*thisRow)] = this_sheet
+                            if sum_row==5 and not got_lot_max:
+                                if artworks.lot:# LOT was introduced with the new format.
+                                    font = Font(name='Arial',size=10,bold=False,italic=True,vertAlign=None,underline='single',strike=False,color='FF000000')
+                                    a=sheet['A'+str(sum_row + 2*thisRow-1)]
+                                    a.font=font
+                                    a.alignment = Alignment(horizontal='center')
+                                    sheet['A' + str(sum_row + 2*thisRow-1)] = 'A Rev  Panel Sector Lot'
+                                    got_lot_max=True
+                                else:
+                                    font = Font(name='Arial',size=10,bold=False,italic=True,vertAlign=None,underline='none',strike=False,color='FF000000')
+                                    a=sheet['A'+str(sum_row + 2*thisRow-1)]
+                                    a.font=font
+                                    a.alignment = Alignment(horizontal='center')
+                                    sheet['A' + str(sum_row + 2*thisRow-1)] = 'Old Formats'
+                                    
+                                
                                 sheet['B' + str(sum_row + 2*thisRow-1)] = str(spec_list[0]) + ' Max'
                                 sheet['C' + str(sum_row + 2*thisRow-1)] = str(spec_list[1]) + ' Max'
                                 sheet['D' + str(sum_row + 2*thisRow-1)] = str(spec_list[2]) + ' Max'
@@ -1488,13 +1798,50 @@ class ExcelReports:
                             sheet['D' + str(sum_row + 2*thisRow)] = iso_max
                             sheet['E' + str(sum_row + 2*thisRow)] = ab_max
                             sheet['F' + str(sum_row + 2*thisRow)] = pb_max
-                            sheet['G' + str(sum_row + 2*thisRow)] = int((il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/5) + int((il_fail + rl_fail + iso_fail + ab_fail + pb_fail)/5)
-                            sheet['H' + str(sum_row + 2*thisRow)] = int((il_pass + rl_pass + iso_pass + ab_pass + pb_pass)/5) 
-                            sheet['I' + str(sum_row + 2*thisRow)] = il_fail + rl_fail + iso_fail + ab_fail + pb_fail
                         else:
-                                                    #AVG
-                            sheet['A' + str(sum_row)] = artwork_rev
-                            if sum_row==5:
+                            sheet['L3']='COUP'
+                            sheet['N3']='DIR'
+                            sheet['P3']='COUP FLAT'
+                            #AVG
+                            font = Font(name='Arial',size=10,bold=False,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+                            a=sheet['A' + str(sum_row)]
+                            a.font=font
+                            a.alignment = Alignment(horizontal='center')
+                            g=sheet['G' + str(sum_row)]
+                            g.font=font
+                            g.alignment = Alignment(horizontal='center')
+                            if not artworks.lot:# LOT was introduced with the new format.
+                                sheet['A' + str(sum_row)] = artwork_rev
+                                sheet['G' + str(sum_row)] = artwork_rev
+                            else:
+                                sheet['A' + str(sum_row)] = artworks.artwork + ' ' + artworks.revision + ' ' + artworks.panel + ' ' + artworks.sector + ' ' + artworks.lot
+                                sheet['G' + str(sum_row)] = artworks.artwork + ' ' + artworks.revision + ' ' + artworks.panel + ' ' + artworks.sector + ' ' + artworks.lot
+                            print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!artworks.lot=',artworks.lot)
+                            if sum_row==5 and not got_lot_avg:
+                                if artworks.lot:# LOT was introduced with the new format.
+                                    print('in artworks', sum_row)
+                                    font = Font(name='Arial',size=10,bold=False,italic=True,vertAlign=None,underline='single',strike=False,color='FF000000')
+                                    a=sheet['A'+str(sum_row-1)]
+                                    a.font=font
+                                    a.alignment = Alignment(horizontal='center')
+                                    sheet['A' + str(sum_row-1)] = 'A Rev  Panel Sector Lot'
+                                    g=sheet['G'+str(sum_row-1)]
+                                    g.font=font
+                                    g.alignment = Alignment(horizontal='center')
+                                    sheet['G' + str(sum_row-1)] = 'A Rev  Panel Sector Lot'
+                                    got_lot_avg=True
+                                else:
+                                    print('not in artworks', sum_row)
+                                    font = Font(name='Arial',size=10,bold=False,italic=True,vertAlign=None,underline='none',strike=False,color='FF000000')
+                                    a=sheet['A'+str(sum_row-1)]
+                                    a.font=font
+                                    a.alignment = Alignment(horizontal='center')
+                                    sheet['A' + str(sum_row-1)] = 'Old Formats'
+                                    g=sheet['G'+str(sum_row-1)]
+                                    g.font=font
+                                    g.alignment = Alignment(horizontal='center')
+                                    sheet['G' + str(sum_row-1)] = 'Old Formats'
+                                
                                 sheet['B' + str(sum_row-1)] = str(spec_list[0]) + ' Max'
                                 sheet['C' + str(sum_row-1)] = str(spec_list[1]) + ' Max'
                                 sheet['D' + str(sum_row-2)] = 'Avg.Coupling (dB)'
@@ -1508,13 +1855,51 @@ class ExcelReports:
                             sheet['D' + str(sum_row)] = coup_avg
                             sheet['E' + str(sum_row)] = dir_avg
                             sheet['F' + str(sum_row)] = cf_avg
-                            sheet['G' + str(sum_row)] = int((il_pass + rl_pass + coup_pass + dir_pass + cf_pass)/5) + int((il_fail + rl_fail + coup_fail + dir_fail + cf_fail)/5)
-                            sheet['H' + str(sum_row)] = int((il_pass + rl_pass + coup_pass + dir_pass + cf_pass)/5) 
-                            sheet['I' + str(sum_row)] = il_fail + rl_fail + coup_fail + dir_fail + cf_fail
+                            if not artworks.lot:
+                                sheet['A' + str(sum_row)] = artwork_rev
+                            else:
+                                sheet['A' + str(sum_row)] = artworks.artwork + ' ' + artworks.revision + ' ' + artworks.panel + ' ' + artworks.sector + ' ' + artworks.lot
+                            sheet['H' + str(sum_row)] = il_pass
+                            sheet['I' + str(sum_row)] = il_fail
+                            sheet['J' + str(sum_row)] = rl_pass
+                            sheet['K' + str(sum_row)] = rl_fail
+                            sheet['L' + str(sum_row)] = coup_pass
+                            sheet['M' + str(sum_row)] = coup_fail
+                            sheet['N' + str(sum_row)] = dir_pass
+                            sheet['O' + str(sum_row)] = dir_fail
+                            sheet['P' + str(sum_row)] = cf_pass
+                            sheet['Q' + str(sum_row)] = cf_fail
+                            total = il_pass + rl_pass + coup_pass + dir_pass + cf_pass + il_fail + rl_fail + coup_fail + dir_fail + cf_fail
+                            sheet['R' + str(sum_row)] = str(round((((il_pass + rl_pass + coup_pass + dir_pass + cf_pass)/total) * 100),1)) + '%'
+                            sheet['S' + str(sum_row)] = str(round((((il_fail + rl_fail + coup_fail + dir_fail + cf_fail)/total) * 100),1)) + '%'
                             
-                            #MIN
-                            sheet['A' + str(sum_row + thisRow)] = artwork_rev
-                            if sum_row==5:
+                            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~MIN~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                            font = Font(name='Arial',size=10,bold=False,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+                            a=sheet['A'+str(sum_row + thisRow)]
+                            a.font=font
+                            a.alignment = Alignment(horizontal='center')
+                            if not artworks.lot:# LOT was introduced with the new format.
+                                sheet['A' + str(sum_row + thisRow)] = artwork_rev
+                            else:
+                                this_sheet=artworks.artwork + ' ' + artworks.revision + ' ' + artworks.panel + ' ' + artworks.sector + ' ' + artworks.lot
+                                sheet['A' + str(sum_row)] = this_sheet
+                            if sum_row==5 and not got_lot_min:
+                                if artworks.lot:# LOT was introduced with the new format.
+                                    font = Font(name='Arial',size=10,bold=False,italic=True,vertAlign=None,underline='single',strike=False,color='FF000000')
+                                    a=sheet['A'+str(sum_row + thisRow-1)]
+                                    a.font=font
+                                    a.alignment = Alignment(horizontal='center')
+                                    sheet['A' + str(sum_row + thisRow-1)] = 'A Rev  Panel Sector Lot'
+                                    sheet['A' + str(sum_row)] = artworks.artwork + ' ' + artworks.revision + ' ' + artworks.panel + ' ' + artworks.sector + ' ' + artworks.lot
+                                    got_lot_min=True
+                                else:
+                                    font = Font(name='Arial',size=10,bold=False,italic=True,vertAlign=None,underline='none',strike=False,color='FF000000')
+                                    a=sheet['A'+str(sum_row + thisRow-1)]
+                                    a.font=font
+                                    a.alignment = Alignment(horizontal='center')
+                                    sheet['A' + str(sum_row + thisRow-1)] = 'Old Formats'
+                                    sheet['A' + str(sum_row)] = artwork_rev
+                                   
                                 sheet['B' + str(sum_row + thisRow-1)] = spec_list[0]  = str(spec_list[0]) + ' Max'
                                 sheet['C' + str(sum_row + thisRow-1)] = str(spec_list[1]) + ' Max'
                                 sheet['D' + str(sum_row + thisRow-2)] = 'Min.Coupling (dB)'
@@ -1528,13 +1913,33 @@ class ExcelReports:
                             sheet['D' + str(sum_row + thisRow)] = coup_min
                             sheet['E' + str(sum_row + thisRow)] = dir_min
                             sheet['F' + str(sum_row + thisRow)] = cf_min
-                            sheet['G' + str(sum_row + thisRow)] = int((il_pass + rl_pass + coup_pass + dir_pass + cf_pass)/5) + int((il_fail + rl_fail + coup_fail + dir_fail + cf_fail)/5)
-                            sheet['H' + str(sum_row + thisRow)] = int((il_pass + rl_pass + coup_pass + dir_pass + cf_pass)/5) 
-                            sheet['I' + str(sum_row + thisRow)] = il_fail + rl_fail + coup_fail + dir_fail + cf_fail
+                           
                             
-                            #Max
-                            sheet['A' + str(sum_row + 2*thisRow)] = artwork_rev
-                            if sum_row==5:
+                            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Max~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                            font = Font(name='Arial',size=10,bold=False,italic=False,vertAlign=None,underline='none',strike=False,color='FF000000')
+                            a=sheet['A'+str(sum_row + 2*thisRow)]
+                            a.font=font
+                            a.alignment = Alignment(horizontal='center')
+                            if not artworks.lot:# LOT was introduced with the new format.
+                                sheet['A' + str(sum_row + 2*thisRow)] = artwork_rev
+                            else:
+                                this_sheet=artworks.artwork + ' ' + artworks.revision + ' ' + artworks.panel + ' ' + artworks.sector + ' ' + artworks.lot
+                                sheet['A' + str(sum_row)] = this_sheet
+                            if sum_row==5 and not got_lot_max:
+                                if artworks.lot: # LOT was introduced with the new format.
+                                    font = Font(name='Arial',size=10,bold=False,italic=True,vertAlign=None,underline='single',strike=False,color='FF000000')
+                                    a=sheet['A'+str(sum_row + 2*thisRow-1)]
+                                    a.font=font
+                                    a.alignment = Alignment(horizontal='center')
+                                    sheet['A' + str(sum_row + 2*thisRow-1)] = 'A Rev  Panel Sector Lot'
+                                    got_lot_max=True
+                                else:
+                                    font = Font(name='Arial',size=10,bold=False,italic=True,vertAlign=None,underline='none',strike=False,color='FF000000')
+                                    a=sheet['A'+str(sum_row + 2*thisRow-1)]
+                                    a.font=font
+                                    a.alignment = Alignment(horizontal='center')
+                                    sheet['A' + str(sum_row + 2*thisRow-1)] = 'Old Formats'
+                                   
                                 sheet['B' + str(sum_row + 2*thisRow-1)] = str(spec_list[0]) + ' Max'
                                 sheet['C' + str(sum_row + 2*thisRow-1)] = str(spec_list[1]) + ' Max'
                                 sheet['D' + str(sum_row + 2*thisRow-2)] = 'Max.Coupling (dB)'
@@ -1548,10 +1953,7 @@ class ExcelReports:
                             sheet['D' + str(sum_row + 2*thisRow)] = coup_max
                             sheet['E' + str(sum_row + 2*thisRow)] = dir_max
                             sheet['F' + str(sum_row + 2*thisRow)] = cf_max
-                            sheet['G' + str(sum_row + 2*thisRow)] = int((il_pass + rl_pass + coup_pass + dir_pass + cf_pass)/5) + int((il_fail + rl_fail + coup_fail + dir_fail + cf_fail)/5)
-                            sheet['H' + str(sum_row + 2*thisRow)] = int((il_pass + rl_pass + coup_pass + dir_pass + cf_pass)/5)
-                            sheet['I' + str(sum_row + 2*thisRow)] = il_fail + rl_fail + coup_fail + dir_fail + cf_fail
-
+                       
                         #~~~~~~~~~~~~~~~~~~~~~~Summary sheet~~~~~~~~~~~~~~~~~~~~~~~~
                         #rename the sheet to the artworkrev
                         x+=1
@@ -1561,7 +1963,7 @@ class ExcelReports:
                 #~~~~~~~~~~~~~~~~~~~~~~~~~charts~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 ReportQueue.objects.using('TEST').filter(jobnumber=self.job_num).filter(workstation=self.workstation).update(reportstatus='loading charts')
                 trace_num = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Insertion Loss J3').count()
-                loadcharts=LoadCharts(self.job_num,part_num,spectype,wb,artwork_rev,len(artwork_list))
+                loadcharts=LoadCharts(self.job_num,part_num,spectype,wb,artwork_sheet,artwork_rev,len(artwork_list))
                 loadcharts.charts()
                 print('Charts Loaded')
         
@@ -1888,12 +2290,13 @@ class MakeCharts:
         
  
 class LoadCharts:    
-    def __init__ (self, job_num,part_num,spec_type,workbook,artwork_rev,artwork_len):
+    def __init__ (self, job_num,part_num,spec_type,workbook,artwork_sheet,artwork_rev,artwork_len):
         self.job_num = job_num
         self.part_num = part_num
         self.spec_type = spec_type
         self.workbook = workbook
         self.artwork_rev=artwork_rev
+        self.artwork_sheet=artwork_sheet
         self.artwork_len = artwork_len
         print('loading charts')
     
@@ -1915,7 +2318,7 @@ class LoadCharts:
             serialnumber = 'UUT' + str(idx+1)
             print('serialnumber=',serialnumber)
             #create new sheet and format
-            new_sheetname = str(self.artwork_rev) + '_UUT' + str(idx+1)    
+            new_sheetname = str(self.artwork_sheet) + '_UUT' + str(idx+1)    
             print('new_sheetname=',new_sheetname)
             sheet = self.workbook.create_sheet(new_sheetname) 
             makesheet=CreateSheets(new_sheetname,sheet,self.artwork_len)
@@ -1926,6 +2329,7 @@ class LoadCharts:
             sheet['F2'] = self.job_num
             sheet['F3'] = self.part_num
             sheet['F4'] = self.spec_type
+            sheet['F5'] = self.artwork_sheet
             #~~~~~~~~~~~Load Header~~~~~~
             all_charts = 0
             chart_data = []
@@ -1934,94 +2338,106 @@ class LoadCharts:
                 chart_data = []
                 title1='Insertion Loss J3'
                 title2='Insertion Loss J4'
-                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
-                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
+                print('serialnumber=',serialnumber)
+                print('self.job_num=',self.job_num)
+                print('self.artwork_rev=',self.artwork_rev)
+                print('serialnumber=',serialnumber)
+                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()
+                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()
                 #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss J3~~~~~~~~~~~~~~~~~~~~~~~~
                 print('trace_id 1=',trace_id1)
+                print('trace_id 2=',trace_id2)
                 trace_points = []
                 f_list = []
                 d1_list=[]
                 x=0
                 if not trace_id1:
                     serialnumber = 'UUT ' + str(idx+1)
-                    #print('serialnumber=',serialnumber)
-                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
-                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()
                 if not trace_id1:
                     serialnumber = 'UUT  ' + str(idx+1)
-                    #print('serialnumber=',serialnumber)
-                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').last()
-                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').last()    
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).last()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).last()    
                 if not trace_id1:
                     serialnumber = 'UUT' + str(idx+1)
-                    #print('serialnumber=',serialnumber)
-                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').last()
-                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').last()
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).last()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).last()
                 if not trace_id1:
                     serialnumber = 'UUT ' + str(idx+1)
-                    #print('serialnumber=',serialnumber)
-                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').last()
-                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').last()
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).last()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).last()
                 if not trace_id1:
                     serialnumber = 'UUT  ' + str(idx+1)
-                    #print('serialnumber=',serialnumber)
-                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').last()
-                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').last()   
+                    print('serialnumber=',serialnumber)
+                    trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).last()
+                    trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).last()   
                 
-                
+                print('trace_id 1=',trace_id1)
+                print('trace_id 2=',trace_id2)
                 if trace_id1:
-                    if trace_id1[0] > 171666:
-                        trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id1[0]).all()
+                    if trace_id1.pk > 171666:
+                        trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id1.pk).all()
                     else:
-                        trace_points = Tracepoints.objects.using('TEST').filter(traceid=trace_id1[0]).all()
-                    #print('trace_points=',trace_points)
+                        trace_points = Tracepoints.objects.using('TEST').filter(traceid=trace_id1.pk).all()
+                    print('trace_points=',trace_points)
                     rownum=50
                     #print(len(trace_points))
                     x=0
                     for point in trace_points:
-                        if point.xdata==0 or x>200:
+                        if x>200:
+                            print('point.xdata=',point.xdata)
+                            print('x=',x)
                             break    # break here
-                        #print('rownum=',rownum)
-                        sheet.cell(row=rownum, column=1).value= round(point.xdata,2)
-                        sheet.cell(row=rownum, column=2).value= round(point.ydata,2)
-                        #print('rownum=',rownum,' point.xdata=',point.xdata,' point.ydata=',point.ydata)
-                        f_list.append(round(point.xdata,2))
-                        d1_list.append(round(point.ydata,2))
-                        rownum+=1
-                        x+=1 
+                        if not point.xdata==0: 
+                            print('rownum=',rownum)
+                            sheet.cell(row=rownum, column=1).value= round(point.xdata,2)
+                            sheet.cell(row=rownum, column=2).value= round(point.ydata,2)
+                            print('rownum=',rownum,' point.xdata=',point.xdata,' point.ydata=',point.ydata)
+                            f_list.append(round(point.xdata,2))
+                            d1_list.append(round(point.ydata,2))
+                            rownum+=1
+                            x+=1 
                     #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss J4~~~~~~~~~~~~~~~~~~~~~~~~
                     trace_points = []
                     title='Insertion Loss'
-                    #print('trace_id2=',trace_id2)
-                    #print('f_list=',len(f_list))
-                    #print('d1_list=',len(d1_list))
+                    print('trace_id2=',trace_id2)
+                    print('f_list=',len(f_list))
+                    print('d1_list=',len(d1_list))
                 if trace_id2 and f_list:
-                    if trace_id2[0] > 171666:
-                        trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id2[0]).all()
+                    if trace_id2.pk > 171666:
+                        trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id2.pk).all()
                     else:
-                        trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id2[0]).all()
+                        trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id2.pk).all()
                     rownum=50
                     print(len(trace_points))
                     x=0
                     for point in trace_points:
-                        if point.xdata==0 or x>200:
+                        if x>200:
                             break    # break here
-                        sheet.cell(row=rownum, column=3).value= round(point.ydata,2)
-                        d2=round(point.ydata,2)
-                        #print('x=',x)
-                        try:
-                            chart_data.append([title,f_list[x],d1_list[x],d2])
-                            #print('f=',f_list[x],'d1=',d1_list[x],'d2=',d2)
-                        except IndexError as e:
-                            print('indexError=',e)
-                        
-                        rownum+=1 
-                        x+=1 
+                        if not point.xdata==0:
+                            sheet.cell(row=rownum, column=3).value= round(point.ydata,2)
+                            d2=round(point.ydata,2)
+                            #print('x=',x)
+                            try:
+                                chart_data.append([title,f_list[x],d1_list[x],d2])
+                                #print('f=',f_list[x],'d1=',d1_list[x],'d2=',d2)
+                            except IndexError as e:
+                                print('indexError=',e)
+                            
+                            rownum+=1 
+                            x+=1 
             else:
                 #~~~~~~~~~~~~~~~~~~~~~~Insertion Loss ~~~~~~~~~~~~~~~~~~~~~~~~
                 title='Insertion Loss'
                 trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
-                
+                print('serialnumber=',serialnumber)
+                print('artwork_rev=',self.artwork_rev)
+                print('title=',title)
                 trace_points = []
                 if not trace_id:
                     serialnumber = 'UUT ' + str(idx+1)
@@ -2045,26 +2461,28 @@ class LoadCharts:
                     trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).values_list('id').last()
                 
                 if trace_id:
-                    print('trace_id=',trace_id[0])
-                    if trace_id[0] > 171666:
-                        trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id[0]).all()
+                    print('trace_id=',trace_id.pk)
+                    if trace_id.pk > 171666:
+                        trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id.pk).all()
                     else:
-                        trace_points = Tracepoints.objects.using('TEST').filter(traceid=trace_id[0]).all()
+                        trace_points = Tracepoints.objects.using('TEST').filter(traceid=trace_id.pk).all()
                     #print('trace_points=',trace_points)
                     rownum=50
                     x=0
                     for point in trace_points:
-                        if point.xdata==0 or x>200:
+                        if x>200:
                             break    # break here
-                        sheet.cell(row=rownum, column=1).value= round(point.xdata,2)
-                        sheet.cell(row=rownum, column=2).value= round(point.ydata,2)
-                        #print('rownum=',rownum,' point.xdata=',point.xdata,' point.ydata=',point.ydata)
-                        f=round(point.xdata,2)
-                        d=round(point.ydata,2)
-                        rownum+=1
-                        x+=1 
-                        chart_data.append([title,f,d])
-            #print('chart1_data=',chart_data)
+                        
+                        if not point.xdata==0:
+                            sheet.cell(row=rownum, column=1).value= round(point.xdata,2)
+                            sheet.cell(row=rownum, column=2).value= round(point.ydata,2)
+                            #print('rownum=',rownum,' point.xdata=',point.xdata,' point.ydata=',point.ydata)
+                            f=round(point.xdata,2)
+                            d=round(point.ydata,2)
+                            rownum+=1
+                            x+=1 
+                            chart_data.append([title,f,d])
+            print('chart1_data=',chart_data)
             if chart_data:            
                 load_chart= MakeCharts(sheet,self.spec_type,chart_data)
                 load_chart.chart1()
@@ -2081,46 +2499,47 @@ class LoadCharts:
             title='Return Loss'
             #~~~~~~~~~~~~~~~~~~~~~~Return Loss~~~~~~~~~~~~~~~~~~~~~~~~
             chart_data = []
-            trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()       
+            trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()       
             trace_points = []
             if not trace_id:
                 serialnumber = 'UUT ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()  
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()  
             if not trace_id:
                 serialnumber = 'UUT  ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()  
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()  
             if not trace_id:
                 serialnumber = 'UUT' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).values_list('id').last()
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).last()
             if not trace_id:
                 serialnumber = 'UUT ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).values_list('id').last()
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).last()
             if not trace_id:
                 serialnumber = 'UUT  ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).values_list('id').last()
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Return Loss').filter(serialnumber=serialnumber).last()
             
             if trace_id:
-                if trace_id[0] > 171666:
-                    trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id[0]).all()
+                if trace_id.pk > 171666:
+                    trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id.pk).all()
                 else:
-                    trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id[0]).all()
+                    trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id.pk).all()
                 rownum=50
                 x=0
                 for point in trace_points:
-                    if point.xdata==0 or x>200:
+                    if x>200:
                         break    # break here
-                    sheet.cell(row=rownum, column=4).value= round(point.xdata,2)
-                    sheet.cell(row=rownum, column=5).value= round(point.ydata,2)
-                    f=round(point.xdata,2)
-                    d=round(point.ydata,2)
-                    rownum+=1
-                    x+=1 
-                    chart_data.append([title,f,d])
+                    if not point.xdata==0:
+                        sheet.cell(row=rownum, column=4).value= round(point.xdata,2)
+                        sheet.cell(row=rownum, column=5).value= round(point.ydata,2)
+                        f=round(point.xdata,2)
+                        d=round(point.ydata,2)
+                        rownum+=1
+                        x+=1 
+                        chart_data.append([title,f,d])
             
             #print('chart2_data=',chart_data)
             if chart_data:
@@ -2134,49 +2553,57 @@ class LoadCharts:
             #~~~~~~~~~~~~~~~~~~~~Chart2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
             #~~~~~~~~~~~~~~~~~~~~Chart3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            #~~~~~~~~~~~~~~~~~~~~~~isolation~~~~~~~~~~~~~~~~~~~~~~~~
+            #~~~~~~~~~~~~~~~~~~~~~~Isolation/Coupling~~~~~~~~~~~~~~~~~~~~~~~~
             chart_data = []
-            trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()    
             trace_points = []
-            title='Isolation'
+            if '90 DEGREE COUPLER' in self.spec_type or 'BALUN' in self.spec_type:
+                title='Isolation'
+            else:
+                title='Coupling'
+            print('trace_id=',trace_id)
+            print('self.job_num=',self.job_num)
+            print('serialnumber=',serialnumber)
+            print('self.artwork_rev=',self.artwork_rev)
+            trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()    
             if not trace_id:
                 serialnumber = 'UUT ' + str(idx+1)
-                #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()  
+                print('serialnumber1=',serialnumber)
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()  
             if not trace_id:
                 serialnumber = 'UUT  ' + str(idx+1)
-                #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()  
+                print('serialnumber2=',serialnumber)
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()  
             if not trace_id:
                 serialnumber = 'UUT' + str(idx+1)
-                #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).values_list('id').last()
+                print('serialnumber3=',serialnumber)
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).last()
             if not trace_id:
                 serialnumber = 'UUT ' + str(idx+1)
-                #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).values_list('id').last()
+                print('serialnumber4=',serialnumber)
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).last()
             if not trace_id:
                 serialnumber = 'UUT  ' + str(idx+1)
-                #print('serialnumber=',serialnumber)
-                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title='Isolation').filter(serialnumber=serialnumber).values_list('id').last()
+                print('serialnumber5=',serialnumber)
+                trace_id = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title).filter(serialnumber=serialnumber).last()
             
             if trace_id:
-                if trace_id[0] > 171666:
-                    trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id[0]).all()
+                if trace_id.pk > 171666:
+                    trace_points = Tracepoints2.objects.using('TEST').filter(traceid=trace_id.pk).all()
                 else:
-                    trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id[0]).all()
+                    trace_points = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id.pk).all()
                 rownum=50
                 x=0
                 for point in trace_points:
-                    if point.xdata==0 or x>200:
+                    if x>200:
                         break    # break here
-                    sheet.cell(row=rownum, column=6).value= round(point.xdata,2)
-                    sheet.cell(row=rownum, column=7).value= round(point.ydata,2)
-                    f=round(point.xdata,2)
-                    d=round(point.ydata,2)
-                    rownum+=1
-                    x+=1
-                    chart_data.append([title,f,d])
+                    if not point.xdata==0:
+                        sheet.cell(row=rownum, column=6).value= round(point.xdata,2)
+                        sheet.cell(row=rownum, column=7).value= round(point.ydata,2)
+                        f=round(point.xdata,2)
+                        d=round(point.ydata,2)
+                        rownum+=1
+                        x+=1
+                        chart_data.append([title,f,d])
             
             #print('chart3_data=',chart_data)
             if chart_data:
@@ -2198,8 +2625,8 @@ class LoadCharts:
                 title1='Coupled Flatness J3'
                 title2='Coupled Flatness J4'
             chart_data = [] 
-            trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
-            trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
+            trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()
+            trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()
         
             #~~~~~~~~~~~~~~~~~~~~~~Phase Balance J3 & J4~~~~~~~~~~~~~~~~~~~~~~~~
             trace_points = []
@@ -2209,39 +2636,39 @@ class LoadCharts:
             if not trace_id1:
                 serialnumber = 'UUT ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
-                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()  
+                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()
+                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()  
             if not trace_id1:
                 serialnumber = 'UUT  ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()
-                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last() 
+                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()
+                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last() 
             if not trace_id1:
                 serialnumber = 'UUT' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').last()
-                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).values_list('id').last()  
+                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()  
+                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()  
             if not trace_id1:
                 serialnumber = 'UUT ' + str(idx+1)
                # print('serialnumber=',serialnumber)
-                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').last()
-                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').last()  
+                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()  
+                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()  
             if not trace_id1:
                 serialnumber = 'UUT  ' + str(idx+1)
                 #print('serialnumber=',serialnumber)
-                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).values_list('id').last()
-                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).values_list('id').last()  
+                trace_id1 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title1).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()  
+                trace_id2 = Trace.objects.using('TEST').filter(jobnumber=self.job_num).filter(title=title2).filter(serialnumber=serialnumber).filter(artwork_rev=self.artwork_rev).last()    
             
             if trace_id1:
-                if trace_id1[0] > 171666:
-                    trace_points1 = Tracepoints2.objects.using('TEST').filter(traceid=trace_id1[0]).all()
+                if trace_id1.pk > 171666:
+                    trace_points1 = Tracepoints2.objects.using('TEST').filter(traceid=trace_id1.pk).all()
                 else:
-                    trace_points1 = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id1[0]).all()
+                    trace_points1 = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id1.pk).all()
             if trace_id2:
-                if trace_id1[0] > 171666:
-                    trace_points2 = Tracepoints2.objects.using('TEST').filter(traceid=trace_id2[0]).all()
+                if trace_id2.pk > 171666:
+                    trace_points2 = Tracepoints2.objects.using('TEST').filter(traceid=trace_id2.pk).all()
                 else:
-                    trace_points2 = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id2[0]).all()
+                    trace_points2 = Tracepoints.objects.using('TEST').objects.using('TEST').filter(traceid=trace_id2.pk).all()
                     
                 rownum=50
                 x=0
@@ -2250,17 +2677,18 @@ class LoadCharts:
                     yarray.append(point.ydata)
                 
                 for point in trace_points1:
-                    if point.xdata==0 or x>200:
+                    if x>200:
                         break    # break here
-                    ydata=point.ydata-yarray[x]
-                    print('ydata',ydata,'x=',x)
-                    sheet.cell(row=rownum, column=8).value= round(point.xdata,2)
-                    sheet.cell(row=rownum, column=9).value= round(ydata,2)
-                    f=round(point.xdata,2)
-                    d=round(ydata,2)
-                    chart_data.append([title,f,d])
-                    rownum+=1
-                    x+=1
+                    if not point.xdata==0:
+                        ydata=point.ydata-yarray[x]
+                        #print('ydata',ydata,'x=',x)
+                        sheet.cell(row=rownum, column=8).value= round(point.xdata,2)
+                        sheet.cell(row=rownum, column=9).value= round(ydata,2)
+                        f=round(point.xdata,2)
+                        d=round(ydata,2)
+                        chart_data.append([title,f,d])
+                        rownum+=1
+                        x+=1
             #print('chart4_data=',chart_data)
             if chart_data:
                 load_chart= MakeCharts(sheet,self.spec_type,chart_data)

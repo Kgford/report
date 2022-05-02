@@ -116,6 +116,7 @@ class ReportView(View):
             workstation_list = []
             operator_list = []
             stat_list = []
+            lot_list=[]
             spec_list = -1
             artwork_list = ['RawData 1',]
             art_rev_list = []
@@ -137,6 +138,7 @@ class ReportView(View):
             bad_data1 = 0
             passed1 = 0
             failed1 = 0
+            lot=-1
             failed_percent1 = 0
             bad_data2 = 0
             passed2 = 0
@@ -206,8 +208,9 @@ class ReportView(View):
             operator_list = Effeciency.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
             job_list = Testdata.objects.using('TEST').order_by('jobnumber').values_list('jobnumber', flat=True).order_by('-jobnumber').distinct()
             part_list = Testdata.objects.using('TEST').order_by('partnumber').values_list('partnumber', flat=True).distinct()
+            lot_list = Testdata.objects.using('TEST').order_by('lot').values_list('lot', flat=True).distinct()
             workstation_status = ReportQueue.objects.using('TEST').filter(reportstatus='test running').values_list('workstation','jobnumber','partnumber','activedate','operator','value','maxvalue','ping','pk').all()
-            print('part_list=',part_list)
+            print('$$$$$$$$$$$$$$$$$$$$$$$$lot_list=',lot_list)
             x=1
             for station, jobs, parts, activedate, opera, value, maxvalue,ping,test_id in workstation_status:
                 daywatch=today-activedate
@@ -226,7 +229,7 @@ class ReportView(View):
                     #print('dt=',dt)
                     dt=dt.seconds/3600
                     #print('dt=',dt)
-                    if int(dt)>2:
+                    if int(dt)>2 and value !=None and maxvalue!=None:
                         percent=100 * float(value)/float(maxvalue)
                         #print('percent=',percent)
                         if percent>=30:
@@ -284,14 +287,14 @@ class ReportView(View):
                     test_comment10 = comment
                 x+=1
                 #print('test_status1',test_status1)
-                print('comment=',comment)
+                print('lot*********************************=',lot)
               
             
         except IOError as e:
             print ("Lists load Failure ", e)
             print('error = ',e)     
         return render (self.request,"excel/index.html",{'job_num':job_num,'part_num':part_num,'workstation':workstation,'operator':operator,'start_date':start_date,'end_date':end_date,'artwork_list':artwork_list,'artwork':artwork,
-                                                        'job_list':job_list,'part_list':part_list,'workstation_list':workstation_list,'operator_list':operator_list,'spec1':spec1,'spec2':spec1,'spec3':spec3,'spectype':spectype,
+                                                        'job_list':job_list,'part_list':part_list,'workstation_list':workstation_list,'operator_list':operator_list,'spec1':spec1,'spec2':spec2,'spec3':spec3,'spectype':spectype,
                                                         'spec4':spec4,'spec5':spec5,'report_data':report_data,'test1_list':test1_list,'test2_list':test2_list,'test3_list':test3_list,'test4_list':test4_list,'test5_list':test5_list,
                                                         'stat1_min':stat1_min,'stat1_max':stat1_max,'stat1_avg':stat1_avg,'stat1_std':stat1_std,'stat2_min':stat2_min,'stat2_max':stat2_max,'stat2_avg':stat2_avg,'stat2_std':stat2_std,
                                                         'stat3_min':stat3_min,'stat3_max':stat3_max,'stat3_avg':stat3_avg,'stat3_std':stat3_std,'stat4_min':stat4_min,'stat4_max':stat4_max,'stat4_avg':stat4_avg,'stat4_std':stat4_std,
@@ -304,7 +307,7 @@ class ReportView(View):
                                                         'test_status2':test_status2,'test_status3':test_status3,'test_status4':test_status4,'test_status5':test_status5,'test_status6':test_status6,'test_status7':test_status7,
                                                         'test_status8':test_status8,'test_status9':test_status9,'test_status10':test_status10,'test_comment1':test_comment1,'test_comment2':test_comment2,'test_comment3':test_comment3,
                                                         'test_comment4':test_comment4,'test_comment5':test_comment5,'test_comment6':test_comment6,'test_comment7':test_comment7,'test_comment8':test_comment8,
-                                                        'test_comment9':test_comment9,'test_comment10':test_comment10})
+                                                        'test_comment9':test_comment9,'test_comment10':test_comment10,'lot_list':lot_list,'lot':lot})
     def post(self, request, *args, **kwargs):
         operator = self.request.user
         form = 0
@@ -324,6 +327,7 @@ class ReportView(View):
             spec4 = -1
             spec5 = -1
             artwork = -1
+            lot=-1
             report_data = -1
             stat1_min = -1
             stat1_max = -1
@@ -366,7 +370,7 @@ class ReportView(View):
             chart3 = -1
             chart4 = -1
             chart5 = -1
-            
+            lot_list=[]
             job_list = []
             part_list = []
             workstation_list = []
@@ -486,6 +490,7 @@ class ReportView(View):
             #print('report123=',report)
             analyze = request.POST.get('_analyze', -1)
             trace = request.POST.get('_trace', -1)
+            lot = request.POST.get('_lot', -1)
             artwork = request.POST.get('_art', -1)
             if artwork=='None' or artwork=='' or artwork==None or artwork=='All Artworks':
                 artwork=-1
@@ -528,9 +533,11 @@ class ReportView(View):
             part_list = Testdata.objects.using('TEST').order_by('-partnumber').values_list('partnumber', flat=True).distinct() 
             operator_list = Effeciency.objects.using('TEST').order_by('operator').values_list('operator', flat=True).distinct()
             workstation_list = Workstation.objects.using('TEST').order_by('computername').values_list('computername', flat=True).distinct()
+            lot_list = Testdata.objects.using('TEST').order_by('lot').values_list('lot', flat=True).distinct()
             
             got_enough=False
-            print('job_num=',job_num)
+            print('lot_list$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$=',lot_list)
+            print('logt',lot)
             if job_num !=-1:#Job
                 part = Testdata.objects.using('TEST').filter(jobnumber=job_num).last()
                 print('part=',part)
@@ -546,32 +553,52 @@ class ReportView(View):
                 
                 print('spec_data',spec_data)
                 #print('we are here',report_data)
-            elif part_num!=-1 and artwork!=-1 and workstation!=-1  and operator!=-1 : #part_number, Artwork, Workstation, Operator
+            elif part_num!=-1 and artwork!=-1 and workstation!=-1  and operator!=-1 and lot!=-1 : #part_number, Artwork, Workstation, Operator, lot
+                report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).filter(workstation=workstation).filter(operator=operator).filter(LOT=lot).all()
+                spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
+                if spec_data:
+                    got_enough=True
+                print('in part1')
+            elif part_num!=-1 and artwork!=-1 and workstation!=-1  and operator!=-1 and lot==-1 : #part_number, Artwork, Workstation, Operator
                 report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).filter(workstation=workstation).filter(operator=operator).all()
                 spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
                 if spec_data:
                     got_enough=True
                 print('in part1')
-            elif part_num!=-1 and artwork!=-1 and workstation!=-1  and operator==-1 : #part_number, Artwork, Workstation
+            elif part_num!=-1 and artwork!=-1 and workstation!=-1  and operator==-1 and lot==-1: #part_number, Artwork, Workstation
                 report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).filter(workstation=workstation).all()
                 spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
                 if spec_data:
                     got_enough=True
                 print('in part2')
-            elif part_num!=-1 and artwork!=-1 and workstation==-1  and operator==-1 : #part_number, Artwork
+            elif part_num!=-1 and artwork!=-1 and workstation==-1  and operator==-1 and lot==-1: #part_number, Artwork
                 report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).filter(artwork_rev=artwork).all()
                 spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
                 if spec_data:
                     got_enough=True
                 print('in part3')
-            elif part_num!=-1 and artwork==-1 and workstation==-1  and operator==-1 : #part_number
+            elif part_num!=-1 and artwork==-1 and workstation==-1  and operator==-1 and lot==-1: #part_number
                 report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).all()
                 spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
                 if spec_data:
                     got_enough=True
                 print('spec_data=',spec_data)
                 print('in part4')
-            elif part_num==-1 and artwork!=-1 and workstation!=-1  and operator!=-1 : #Artwork, Workstation, Operator
+            elif part_num==-1 and artwork==-1 and workstation==-1  and operator==-1  and lot!=-1 : #lot
+                report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).all()
+                spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
+                if spec_data:
+                    got_enough=True
+                print('spec_data=',spec_data)
+                print('in part4')
+            elif part_num!=-1 and artwork==-1 and workstation==-1  and operator==-1  and lot==-1 and operator==-1 : #part_number
+                report_data = Testdata.objects.using('TEST').filter(partnumber=part_num).all()
+                spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
+                if spec_data:
+                    got_enough=True
+                print('spec_data=',spec_data)
+                print('in part4')
+            elif part_num==-1 and artwork!=-1 and workstation!=-1  and operator!=-1 : #Artwork, Workstation, Operator,Lot
                 report_data = Testdata.objects.using('TEST').filter(artwork_rev=artwork).filter(workstation=workstation).filter(operator=operator).all()
                 if report_data:
                     part_num=report_data[0].partnumber
@@ -580,7 +607,7 @@ class ReportView(View):
                         if spec_data:
                             got_enough=True
                 print('in part5')
-            elif part_num==-1 and artwork!=-1 and workstation!=-1  and operator==-1 : #Artwork, Workstation
+            elif part_num==-1 and artwork!=-1 and workstation!=-1  and operator==-1  and lot==-1: #Artwork, Workstation
                 report_data = Testdata.objects.using('TEST').filter(artwork_rev=artwork).filter(workstation=workstation).all() 
                 if report_data:
                     part_num=report_data[0].partnumber
@@ -589,7 +616,7 @@ class ReportView(View):
                         if spec_data:
                             got_enough=True                
                 print('in part6')                
-            elif part_num==-1 and artwork!=-1 and workstation==-1  and operator==-1 : #Artwork
+            elif part_num==-1 and artwork!=-1 and workstation==-1  and operator==-1  and lot==-1: #Artwork
                 report_data = Testdata.objects.using('TEST').filter(artwork_rev=artwork).all()   
                 if report_data:
                     part_num=report_data[0].partnumber
@@ -598,7 +625,7 @@ class ReportView(View):
                         if spec_data:
                             got_enough=True    
                 print('in part7')
-            elif part_num==-1 and artwork==-1 and workstation!=-1  and operator!=-1 : #Workstation, Operator
+            elif part_num==-1 and artwork==-1 and workstation!=-1  and operator!=-1  and lot==-1: #Workstation, Operator
                 report_data = Testdata.objects.using('TEST').filter(workstation=workstation).filter(operator=operator).all()   
                 if report_data:
                     part_num=report_data[0].partnumber
@@ -607,7 +634,7 @@ class ReportView(View):
                         if spec_data:
                             got_enough=True    
                 print('in part8')
-            elif part_num==-1 and artwork==-1 and workstation!=-1  and operator==-1 : #Workstation
+            elif part_num==-1 and artwork==-1 and workstation!=-1  and operator==-1 and lot==-1: #Workstation
                 report_data = Testdata.objects.using('TEST').filter(workstation=workstation).all() 
                 if report_data:
                     part_num=report_data[0].partnumber
@@ -616,7 +643,7 @@ class ReportView(View):
                         if spec_data:
                             got_enough=True    
                 print('in part9')
-            elif part_num==-1 and artwork==-1 and workstation==-1  and operator!=-1 : #Operator
+            elif part_num==-1 and artwork==-1 and workstation==-1  and operator!=-1 and lot==-1 : #Operator
                 report_data = Testdata.objects.using('TEST').filter(operator=operator).all() 
                 if report_data:
                     part_num=report_data[0].partnumber
@@ -625,8 +652,21 @@ class ReportView(View):
                         if spec_data:
                             got_enough=True    
                 print('in part10')
-            print('report_data',report_data)
+            elif part_num==-1 and artwork==-1 and workstation==-1  and operator==-1 and lot!=-1 : #LOT
+                report_data = Testdata.objects.using('TEST').filter(operator=operator).all() 
+                if report_data:
+                    part_num=report_data[0].partnumber
+                    if part_num:
+                        spec_data = Specifications.objects.using('TEST').filter(partnumber=part_num).first()
+                        if spec_data:
+                            got_enough=True    
+                print('in part11')
+            print('spec2',spec2)
+            print('got_enough',got_enough)
+            print('spec_data',spec_data)
+            print('report_data',len(report_data))
             if got_enough and spec_data and report_data:
+                print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!we are here!!!!!!!!!!!!!!!!!!!!!!!!!!!')
                 #filter blanks
                 temp_list = []
                 for artwork_rev in artwork_list:
@@ -642,14 +682,15 @@ class ReportView(View):
                     spec_rl = round(conversions.vswr_to_rl(),3)
                 else:
                     spec_rl = 0
-                print('spec_rl=',spec_rl)
+                print('spec1=',spec1)
                 spectype=spec_data.spectype
                 try:
-                    if '90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype:
+                    if ('90 DEGREE COUPLER' in spec_data.spectype or 'BALUN' in spec_data.spectype) and spec1==-1:
                         if spec_data.insertionloss:
                             spec1 = round(spec_data.insertionloss,3)
                         if spec_rl:
                             spec2 = spec_rl
+                            print('spec2 hello=',spec2)
                         if spec_data.isolation:
                             spec3 = round(spec_data.isolation,3)
                         if spec_data.amplitudebalance:
@@ -661,6 +702,7 @@ class ReportView(View):
                             spec1 = round(spec_data.insertionloss,3)
                         if spec_rl:
                             spec2 = spec_rl
+                            print('spec2 goodbywe=',spec2)
                         if spec_data.coupling:
                             spec3 = round(spec_data.coupling,3)
                         if spec_data.directivity:
@@ -675,12 +717,12 @@ class ReportView(View):
                 total=0
                 temp_list = []
                 
-                print('report_data=',report_data)
+                #print('report_data=',report_data)
                 for data in report_data:
                    good_data=True
-                   print('good_data1=',good_data)
+                   #print('good_data1=',good_data)
                    #~~~~~~~~~~~~~~~Check for good data~~~~~~~~~~~~~~~~~
-                   print('IL&RL ',data.insertionloss,data.insertionloss)
+                   #print('IL&RL ',data.insertionloss,data.insertionloss)
                    if not data.insertionloss and not data.returnloss:
                         good_data=False
                         print('IL no good')
@@ -702,7 +744,7 @@ class ReportView(View):
                         if not data.coupling and not data.directivity and not data.coupledflatness: 
                             good_data=False
                             print('no good CPL DIR CF')
-                   print('good_data2=',good_data)
+                   #print('good_data2=',good_data)
                    #~~~~~~~~~~~~~~~Check for good data~~~~~~~~~~~~~~~~~
                    if good_data:
                         go = True
@@ -790,11 +832,12 @@ class ReportView(View):
                         bad_data5 = round(statistics.mean(bad5_list),2)
                 
                 report_data = temp_list 
-                
+                print('sep22222',spec2)
+                print('len(test1_list',len(test1_list))
                 if len(test1_list) > 1:# must have at least two tests
                     test_list = [test1_list,test2_list,test3_list,test4_list,test5_list]
                     spec_list = [spec1,spec2,spec3,spec4,spec5]
-                    #print('test_list =',test_list)
+                    print('spec_list =',spec_list)
                     histo_data = Histogram_data(test_list,spec_list,'test1') 
                     il_histo_data = histo_data.Hist_data()
                     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~statistics~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -979,7 +1022,7 @@ class ReportView(View):
                     xy_chart.title = 'RL Histogram'
                     xy_chart.add('RL Histogram', sd_list)
                     #print('sd_list=',sd_list)
-                    #print('spec2=',spec2)
+                    print('spec2=',spec2)
                     # add  spec line
                     xy_chart.add('spec max', [(spec2, min_max[0]),(spec2, min_max[1])])
                     #~~~~~~~~~~ RL Standard deviation Chart~~~~~~~~~~~~~~~~~
@@ -1405,7 +1448,7 @@ class ReportView(View):
                 show_legend=False, half_pie=True, inner_radius=0.70,
                 style=pygal.style.styles['default'](value_font_size=80,plot_background="gray"))
                 efficiency = Effeciency.objects.using('TEST').filter(workstation=station).filter(jobnumber=jobs).filter(operator=opera).last()
-                print('efficiency=',efficiency)
+                #print('efficiency=',efficiency)
                 #print('************************ping=',ping)
                 if efficiency:
                     comment = 'Workstation: ' + str(station) + '\nOperator: ' + str(opera) + '\nJob: ' + str(jobs) + '\nPart: ' + str(parts) + '\nTotal Parts: ' + str(efficiency.totaluuts) + '\nParts Complete: ' + str(efficiency.completeuuts) + '\nOperator Effeciency: ' + str(efficiency.effeciencystatus)
@@ -1456,17 +1499,17 @@ class ReportView(View):
             print ("Lists load Failure ", e)
             print('error = ',e)     
         return render (self.request,"excel/index.html",{'job_num':job_num,'part_num':part_num,'workstation':workstation,'operator':operator,'start_date':start_date,'end_date':end_date,'artwork_list':artwork_list,'artwork':artwork,
-                                                        'job_list':job_list,'part_list':part_list,'workstation_list':workstation_list,'operator_list':operator_list,'spec1':spec1,'spec2':spec1,'spec3':spec3,'spectype':spectype,
+                                                        'job_list':job_list,'part_list':part_list,'workstation_list':workstation_list,'operator_list':operator_list,'spec1':spec1,'spec2':spec2,'spec3':spec3,'spectype':spectype,
                                                         'spec4':spec4,'spec5':spec5,'report_data':report_data,'test1_list':test1_list,'test2_list':test2_list,'test3_list':test3_list,'test4_list':test4_list,'test5_list':test5_list,
                                                         'stat1_min':stat1_min,'stat1_max':stat1_max,'stat1_avg':stat1_avg,'stat1_std':stat1_std,'stat2_min':stat2_min,'stat2_max':stat2_max,'stat2_avg':stat2_avg,'stat2_std':stat2_std,
                                                         'stat3_min':stat3_min,'stat3_max':stat3_max,'stat3_avg':stat3_avg,'stat3_std':stat3_std,'stat4_min':stat4_min,'stat4_max':stat4_max,'stat4_avg':stat4_avg,'stat4_std':stat4_std,
                                                         'stat5_min':stat3_min,'stat5_max':stat5_max,'stat5_avg':stat5_avg,'stat5_std':stat5_std,'analyze':analyze,'il_histo_data':il_histo_data,'rl_histo_data':rl_histo_data,
-                                                        'iso_histo_data':iso_histo_data,'ab_histo_data':ab_histo_data,'pb_histo_data':pb_histo_data,'coup_histo_data':coup_histo_data,'iso_histo_data':iso_histo_data,
+                                                        'iso_histo_data':iso_histo_data,'ab_histo_data':ab_histo_data,'pb_histo_data':pb_histo_data,'coup_histo_data':coup_histo_data,'iso_histo_data':iso_histo_data,'lot_list':lot_list,
                                                         'passed1':passed1,'failed1':failed1,'failed_percent1':failed_percent1,'passed2':passed2,'failed2':failed2,'failed_percent2':failed_percent2,'passed3':passed3,'failed3':failed3,   
                                                         'cb_histo_data':cb_histo_data,'failed_percent3':failed_percent3,'passed4':passed4,'failed4':failed4,'failed_percent4':failed_percent4,'passed5':passed5,'failed5':failed5,
                                                         'failed_percent5':failed_percent5,'bad_data1':bad_data1,'bad_data2':bad_data2,'bad_data3':bad_data3,'bad_data4':bad_data4,'bad_data5':bad_data5,'il_histo_data2':il_histo_data2,
                                                         'chart1':chart1,'chart2':chart2,'chart3':chart3,'chart4':chart4,'chart5':chart5,'blank':blank,'total':total,'art_rev_list':art_rev_list,'blank':blank,'test_status1':test_status1,
-                                                        'test_status2':test_status2,'test_status3':test_status3,'test_status4':test_status4,'test_status5':test_status5,'test_status6':test_status6,'test_status7':test_status7,
+                                                        'test_status2':test_status2,'test_status3':test_status3,'test_status4':test_status4,'test_status5':test_status5,'test_status6':test_status6,'test_status7':test_status7,'lot':lot,
                                                         'test_status8':test_status8,'test_status9':test_status9,'test_status10':test_status10,'test_comment1':test_comment1,'test_comment2':test_comment2,'test_comment3':test_comment3,'test_comment4':test_comment4,
                                                         'test_comment5':test_comment5,'test_comment6':test_comment6,'test_comment7':test_comment7,'test_comment8':test_comment8,'test_comment9':test_comment9,'test_comment10':test_comment10,
                                                         'rl_histo_data2':rl_histo_data2,'iso_histo_data2':iso_histo_data2,'ab_histo_data2':ab_histo_data2,'pb_histo_data2':pb_histo_data2,'coup_histo_data2':coup_histo_data2,'dir_histo_data2':dir_histo_data2,

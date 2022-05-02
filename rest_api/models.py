@@ -8,7 +8,8 @@ class SPCData(models.Model):
     closed_date = models.DateField("closed_date",null=True, blank=True)
     artwork = models.CharField("artwork",max_length=20,null=True,unique=False,default='N/A')
     panel = models.CharField("panel",max_length=20,null=True,unique=False,default='N/A')
-    quadrant = models.CharField("quadrant",max_length=20,null=True,unique=False,default='N/A')
+    sector = models.CharField("sector",max_length=20,null=True,unique=False,default='N/A')
+    lot = models.CharField("lot",max_length=20,null=True,unique=False,default='N/A')
     quantity = models.IntegerField("quantity",null=True)
     failed = models.IntegerField("failed",null=True)
     failed_percent = models.FloatField("failed_percent",null=True)
@@ -16,6 +17,7 @@ class SPCData(models.Model):
     misc_mechanical = models.IntegerField("misc_mechanical",null=False,default=0)
     IL_failure = models.IntegerField("IL_failure",null=False,default=0)
     AB_failure = models.IntegerField("AB_failure",null=False,default=0)
+    PB_failure = models.IntegerField("PB_failure",null=False,default=0)
     VSWR_failure = models.IntegerField("vswr_failure",null=False,default=0)
     ISO_failure = models.IntegerField("ISO_failure",null=False,default=0)
     
