@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'E2',
     'test_db',
     'rest_api',
+    'testfixtures',
     "rest_framework_api_key",
     'rest_framework',
     'django.contrib.admin',

@@ -1,0 +1,201 @@
+{% extends "testfixtures/index_layout.html" %}
+{% load static %}
+
+{% block title %}
+    {{ index_type }}
+{% endblock %}
+
+{% block body %}
+<body">
+	<nav class="navbar navbar-expand-lg navbar-dark "style="background-color: #304e74;">
+            <div class="container-fluid">
+			<a class="navbar-brand" href = "https://innovativepp.com/">Innovative Power Products&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+			    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item active">
+							<span data-feather="dummyspace"></span>
+							<a class="nav-link" href="#" aria-disabled="true">      </a>
+						</li>
+						<li class="nav-item active">
+							<span data-feather="dummyspace"></span>
+							<a class="nav-link" href="#" aria-disabled="true">      </a>
+						</li>
+						<li class="nav-item active">
+							<span data-feather="home"></span>
+							<a class="nav-link" href="http://innpriority:8888/tickets/">Home  </a>
+						</li>
+						
+						<li class="nav-item active">
+							<span data-feather="dummyspace"></span>
+							<a class="nav-link" href="#" aria-disabled="true">      </a>
+						</li>
+						<li class="nav-item active">
+							<span data-feather="dummyspace"></span>
+							<a class="nav-link" href="#" aria-disabled="true">      </a>
+						</li>
+						<li class="nav-item active">
+							<span data-feather="dummyspace"></span>
+							<a class="nav-link" href="#" aria-disabled="true">      </a>
+						</li>
+						{% if active_administrator %}
+						<li class="nav-item active">
+							<span data-feather="home"></span>
+							<a class="nav-link" href="{% url 'admin:index' %}" >Database</a>
+						</li>
+						<li class="nav-item active">
+							<span data-feather="dummyspace"></span>
+							<a class="nav-link" href="#" aria-disabled="true">      </a>
+						</li>
+						<li class="nav-item active">
+							<span data-feather="dummyspace"></span>
+							<a class="nav-link" href="#" aria-disabled="true">      </a>
+						</li>
+						<li class="nav-item active">
+							<span data-feather="dummyspace"></span>
+							<a class="nav-link" href="#" aria-disabled="true">      </a>
+						</li>
+						{% endif %}
+					</ul>
+                </div>
+				<div class="btn-toolbar mb-2 mb-md-0">
+					<a style = "color:#CCD1D1" >Operator: {{active_user_name}}</a>
+				</div>
+			</div>
+        </nav>
+	
+	<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+			<h1 class="h2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Test Fixture Management</h1>
+		</div>	
+		<form method="post" name="Form" onsubmit="return validateForm()" action = "{% url 'testfixtures:index' %}">
+			{% csrf_token %}
+			{{form}}
+			<input type='hidden' id = "_active_fixture_id"  name = "_active_fixture_id" value = {{active_fixture_id}} >
+			<div class="row">
+				<div class="col-sm-2 col-lg-2 grid-col">
+					<div class="form-group">
+						<label for="_part_num">Part Number</label>
+						{% if active_part == -1 %}
+							<input type="text" class="form-control" name ='_part' list="_part"  placeholder="Search by typing" required>
+						{% else %}
+							<input type="text" class="form-control" name ='_part' list="_part"  value = "{{active_part}}" required>
+						{% endif %}	
+						<datalist id='_part'>
+							{% for this_part in part_list %}
+								<option data-desc = '_part', value = "{{this_part}}">{{this_part}}</option>
+							{% endfor %}
+						</datalist>
+					</div>	
+				</div>
+				<div class="col-sm-2 col-lg-2 grid-col">
+					<div class="form-group">
+					<label for="_title">Fixture Rev</label>
+						{% if fixture == -1 %}
+							<input type="text" class="form-control" name = "_fixture" list= "_fixture"  required>
+						{% else %}
+							<input type="text" class="form-control" name = "_fixture" list= "_fixture"  value = "{{fixture}}" required>
+						{% endif %}
+					</div>	
+				</div>
+				<div class="col-sm-2 col-lg-2 grid-col">
+					<div class="form-group">
+					<label for="_title">Plunger</label>
+						{% if plunger == -1 %}
+							<input type="text" class="form-control" name = "_plunger" list= "_plunger">
+						{% else %}
+							<input type="text" class="form-control" name = "_plunger" list= "_plunger"  value = "{{plunger}}">
+						{% endif %}
+					</div>	
+				</div>
+				<div class="col-sm-2 col-lg-2 grid-col">
+					<div class="form-group">
+					<label for="_title">Golden Unit</label>
+						{% if plunger == -1 %}
+							<input type="text" class="form-control" name = "_revision" list= "_revision" >
+						{% else %}
+							<input type="text" class="form-control" name = "_revision" list= "_revision"  value = "{{revision}}" >
+						{% endif %}
+					</div>	
+				</div>
+				<div class="col-sm-2 col-lg-2 grid-col">
+					<div class="form-group">
+					<label for="_title"># of Fixtures</label>
+						{% if plunger == -1 %}
+							<input type="text" class="form-control" name = "_fix_num" list= "_fix_num"  required>
+						{% else %}
+							<input type="text" class="form-control" name = "_fix_num" list= "_fix_num"  value = "{{fix_num}}" required>
+						{% endif %}
+					</div>	
+				</div>
+			</div>
+			</div>
+			<div class="row">
+				{% if active_fixture_id == -1 %}
+					<div class="col-sm-1 col-lg-1 grid-col">
+						<div class="form-group">
+							<label  for="_quantity">Save</label>
+							<button type="submit" id = "_save" name = "_save"  class="btn btn-success">Save Fixture</button>
+						</div>
+					</div>
+				{% else %}
+					<div class="col-sm-1 col-lg-1 grid-col">
+						<div class="form-group">
+							<button type="submit" id = "_update" name = "_update"  class="btn btn-warning">Update Fixture</button>
+						</div>
+					</div>
+					<div class="col-sm-1 col-lg-1 grid-col">
+						<div class="form-group">
+							<button type="submit" id = "_delete" name = "_delete"  class="btn btn-danger">Delete Fixture</button>
+						</div>
+					</div>
+				{% endif %}
+			</div>	
+			<div class="text-CENTER">
+				<h2 class="h2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Test Fixtures</h2>
+			</div>	
+			<div class="table-responsive" Method = "POST">
+				 <table id = "table_id" class="table table-striped table-sm">
+					<thead>
+						<tr>
+							<th>Ticket#</th>
+							<th>Part Number</th>
+							<th>Fixture Number</th>
+							<th>Plunger</th>
+							<th>Golden Unit</th>
+							<th>Quantity</th>
+						</tr>
+					</thead>
+					<tbody>
+					{% load index %}
+					{% for fixture in test_fixtures %}
+						<tr>	
+							<td><a class="nav-link" href="{% url 'testfixtures:index' %}?active_fixture_id={{fixture.pk}}">{{fixture.pk}}</td>
+							<td><a class="nav-link" href="{% url 'testfixtures:index' %}?active_fixture_id={{fixture.pk}}">{{fixture.partnumber}}</td>
+							<td><a class="nav-link" href="{% url 'testfixtures:index' %}?active_fixture_id={{fixture.pk}}">{{fixture.fixturenumber}}</td>
+							<td><a class="nav-link" href="{% url 'testfixtures:index' %}?active_fixture_id={{fixture.pk}}">{{fixture.plunger}}</td>
+							<td><a class="nav-link" href="{% url 'testfixtures:index' %}?active_fixture_id={{fixture.pk}}">{{fixture.revision}}</td>
+							<td><a class="nav-link" href="{% url 'testfixtures:index' %}?active_fixture_id={{fixture.pk}}">{{fixture.fixnum}}</td>
+						</tr>
+					{% endfor %}
+					</tbody>
+					
+				</table>
+			</div>
+		
+		</form>
+		<hr>
+		
+		
+	</main>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+	
+<script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script> 
+<script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'}),_trfd.push({'ap':'cpsh'},{'server':'p3plcpnl0769'}) // Monitoring performance to make your website faster. If you want to opt-out, please contact web hosting support.</script>
+
+</body>
+{% endblock %}
+
+</html>

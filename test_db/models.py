@@ -8,7 +8,18 @@
 from django.db import models
 from django.utils import timezone
 
+class TestFixtures(models.Model):   
+     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
+     partnumber = models.CharField(db_column='PartNumber', max_length=255, blank=True, null=True)  # Field name made lowercase.
+     fixturenumber = models.CharField(db_column='fixturenumber', max_length=255, blank=True, null=True)  # Field name made lowercase.
+     plunger = models.CharField(db_column='plunger', max_length=255, blank=True, null=True)  # Field name made lowercase.
+     revision = models.CharField(db_column='revision', max_length=255, blank=True, null=True)  # Field name made lowercase.
+     fixnum = models.IntegerField(db_column='fixnum')  # Field name made lowercase.
+     class Meta:
+        managed = False
+        db_table = 'TestFixtures'
 
+ 
 class ReportQueue(models.Model):    
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
     reportname = models.CharField(db_column='ReportName', max_length=50, blank=True, null=True)  # Field name made lowercase.
