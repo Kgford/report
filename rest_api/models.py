@@ -20,7 +20,7 @@ class SPCData(models.Model):
     PB_failure = models.IntegerField("PB_failure",null=False,default=0)
     VSWR_failure = models.IntegerField("vswr_failure",null=False,default=0)
     ISO_failure = models.IntegerField("ISO_failure",null=False,default=0)
-    
+      
 class SPCDataAPIKey(AbstractAPIKey):
     spcdata = models.ForeignKey(SPCData,on_delete=models.CASCADE, related_name="api_keys", )
  
